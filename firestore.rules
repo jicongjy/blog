@@ -21,5 +21,16 @@ service cloud.firestore {
         && request.resource.data.body.size() <= 200000;
       allow delete: if isAdmin();
     }
+
+    // 카테고리: 누구나 읽고, 추가·수정·삭제는 관리자만 가능하다.
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isAdmin()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 30
+        && request.resource.data.order is number;
+      allow delete: if isAdmin();
+    }
   }
 }

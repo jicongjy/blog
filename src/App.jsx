@@ -6,6 +6,7 @@ import Home from './pages/Home.jsx'
 import List from './pages/List.jsx'
 import Post from './pages/Post.jsx'
 import Editor from './pages/Editor.jsx'
+import Categories from './pages/Categories.jsx'
 import Login from './pages/Login.jsx'
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/post/:id" element={<Post />} />
           <Route path="/write" element={<Editor />} />
           <Route path="/write/:id" element={<Editor />} />
+          <Route path="/admin/categories" element={<Categories />} />
           <Route path="/login" element={<Login />} />
         </Route>
         <Route path="*" element={<Home />} />

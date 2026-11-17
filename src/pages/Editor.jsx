@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Body from '../components/Body.jsx'
 import RichEditor from '../components/RichEditor.jsx'
-import { CATEGORIES } from '../data/categories.js'
+import { useCategories } from '../lib/useCategories.js'
 import { toHtml } from '../lib/body.js'
 import Tile from '../components/Tile.jsx'
 import { getPost, savePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
 
-const empty = { title: '', excerpt: '', category: CATEGORIES[0], thumbnail: '', visibility: 'public', body: '' }
+const empty = { title: '', excerpt: '', category: '', thumbnail: '', visibility: 'public', body: '' }
 
 export default function Editor() {
   const { id } = useParams()
@@ -17,6 +17,7 @@ export default function Editor() {
   const [f, setF] = useState(empty)
   const [saving, setSaving] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const [cats] = useCategories()
 
   useEffect(() => {
     if (!id) return
@@ -42,13 +43,14 @@ export default function Editor() {
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }))
   const submit = async (status) => {
     if (!f.title.trim()) return window.alert('제목을 입력해 주세요.')
-    if (!f.category) return window.alert('카테고리를 선택해 주세요.')
+    const category = f.category || cats?.[0]?.name
+    if (!category) return window.alert('카테고리를 먼저 만들어 주세요.')
     setSaving(true)
     const saved = await savePost({
       id,
       title: f.title.trim(),
       excerpt: f.excerpt.trim(),
-      category: f.category,
+      category,
       thumbnail: f.thumbnail.trim(),
       visibility: f.visibility,
       body: f.body,
@@ -86,9 +88,11 @@ export default function Editor() {
           </label>
           <div className="row">
             <label className="grow">
-              <span>카테고리</span>
-              <select value={f.category} onChange={set('category')}>
-                {[...new Set([...CATEGORIES, f.category].filter(Boolean))].map((c) => (
+              <span>
+                카테고리 · <Link to="/admin/categories">관리</Link>
+              </span>
+              <select value={f.category || cats?.[0]?.name || ''} onChange={set('category')}>
+                {[...new Set([...(cats ?? []).map((c) => c.name), f.category].filter(Boolean))].map((c) => (
                   <option key={c} value={c}>
                     {c}
                   </option>
@@ -121,10 +125,10 @@ export default function Editor() {
         <aside className="editor-preview" aria-label="미리보기">
           <p className="lbl">미리보기</p>
           <div className="pv">
-            <p className="art-meta">{f.category || '카테고리'}</p>
+            <p className="art-meta">{f.category || cats?.[0]?.name || '카테고리'}</p>
             <h2>{f.title || '제목'}</h2>
             <p className="art-summary">{f.excerpt}</p>
-            <Tile post={{ id: 'preview', category: f.category, thumbnail: f.thumbnail }} no="00" ratio="16 / 9" size="lg" />
+            <Tile post={{ id: 'preview', category: f.category || cats?.[0]?.name, thumbnail: f.thumbnail }} no="00" ratio="16 / 9" size="lg" />
             <div className="art sm">
               <Body source={f.body} />
             </div>

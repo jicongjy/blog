@@ -68,3 +68,8 @@ export async function removePost(id) {
   if (!firebaseEnabled) return persist(load().filter((p) => p.id !== id))
   await deleteDoc(doc(db, 'posts', id))
 }
+
+// 미리보기(localStorage) 모드에서 카테고리 이름을 바꿀 때 글도 함께 바꾼다.
+export function renameCategoryInLocalPosts(from, to) {
+  persist(load().map((p) => (p.category === from ? { ...p, category: to } : p)))
+}

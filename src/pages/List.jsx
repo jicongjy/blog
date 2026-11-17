@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useOutletContext, useSearchParams } from 'react-router-dom'
 import Tile from '../components/Tile.jsx'
 import { fmtDate, noOf } from '../lib/format.js'
+import { useCategories } from '../lib/useCategories.js'
 
 export default function List() {
   const { posts } = useOutletContext()
@@ -9,7 +10,8 @@ export default function List() {
   const [q, setQ] = useState('')
   const category = params.get('c')
   const list = posts ?? []
-  const cats = [...new Set(list.map((p) => p.category).filter(Boolean))]
+  const [dbCats] = useCategories()
+  const cats = [...new Set([...(dbCats ?? []).map((c) => c.name), ...list.map((p) => p.category).filter(Boolean)])]
   const shown = list.filter((p) => (!category || p.category === category) && p.title.toLowerCase().includes(q.trim().toLowerCase()))
   const pick = (c) => setParams(c ? { c } : {})
 

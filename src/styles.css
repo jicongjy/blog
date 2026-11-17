@@ -235,3 +235,19 @@ h1, h2, h3, p, ul, ol, figure, blockquote { margin: 0; }
 .rte-body .tiptap > :last-child { margin-bottom: 0; }
 .art ol { margin: 0 0 20px; padding-left: 1.4em; }
 .art li > p { margin: 0; }
+
+/* 카테고리 관리 */
+.cat-admin { max-width: 640px; padding-top: 32px; }
+.cat-add { display: flex; gap: 8px; }
+.cat-add input, .cat-list input { flex: 1; min-width: 0; height: 44px; padding: 0 16px; border: 0; border-radius: 4px; background: var(--soft); font: inherit; font-size: 15px; color: var(--ink); outline: none; }
+.cat-add input:focus, .cat-list input:focus { box-shadow: inset 0 0 0 1px var(--ink); }
+.cat-list { margin: 20px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.cat-list li { display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid var(--line); }
+.cat-list .nm { flex: 1; font-size: 16px; font-weight: 500; }
+.cat-list .nm sup { margin-left: 4px; font-size: 11px; font-weight: 400; color: var(--mute); }
+.cat-list .ops { display: flex; gap: 4px; }
+.cat-list .ops button { height: 32px; padding: 0 10px; border: 0; border-radius: 4px; background: transparent; font: inherit; font-size: 13px; color: var(--mute); cursor: pointer; }
+.cat-list .ops button:hover:not(:disabled) { background: var(--soft); color: var(--ink); }
+.cat-list .ops button:disabled { opacity: .3; cursor: default; }
+.cat-note { margin-top: 16px; font-size: 13px; color: var(--mute); }
+.form-error { margin: 12px 0 0; padding: 12px 14px; border-radius: 4px; background: var(--soft); font-size: 14px; color: var(--accent); }

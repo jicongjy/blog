@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../lib/auth.jsx'
 import { fmtDate } from '../lib/format.js'
+import { useCategories } from '../lib/useCategories.js'
 import Mascot from './Mascot.jsx'
 
 export default function Sidebar({ posts }) {
@@ -8,7 +9,10 @@ export default function Sidebar({ posts }) {
   const [params] = useSearchParams()
   const current = params.get('c')
   const list = posts ?? []
-  const cats = [...new Set(list.map((p) => p.category).filter(Boolean))]
+  const [dbCats] = useCategories()
+  const names = (dbCats ?? []).map((c) => c.name)
+  // 등록된 카테고리를 순서대로, 아직 등록되지 않은 이름이 글에 있으면 뒤에 붙인다.
+  const cats = [...new Set([...names, ...list.map((p) => p.category).filter(Boolean)])]
 
   return (
     <aside className="side" aria-label="사이트 탐색">
@@ -45,6 +49,9 @@ export default function Sidebar({ posts }) {
       <div className="side-spacer" />
       {isAdmin ? (
         <div className="admin-box">
+          <Link to="/admin/categories" className="side-link">
+            카테고리 관리
+          </Link>
           <Link to="/write" className="sub">
             <span>글쓰기 ↗</span>
             <Mascot />

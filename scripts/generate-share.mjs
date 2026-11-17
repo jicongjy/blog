@@ -5,6 +5,7 @@
 //
 // 사용: node scripts/generate-share.mjs [--out dist] [--check]
 //   --check : 파일은 만들지 않고, 지금 배포된 목록과 달라졌는지만 GITHUB_OUTPUT 에 changed=true|false 로 적는다.
+//             읽기에 실패하면 실패(종료 코드 1)로 끝낸다.
 // 필요한 환경 변수: VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_DATABASE_ID(없으면 기본 데이터베이스)
 import { createHash } from 'node:crypto'
 import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs'
@@ -128,11 +129,13 @@ async function main() {
     let live = null
     try {
       const r = await fetch(`${SITE}/share/manifest.json`, { cache: 'no-store' })
-      if (r.ok) live = (await r.json()).sig
+      if (r.ok) live = await r.json()
     } catch {
       /* 받지 못하면 새로 만든다 */
     }
-    setOutput(live === sig ? 'false' : 'true')
+    // 글 목록이 같고, 배포된 코드(커밋)도 지금 검사하는 커밋과 같을 때만 건너뛴다.
+    const same = live?.sig === sig && (!process.env.GITHUB_SHA || live?.sha === process.env.GITHUB_SHA)
+    setOutput(same ? 'false' : 'true')
     return
   }
 
@@ -142,13 +145,13 @@ async function main() {
     writeFileSync(join(dir, 'index.html'), page(p))
   }
   mkdirSync(join(out, 'share'), { recursive: true })
-  writeFileSync(join(out, 'share', 'manifest.json'), JSON.stringify({ sig, count: posts.length }))
+  writeFileSync(join(out, 'share', 'manifest.json'), JSON.stringify({ sig, sha: process.env.GITHUB_SHA ?? '', count: posts.length }))
   console.log(`공유 페이지 ${posts.length}개를 ${join(out, 'share')} 에 만들었습니다.`)
 }
 
 main().catch((e) => {
   console.error('공유 페이지 생성 실패:', e.message)
-  // 배포 자체는 막지 않는다. 점검 모드에서는 안전하게 "바뀜"으로 처리하지 않고 건너뛴다.
-  if (check) setOutput('false')
-  process.exit(0)
+  // 글 목록을 읽지 못한 것을 "바뀐 게 없다"로 보면 사이트가 옛 상태로 멈추고, 공유 페이지 없이 배포하면 기존 공유 링크가 사라진다.
+  // 그래서 실패로 끝내서 실행을 멈추고 알림이 가게 한다.
+  process.exit(1)
 })

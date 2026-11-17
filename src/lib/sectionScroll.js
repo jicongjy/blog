@@ -1,6 +1,6 @@
 // 홈 스크롤: 휠이나 방향키를 한 번 움직이면 첫 화면 -> 글 하나씩 -> 맨 아래로 부드럽게 한 칸씩 넘어간다.
 // CSS scroll-snap 은 브라우저 기본 스크롤과 싸워서 끊겨 보이므로, 직접 애니메이션으로 옮긴다.
-const DURATION = 600
+const DURATION = 380
 const ease = (t) => 1 - Math.pow(1 - t, 4) // easeOutQuart: 바로 출발해서 부드럽게 멈춘다
 
 export function startSectionScroll() {

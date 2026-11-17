@@ -40,7 +40,7 @@ export default function Home() {
     const els = document.querySelectorAll('.hm-entry')
     const io = new IntersectionObserver(
       (items) => items.forEach((it) => it.isIntersecting && it.target.classList.add('in')),
-      { threshold: 0.25 }
+      { threshold: 0.05 }
     )
     els.forEach((el) => io.observe(el))
     return () => io.disconnect()

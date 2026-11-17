@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>기획 노트 블로그 GA4 이벤트 택소노미</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font-family: Pretendard, 'Apple SD Gothic Neo', sans-serif; font-size: 10pt; line-height: 1.55; letter-spacing: -0.01em; color: #111; word-break: keep-all; }
+h1 { margin: 0 0 4px; font-size: 22pt; font-weight: 700; letter-spacing: -0.04em; line-height: 1.2; }
+.sub { margin: 0 0 22px; color: #666; }
+h2 { margin: 26px 0 8px; font-size: 13pt; font-weight: 700; letter-spacing: -0.03em; break-after: avoid; }
+h2 small { margin-left: 6px; font-size: 9pt; font-weight: 500; color: #888; letter-spacing: 0; }
+p { margin: 0 0 8px; }
+.note { color: #555; }
+table { width: 100%; border-collapse: collapse; margin: 6px 0 4px; font-size: 9pt; }
+th { text-align: left; font-weight: 600; color: #444; background: #f1f1ef; padding: 6px 8px; }
+td { padding: 7px 8px; vertical-align: top; border-bottom: 1px solid #e4e4e0; }
+tr { break-inside: avoid; }
+code { font-family: 'SF Mono', Menlo, monospace; font-size: 8.6pt; background: #f1f1ef; padding: 1px 4px; border-radius: 3px; }
+td code { white-space: nowrap; }
+.ev { font-weight: 700; }
+.tag { display: inline-block; padding: 0 6px; border-radius: 99px; background: #111; color: #fff; font-size: 8pt; }
+ul { margin: 4px 0 8px; padding-left: 1.2em; }
+li { margin: 2px 0; }
+.pb { break-before: page; }
+.kv td:first-child { width: 26%; font-weight: 600; color: #444; }
+</style>
+</head>
+<body>
+
+<h1>기획 노트 블로그<br>GA4 이벤트 택소노미</h1>
+<p class="sub">측정 항목과 이벤트 정의를 구현 기준으로 정리한 문서</p>
+
+<h2>1. 설정 개요</h2>
+<table class="kv">
+<tr><td>대상</td><td>기획 노트 블로그</td></tr>
+<tr><td>사이트</td><td>https://jicongjy.github.io/blog/</td></tr>
+<tr><td>측정 도구</td><td>Google Analytics 4 (gtag.js 직접 설치, 측정 ID <code>G-369LZY0LHB</code>)</td></tr>
+<tr><td>목적</td><td>블로그 방문과 콘텐츠 이용 행동 측정</td></tr>
+<tr><td>측정 항목</td><td>홈 방문, 글별 조회, 인기 카테고리, 홈에서 글로 이동, 글 읽기 깊이, 이탈, 유입, 사용자 환경</td></tr>
+</table>
+
+<h2>2. 구현 방식</h2>
+<ul>
+<li><b>가상 경로로 page_view 전송.</b> 이 블로그는 <code>#/post/글아이디</code> 형태의 해시 주소를 씁니다. GA는 주소의 <code>#</code> 뒤를 구분하지 못해 모든 페이지가 하나로 합쳐지므로, GA 기본 page_view를 끄고(<code>send_page_view: false</code>) 화면이 바뀔 때마다 <code>page_location</code>을 <code>/blog/post/글아이디</code>처럼 가상 경로로 직접 보냅니다.</li>
+<li><b>글 상세의 페이지 제목은 글 제목.</b> GA의 "페이지 및 화면" 보고서에서 글별 조회가 제목으로 구분됩니다.</li>
+<li><b>집계에서 제외하는 것.</b> 비공개 글과 임시저장 글, 글쓰기·카테고리 관리·로그인 화면, 관리자로 로그인한 브라우저, 로컬 개발 환경.</li>
+</ul>
+
+<h2>3. 측정 지표 <small>무엇을 어느 데이터로 보는가</small></h2>
+<table>
+<tr><th style="width:17%">측정 항목</th><th style="width:40%">확인할 지표</th><th>데이터 출처</th></tr>
+<tr><td>홈 방문</td><td>홈 사용자 수, 조회수</td><td><code>page_view</code> (<code>page_type=home</code>)</td></tr>
+<tr><td>인기 글</td><td>글별 사용자 수, 조회수, 참여 시간</td><td><code>page_view</code> (<code>page_type=post</code>), 페이지 제목</td></tr>
+<tr><td>인기 카테고리</td><td>카테고리별 클릭 수, 카테고리별 글 조회</td><td><code>category_click</code>, <code>post_category</code></td></tr>
+<tr><td>홈에서 글로 이동</td><td>홈 위치별 글 선택 수</td><td><code>article_select</code> (<code>click_location=home_*</code>)</td></tr>
+<tr><td>읽기 깊이</td><td>글별 50%, 90% 도달 수</td><td><code>article_scroll</code></td></tr>
+<tr><td>이탈</td><td>페이지별 종료수, 이동 경로</td><td>GA 기본 (페이지 조회 기록으로 계산)</td></tr>
+<tr><td>유입</td><td>채널, 소스/매체, 첫 방문 페이지</td><td>GA 기본</td></tr>
+<tr><td>사용자 환경</td><td>지역, 기기, OS</td><td>GA 기본</td></tr>
+</table>
+
+<h2 class="pb">4. 이벤트 택소노미</h2>
+<p class="note">모든 이벤트의 상태는 구현 완료입니다. 글 상세의 <code>page_view</code>와 <code>article_scroll</code>은 공개된 글에서만 전송합니다.</p>
+<table>
+<tr><th style="width:15%">이벤트</th><th style="width:26%">발생 조건</th><th style="width:40%">매개변수</th><th>목적</th></tr>
+<tr>
+  <td class="ev">page_view</td>
+  <td>홈, 전체 글, 글 상세 화면이 열릴 때. 화면 이동마다 한 번</td>
+  <td><code>page_title</code> 홈 / 전체 글 / 글 제목<br><code>page_location</code> 가상 경로<br><code>page_type</code> home · list · post<br>글 상세만: <code>post_id</code>, <code>post_category</code></td>
+  <td>홈과 글별 방문, 페이지별 사용자와 조회수</td>
+</tr>
+<tr>
+  <td class="ev">category_click</td>
+  <td>카테고리를 선택할 때</td>
+  <td><code>category</code> 카테고리 이름 (전체를 고르면 <code>전체</code>)<br><code>click_location</code> home_hero · list_filter · post_meta</td>
+  <td>카테고리 관심도</td>
+</tr>
+<tr>
+  <td class="ev">article_select</td>
+  <td>글 제목, 이미지, [읽기], 목차 항목, 목록 항목, 다음 글 카드를 눌러 글로 이동할 때</td>
+  <td><code>post_id</code>, <code>post_title</code>, <code>post_category</code><br><code>click_location</code> home_card · home_toc · list_index · next_article</td>
+  <td>홈에서 글로 이동, 이동 경로별 비교</td>
+</tr>
+<tr>
+  <td class="ev">article_scroll</td>
+  <td>글 본문의 50%, 90% 지점을 지날 때. 지점마다 글 방문당 한 번</td>
+  <td><code>post_id</code>, <code>post_title</code>, <code>post_category</code><br><code>scroll_depth</code> 50 · 90</td>
+  <td>글 읽기 깊이 추정</td>
+</tr>
+<tr>
+  <td class="ev">select_palette</td>
+  <td>색 조합을 바꿀 때 (부가 이벤트)</td>
+  <td><code>palette</code> 선택한 조합 이름</td>
+  <td>화면 색 선호</td>
+</tr>
+</table>
+<p class="note">읽기 깊이는 본문 영역 높이를 기준으로 계산합니다. 한 화면에 다 들어오는 짧은 글은 50%와 90%가 거의 동시에 전송됩니다.</p>
+
+<h2>5. 매개변수 값 정의</h2>
+<table>
+<tr><th style="width:20%">매개변수</th><th style="width:20%">값</th><th>의미</th></tr>
+<tr><td rowspan="3"><code>page_type</code></td><td><code>home</code></td><td>홈 화면</td></tr>
+<tr><td><code>list</code></td><td>전체 글 화면</td></tr>
+<tr><td><code>post</code></td><td>글 상세 화면</td></tr>
+<tr><td rowspan="3"><code>click_location</code><br>(category_click)</td><td><code>home_hero</code></td><td>홈 첫 화면의 카테고리 목록</td></tr>
+<tr><td><code>list_filter</code></td><td>전체 글 화면의 카테고리 필터</td></tr>
+<tr><td><code>post_meta</code></td><td>글 상세 상단의 카테고리 링크</td></tr>
+<tr><td rowspan="4"><code>click_location</code><br>(article_select)</td><td><code>home_card</code></td><td>홈의 글 카드 (이미지, 제목, [읽기])</td></tr>
+<tr><td><code>home_toc</code></td><td>홈 왼쪽 글 목차</td></tr>
+<tr><td><code>list_index</code></td><td>전체 글 화면의 글 목록</td></tr>
+<tr><td><code>next_article</code></td><td>글 상세 하단의 다음 글 카드</td></tr>
+<tr><td><code>scroll_depth</code></td><td><code>50</code>, <code>90</code></td><td>본문 도달 비율(%)</td></tr>
+</table>
+
+<h2 class="pb">6. GA 콘솔 설정</h2>
+<p><b>맞춤 정의 등록.</b> 매개변수는 등록해야 보고서에서 글별, 카테고리별로 나눠 볼 수 있습니다. 등록하지 않으면 이벤트 개수만 보입니다. 등록 후 반영에는 하루 정도 걸릴 수 있습니다.</p>
+<table>
+<tr><th style="width:24%">이름 (이벤트 매개변수)</th><th style="width:20%">종류 · 범위</th><th>용도</th></tr>
+<tr><td><code>post_id</code></td><td>맞춤 측정기준 · 이벤트</td><td>글 구분 (제목이 같은 글 방지)</td></tr>
+<tr><td><code>post_title</code></td><td>맞춤 측정기준 · 이벤트</td><td>글별 이벤트 수 보기</td></tr>
+<tr><td><code>post_category</code></td><td>맞춤 측정기준 · 이벤트</td><td>카테고리별 글 조회와 읽기 깊이</td></tr>
+<tr><td><code>category</code></td><td>맞춤 측정기준 · 이벤트</td><td>카테고리 클릭 집계</td></tr>
+<tr><td><code>click_location</code></td><td>맞춤 측정기준 · 이벤트</td><td>클릭 위치별 비교</td></tr>
+<tr><td><code>page_type</code></td><td>맞춤 측정기준 · 이벤트</td><td>홈, 전체 글, 글 상세 구분</td></tr>
+<tr><td><code>scroll_depth</code></td><td>맞춤 측정기준 · 이벤트</td><td>50%와 90% 구분. 숫자 합계가 필요하면 맞춤 측정항목으로도 등록</td></tr>
+</table>
+<p><b>향상된 측정.</b> 스트림 설정의 향상된 측정에서 "기록 이벤트에 따른 페이지 변경"을 꺼야 합니다. 켜 두면 직접 보내는 <code>page_view</code>와 겹쳐 두 번 집계될 수 있습니다.</p>
+
+<h2>7. 보고서 보는 방법</h2>
+<table>
+<tr><th style="width:26%">알고 싶은 것</th><th>보는 곳</th></tr>
+<tr><td>홈 방문자 수</td><td>보고서 → 참여도 → 페이지 및 화면에서 홈의 사용자와 조회수</td></tr>
+<tr><td>가장 많이 본 글</td><td>같은 보고서에서 페이지 제목(글 제목)별 조회수</td></tr>
+<tr><td>가장 많이 끝까지 읽은 글</td><td>참여도 → 이벤트 → <code>article_scroll</code>, 측정기준 <code>post_title</code>과 <code>scroll_depth</code></td></tr>
+<tr><td>인기 카테고리</td><td>이벤트 → <code>category_click</code>, 측정기준 <code>category</code></td></tr>
+<tr><td>홈에서 어디를 눌러 글로 가는가</td><td>이벤트 → <code>article_select</code>, 측정기준 <code>click_location</code></td></tr>
+<tr><td>이탈</td><td>참여도 → 페이지 및 화면(종료수), 탐색 분석</td></tr>
+<tr><td>유입, 지역, 기기, OS</td><td>보고서 → 획득, 사용자 → 인구통계, 기술</td></tr>
+</table>
+
+</body>
+</html>

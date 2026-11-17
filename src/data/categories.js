@@ -4,7 +4,8 @@ import { collection, deleteDoc, doc, getDocs, query, setDoc, where, writeBatch }
 import { db, firebaseEnabled } from '../lib/firebase.js'
 import { listPosts, renameCategoryInLocalPosts } from './posts.js'
 
-export const DEFAULT_CATEGORIES = ['Planning', 'Design', 'Operations']
+// Firebase를 아직 읽지 못하는 로컬 미리보기에서도 실제 기본 분류와 같은 이름을 쓴다.
+export const DEFAULT_CATEGORIES = ['기획', '설계', '운영']
 const KEY = 'blog:categories:v1'
 const byOrder = (a, b) => a.order - b.order
 

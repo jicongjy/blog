@@ -4,7 +4,7 @@ import { categoryImage, heroImage, postFallback } from '../data/categoryImages.j
 import { track } from '../lib/analytics.js'
 import { startSectionScroll } from '../lib/sectionScroll.js'
 import HmTop from '../components/HmTop.jsx'
-import { fmtDate, noOf, readMinutes } from '../lib/format.js'
+import { fmtDate, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
 import { usePosts } from '../lib/usePosts.js'
 
@@ -13,6 +13,7 @@ export default function Home() {
   const [cats] = useCategories()
   const [active, setActive] = useState(0) // 첫 화면에서 강조 중인 카테고리 순서
   const [filter, setFilter] = useState(null) // 글 섹션에 적용 중인 카테고리 이름
+  const [activePost, setActivePost] = useState(null)
   const notes = useRef(null)
 
   // 홈은 흰 화면으로 쓴다.
@@ -29,20 +30,26 @@ export default function Home() {
 
   const list = posts ?? []
   const names = useMemo(() => {
-    const fromDb = (cats ?? []).map((c) => c.name)
-    return [...new Set([...fromDb, ...list.map((p) => p.category).filter(Boolean)])]
+    const inPosts = list.map((p) => p.category).filter(Boolean)
+    const fromDb = (cats ?? []).map((c) => c.name).filter((name) => inPosts.includes(name))
+    return [...new Set([...fromDb, ...inPosts])]
   }, [cats, list])
   const count = (n) => list.filter((p) => p.category === n).length
   const shown = filter ? list.filter((p) => p.category === filter) : list
 
-  // 글이 화면에 들어오면 이미지와 설명이 천천히 나타나게 한다.
+  // 글이 화면에 들어오면 이미지와 설명을 나타내고, 왼쪽 목차의 현재 글도 바꾼다.
   useEffect(() => {
     const els = document.querySelectorAll('.hm-entry')
     const io = new IntersectionObserver(
-      (items) => items.forEach((it) => it.isIntersecting && it.target.classList.add('in')),
-      { threshold: 0.05 }
+      (items) => items.forEach((it) => {
+        if (!it.isIntersecting) return
+        it.target.classList.add('in')
+        setActivePost(it.target.dataset.postId)
+      }),
+      { threshold: 0.05, rootMargin: '-20% 0px -55% 0px' }
     )
     els.forEach((el) => io.observe(el))
+    setActivePost(els[0]?.dataset.postId ?? null)
     return () => io.disconnect()
   }, [shown.length, filter, posts])
 
@@ -88,9 +95,8 @@ export default function Home() {
         <aside className="hm-side">
           <p className="hm-label">Notes</p>
           <ol>
-            {list.map((p) => (
-              <li key={p.id}>
-                <span>{Number(noOf(list, p))}.</span>
+            {shown.map((p) => (
+              <li key={p.id} className={activePost === p.id ? 'on' : ''}>
                 <Link to={`/post/${p.id}`}>{p.title}</Link>
               </li>
             ))}
@@ -113,20 +119,21 @@ export default function Home() {
             const ci = names.indexOf(p.category)
             const src = p.thumbnail || postFallback(p.category, ci) || heroImage
             return (
-              <article key={p.id} className="hm-entry">
+              <article key={p.id} className="hm-entry" data-post-id={p.id}>
                 <Link to={`/post/${p.id}`} className="hm-slot" aria-label={p.title}>
                   <img src={src} alt="" loading="lazy" />
                 </Link>
                 <div className="hm-row">
-                  <p className="hm-k">
-                    {Number(noOf(list, p))}. <Link to={`/post/${p.id}`}>{p.title}</Link>
-                  </p>
+                  <div className="hm-copy">
+                    <h2 className="hm-title"><Link to={`/post/${p.id}`}>{p.title}</Link></h2>
+                    {p.excerpt && <p className="hm-subtitle">{p.excerpt}</p>}
+                  </div>
                   <div className="hm-meta">
-                    <p>{p.category}</p>
-                    <p className="g">
-                      {fmtDate(p.createdAt)} · 읽는 시간 {readMinutes(p.body)}분
+                    <p className="hm-category"><span aria-hidden="true" />{p.category}</p>
+                    <p className="g hm-date">
+                      <span>{fmtDate(p.createdAt)}</span>
+                      <span className="hm-readtime">읽는 시간 {readMinutes(p.body)}분</span>
                     </p>
-                    {p.excerpt && <p className="g hm-ex">{p.excerpt}</p>}
                     <p className="hm-view">
                       <Link to={`/post/${p.id}`}>[읽기]</Link>
                     </p>

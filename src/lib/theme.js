@@ -1,15 +1,14 @@
-// 색 조합. 배경(bg)과 글자(fg) 두 색만 정하면 회색 단계는 두 색을 섞어서 자동으로 만든다.
-// 크림, 라벤더, 핑크, 라임, 초록, 빨강, 파랑은 사용자가 준 레퍼런스 이미지의 색(HEX)이다.
+// 색 조합. 두 번째 레퍼런스의 왼쪽 바탕색(a)과 글자색(b)을 한 조합으로 쓴다.
+// a는 화면 바탕과 스와치 점, b는 글자와 선택 상태에 쓴다.
 export const PALETTES = [
-  { id: 'white', name: '흰색', bg: '#ffffff', fg: '#0a0a0a' },
-  { id: 'black', name: '검정', bg: '#0d0d0d', fg: '#f2f2f2' },
-  { id: 'cream', name: '크림', bg: '#f3eee8', fg: '#111111' },
-  { id: 'lavender', name: '라벤더', bg: '#a785fe', fg: '#111111' },
-  { id: 'pink', name: '핑크', bg: '#eaa9cb', fg: '#111111' },
-  { id: 'lime', name: '라임', bg: '#d5ef72', fg: '#111111' },
-  { id: 'green', name: '초록', bg: '#00b65c', fg: '#111111' },
-  { id: 'red', name: '빨강', bg: '#f8311c', fg: '#111111' },
-  { id: 'blue', name: '파랑', bg: '#537cde', fg: '#111111' },
+  { id: 'mono', name: '모노톤', bg: '#f5f3ef', fg: '#161616', a: '#161616', b: '#f5f3ef' },
+  { id: 'pink-blue', name: '핑크와 블루', bg: '#efa4aa', fg: '#0f3f93', a: '#efa4aa', b: '#155bc5' },
+  { id: 'lilac-orange', name: '라일락과 오렌지', bg: '#b8a0ef', fg: '#64170d', a: '#b8a0ef', b: '#ed572d' },
+  { id: 'lime-charcoal', name: '라임과 차콜', bg: '#c8f65a', fg: '#3d4434', a: '#c8f65a', b: '#3d4434' },
+  { id: 'charcoal-lilac', name: '차콜과 라일락', bg: '#3d4434', fg: '#b8a0ef', a: '#3d4434', b: '#b8a0ef' },
+  { id: 'orange-pink', name: '오렌지와 핑크', bg: '#ed572d', fg: '#3b0805', a: '#ed572d', b: '#efa4aa' },
+  { id: 'blue-lilac', name: '블루와 라일락', bg: '#155bc5', fg: '#eee9ff', a: '#155bc5', b: '#b8a0ef' },
+  { id: 'gray-lime', name: '그레이와 라임', bg: '#6e706a', fg: '#edff9a', a: '#7b7d76', b: '#d3fb5f' },
 ]
 
 const KEY = 'blog:palette'
@@ -24,6 +23,8 @@ export function applyPalette(p, save = false) {
   const s = document.documentElement.style
   s.setProperty('--hm-bg', p.bg)
   s.setProperty('--hm-fg', p.fg)
+  s.setProperty('--palette-a', p.a)
+  s.setProperty('--palette-b', p.b)
   if (save) {
     try { localStorage.setItem(KEY, p.id) } catch { /* 무시 */ }
   }

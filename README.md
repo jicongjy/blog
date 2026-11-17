@@ -2,7 +2,7 @@
 
 홍지영 블로그. 주소: https://jicongjy.github.io/blog/
 
-- 화면: Vite + React (HashRouter, base `/blog/`)
+- 화면: Vite + React (BrowserRouter, base `/blog/`)
 - 배포: GitHub Pages (`main` 푸시 시 `.github/workflows/deploy.yml`)
 - 데이터·로그인: Firebase (Firestore `blog` 데이터베이스, Google 로그인). 연결 완료. 설정값이 없는 로컬에서는 localStorage 미리보기로 동작한다.
 - 현재 상태, 디자인 규칙, 남은 일: [AGENTS.md](AGENTS.md), 작업 기록: [docs/work-log.md](docs/work-log.md)

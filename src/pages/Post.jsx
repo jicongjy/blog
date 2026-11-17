@@ -69,9 +69,9 @@ export default function Post() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [countable, post])
 
-  // 카카오톡, 슬랙 등에 붙여 넣으면 이 글의 제목, 요약, 대표 이미지가 미리보기로 보이는 공유용 주소.
+  // 글 주소를 복사한다. 카카오톡, 슬랙 등에 붙여 넣으면 이 글의 제목, 요약, 대표 이미지가 미리보기로 보인다.
   const copyShare = async () => {
-    const url = `${window.location.origin}${import.meta.env.BASE_URL}share/${post.id}/`
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}post/${post.id}/`
     try {
       await navigator.clipboard.writeText(url)
     } catch {

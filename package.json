@@ -4,7 +4,7 @@
   "description": "홍지영 블로그",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp dist/index.html dist/404.html",
     "preview": "vite preview"
   },
   "type": "module",

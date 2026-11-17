@@ -1,14 +1,14 @@
 // 글마다 공유용 HTML(Open Graph)을 만든다.
-// 이 블로그는 해시 주소(#/post/...)라서 카카오톡, 슬랙 등의 링크 미리보기 로봇이 글별 정보를 읽을 수 없다.
-// 그래서 https://jicongjy.github.io/blog/share/<글ID>/ 에 제목, 요약, 대표 이미지를 담은 작은 HTML을 만들고,
-// 사람이 열면 실제 글 화면으로 이동시킨다.
+// 이 블로그는 한 페이지짜리 앱이라 카카오톡, 슬랙 등의 링크 미리보기 로봇이 글별 정보를 읽을 수 없다.
+// 그래서 빌드한 index.html 을 바탕으로 https://jicongjy.github.io/blog/post/<글ID>/ 마다
+// 제목, 요약, 대표 이미지만 이 글의 것으로 바꾼 HTML을 만든다. (앱은 그대로 실행된다.)
 //
 // 사용: node scripts/generate-share.mjs [--out dist] [--check]
 //   --check : 파일은 만들지 않고, 지금 배포된 목록과 달라졌는지만 GITHUB_OUTPUT 에 changed=true|false 로 적는다.
 //             읽기에 실패하면 실패(종료 코드 1)로 끝낸다.
 // 필요한 환경 변수: VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID, VITE_FIREBASE_DATABASE_ID(없으면 기본 데이터베이스)
 import { createHash } from 'node:crypto'
-import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const SITE = 'https://jicongjy.github.io/blog'
@@ -86,18 +86,11 @@ function imageOf(p) {
   return f ? `${SITE}/images/${f}.jpg` : `${SITE}/og-blog.png`
 }
 
-function page(p) {
-  const url = `${SITE}/share/${p.id}/`
-  const target = `${SITE}/#/post/${p.id}`
+function meta(p, url) {
   const desc = (p.excerpt.trim() || plain(p.body)).slice(0, 150)
   const img = imageOf(p)
   const date = p.createdAt ? new Date(p.createdAt).toISOString() : ''
-  return `<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(p.title)} | 기획 노트</title>
+  return `<title>${esc(p.title)} | 기획 노트</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="article">
@@ -111,7 +104,27 @@ ${date ? `<meta property="article:published_time" content="${date}">\n` : ''}${p
 <meta name="twitter:title" content="${esc(p.title)}">
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${esc(img)}">
-<noscript><meta http-equiv="refresh" content="0;url=${target}"></noscript>
+`
+}
+
+// 글 주소(/blog/post/글ID/)에 올려 둘 페이지. 앱 화면(index.html)은 그대로 두고 머리말의 제목, 요약, 이미지만 이 글의 것으로 바꾼다.
+// 사람이 열면 앱이 바로 이 글을 보여 주고, 링크 미리보기 로봇은 이 머리말을 읽는다.
+function postPage(template, p) {
+  const head = template
+    .replace(/<title>[\s\S]*?<\/title>\s*/, '')
+    .replace(/<meta\s+(?:name="description"|property="og:[^"]*"|name="twitter:[^"]*")[^>]*>\s*/g, '')
+  return head.replace('</head>', `${meta(p, `${SITE}/post/${p.id}/`)}</head>`)
+}
+
+// 예전에 공유한 /blog/share/글ID/ 주소는 글 주소로 보내 준다.
+function sharePage(p) {
+  const target = `${SITE}/post/${p.id}/`
+  return `<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+${meta(p, target)}<noscript><meta http-equiv="refresh" content="0;url=${target}"></noscript>
 <script>location.replace(${JSON.stringify(target)})</script>
 </head>
 <body>
@@ -139,14 +152,25 @@ async function main() {
     return
   }
 
+  const tplPath = join(out, 'index.html')
+  if (!existsSync(tplPath)) throw new Error(`${tplPath} 가 없습니다. 먼저 npm run build 를 실행하세요.`)
+  const template = readFileSync(tplPath, 'utf8')
+  // 주요 화면 주소도 404 상태가 아니라 정상 응답이 되도록 앱 화면을 놓아 둔다. 그 밖의 주소는 404.html(같은 앱 화면)이 받는다.
+  for (const route of ['notes', 'write', 'login', 'admin/categories']) {
+    mkdirSync(join(out, route), { recursive: true })
+    writeFileSync(join(out, route, 'index.html'), template)
+  }
   for (const p of posts) {
-    const dir = join(out, 'share', p.id)
+    const dir = join(out, 'post', p.id)
     mkdirSync(dir, { recursive: true })
-    writeFileSync(join(dir, 'index.html'), page(p))
+    writeFileSync(join(dir, 'index.html'), postPage(template, p))
+    const sdir = join(out, 'share', p.id)
+    mkdirSync(sdir, { recursive: true })
+    writeFileSync(join(sdir, 'index.html'), sharePage(p))
   }
   mkdirSync(join(out, 'share'), { recursive: true })
   writeFileSync(join(out, 'share', 'manifest.json'), JSON.stringify({ sig, sha: process.env.GITHUB_SHA ?? '', count: posts.length }))
-  console.log(`공유 페이지 ${posts.length}개를 ${join(out, 'share')} 에 만들었습니다.`)
+  console.log(`글 페이지 ${posts.length}개를 ${join(out, 'post')} 에 만들었습니다.`)
 }
 
 main().catch((e) => {

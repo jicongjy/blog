@@ -3,7 +3,7 @@
 다른 AI가 이어서 작업할 때 가장 먼저 읽는 문서. 작업 기록과 겪은 문제는 `docs/work-log.md`(번호순), 실행과 Firebase 설정은 `README.md`.
 
 ## 현재 상태 (2026-11-17)
-- 주소: https://jicongjy.github.io/blog/ (HashRouter, `base: '/blog/'`). `main`에 푸시하면 GitHub Actions가 자동 배포한다.
+- 주소: https://jicongjy.github.io/blog/ (BrowserRouter, `base: '/blog/'`). `main`에 푸시하면 GitHub Actions가 자동 배포한다.
 - Firebase 연결 완료: 프로젝트 `gen-lang-client-0559087225`, Firestore 이름 있는 데이터베이스 `blog`, Google 로그인. 관리자 계정만 글 쓰기. 규칙은 `firestore.rules`(저장소에는 `ADMIN_EMAIL_HERE` 자리표시자, 실제 주소는 콘솔 규칙에만 있다).
 - 화면: 홈(`/`), 전체 글(`/notes`), 글 상세(`/post/:id`)는 잡지형 새 디자인. 글쓰기(`/write`)도 새 디자인(글 상세와 같은 2열: 왼쪽 설정, 오른쪽 제목, 요약, 표지, 본문). 카테고리 관리(`/admin/categories`)와 로그인만 아직 옛 디자인.
 - GA4 코드 완료(`src/lib/analytics.js`). 이벤트: page_view, category_click, article_select, article_scroll(50, 90). 자세한 매개변수는 `docs/work-log.md` 23번. 측정 ID(`VITE_GA_MEASUREMENT_ID`)를 GitHub Variables에 등록하기 전까지는 꺼져 있다. 사용자가 GA 속성을 만들고 `G-...` ID를 줄 예정.
@@ -16,7 +16,7 @@
 - 홈 스크롤은 `src/lib/sectionScroll.js`가 휠과 방향키를 가로채 첫 화면, 글 하나씩, 맨 아래로 한 칸씩 이동시킨다(CSS scroll-snap은 끊겨서 제거함).
 
 ## 구조
-- 글별 OG: `scripts/generate-share.mjs`가 배포 때(그리고 20분마다 변경 확인) `share/<글ID>/index.html`을 만든다. 공유할 때는 글 상세의 "링크 복사" 주소를 쓴다. 자세한 내용은 `docs/work-log.md` 26번.
+- 글별 OG: 일반 주소(BrowserRouter, `/blog/post/<글ID>/`). 배포 때(그리고 20분마다 변경 확인) `scripts/generate-share.mjs`가 글마다 OG가 들어간 `post/<글ID>/index.html`을 만든다. 없는 경로는 `404.html`(앱)이 받는다. 자세한 내용은 `docs/work-log.md` 26, 28번.
 - `src/pages`: Home, List, Post, Editor, Categories, Login. `src/components`: HmTop(상단 한 줄), ThemeSwitch, RichEditor(Tiptap), Body.
 - 글 본문은 HTML로 저장, 옛 마크다운 글은 불러올 때 변환(`src/lib/body.js`), 표시할 때 DOMPurify로 정리.
 - 카테고리는 Firestore `categories`(name, order). 글에는 카테고리 이름 문자열을 저장하며, 이름을 바꾸면 글도 일괄 갱신한다.

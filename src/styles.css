@@ -352,6 +352,8 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .pd-main { min-width: 0; max-width: 720px; }
 .pd-meta { display: flex; flex-wrap: wrap; gap: 0 14px; color: var(--soft-gray); }
 .pd-meta a { color: var(--ink); }
+.pd-meta button { padding: 0; border: 0; background: none; color: var(--soft-gray); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.pd-meta button:hover { color: var(--ink); }
 .pd-title { margin: 14px 0 0; font-size: clamp(30px, 4.6vw, 60px); font-weight: 600; letter-spacing: -0.05em; line-height: 1.1; word-break: keep-all; }
 .hm .pd-excerpt { margin: 22px 0 0; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.5; letter-spacing: -0.03em; color: var(--soft-gray); }
 .hm .pd-admin { display: flex; gap: 16px; margin-top: 18px; color: var(--soft-gray); }

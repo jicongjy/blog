@@ -20,6 +20,7 @@ export default function Post() {
   const [cats] = useCategories()
   const [post, setPost] = useState(undefined)
   const [active, setActive] = useState('')
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     document.body.classList.add('is-home')
@@ -67,6 +68,18 @@ export default function Post() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [countable, post])
+
+  // 카카오톡, 슬랙 등에 붙여 넣으면 이 글의 제목, 요약, 대표 이미지가 미리보기로 보이는 공유용 주소.
+  const copyShare = async () => {
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}share/${post.id}/`
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch {
+      window.prompt('이 주소를 복사하세요.', url)
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1800)
+  }
 
   if (post === undefined || all === null)
     return (
@@ -127,6 +140,11 @@ export default function Post() {
             <span>읽는 시간 {readMinutes(post.body)}분</span>
             {post.status === 'draft' && <span>임시저장</span>}
             {post.visibility === 'private' && <span>비공개</span>}
+            {countable && (
+              <button type="button" onClick={copyShare}>
+                {copied ? '복사됨' : '링크 복사'}
+              </button>
+            )}
           </p>
           <h1 className="pd-title">{post.title}</h1>
           {post.excerpt && <p className="pd-excerpt">{post.excerpt}</p>}

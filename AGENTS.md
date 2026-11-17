@@ -16,6 +16,7 @@
 - 홈 스크롤은 `src/lib/sectionScroll.js`가 휠과 방향키를 가로채 첫 화면, 글 하나씩, 맨 아래로 한 칸씩 이동시킨다(CSS scroll-snap은 끊겨서 제거함).
 
 ## 구조
+- 글별 OG: `scripts/generate-share.mjs`가 배포 때(그리고 20분마다 변경 확인) `share/<글ID>/index.html`을 만든다. 공유할 때는 글 상세의 "링크 복사" 주소를 쓴다. 자세한 내용은 `docs/work-log.md` 26번.
 - `src/pages`: Home, List, Post, Editor, Categories, Login. `src/components`: HmTop(상단 한 줄), ThemeSwitch, RichEditor(Tiptap), Body.
 - 글 본문은 HTML로 저장, 옛 마크다운 글은 불러올 때 변환(`src/lib/body.js`), 표시할 때 DOMPurify로 정리.
 - 카테고리는 Firestore `categories`(name, order). 글에는 카테고리 이름 문자열을 저장하며, 이름을 바꾸면 글도 일괄 갱신한다.

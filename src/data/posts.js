@@ -2,7 +2,7 @@
 // Firebase를 붙일 때는 이 파일의 함수 본문만 Firestore 호출로 바꾸면 화면 코드는 그대로입니다.
 import { samples } from './samples.js'
 
-const KEY = 'blog:posts:v1'
+const KEY = 'blog:posts:v2'
 
 function load() {
   try {

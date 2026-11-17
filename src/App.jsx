@@ -27,7 +27,6 @@ export default function App() {
       </main>
       <footer className="footer">
         <span>© {new Date().getFullYear()} Hong Jiyoung</span>
-        <span>일하며 만들고 배운 것을 기록합니다</span>
       </footer>
     </AuthProvider>
   )

@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Markdown from '../components/Markdown.jsx'
+import Thumb from '../components/Thumb.jsx'
 import { getPost, listPosts, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
 import { fmtDate, readMinutes } from '../lib/format.js'
+
+const i0 = (list, post) => Math.max(0, list.findIndex((p) => p.id === post.id))
 
 export default function Post() {
   const { id } = useParams()
@@ -23,9 +26,7 @@ export default function Post() {
     return (
       <section className="hero">
         <p className="eyebrow">404</p>
-        <h1>
-          <em>찾을 수 없는</em> 글입니다.
-        </h1>
+        <h1>글을 찾을 수 없습니다.</h1>
         <Link className="back" to="/">
           ← 글 목록
         </Link>
@@ -37,7 +38,7 @@ export default function Post() {
   const older = all[i + 1]
 
   const onDelete = async () => {
-    if (!window.confirm('이 글을 삭제할까요? 되돌릴 수 없어요.')) return
+    if (!window.confirm('이 글을 삭제합니다. 되돌릴 수 없습니다.')) return
     await removePost(post.id)
     nav('/')
   }
@@ -49,6 +50,10 @@ export default function Post() {
         <h1>{post.title}</h1>
         <p className="deck">{post.excerpt}</p>
       </header>
+
+      <figure className="article-cover">
+        <Thumb post={post} no={String(all.length - i0(all, post)).padStart(2, '0')} ratio="21 / 9" />
+      </figure>
 
       <div className="article-grid">
         <aside className="margin">

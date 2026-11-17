@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Markdown from '../components/Markdown.jsx'
+import Thumb from '../components/Thumb.jsx'
 import { getPost, savePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
 
-const empty = { title: '', excerpt: '', tags: '', body: '' }
+const empty = { title: '', excerpt: '', tags: '', thumbnail: '', body: '' }
 
 export default function Editor() {
   const { id } = useParams()
@@ -15,16 +16,14 @@ export default function Editor() {
 
   useEffect(() => {
     if (!id) return
-    getPost(id).then((p) => p && setF({ title: p.title, excerpt: p.excerpt, tags: p.tags.join(', '), body: p.body }))
+    getPost(id).then((p) => p && setF({ title: p.title, excerpt: p.excerpt, tags: p.tags.join(', '), thumbnail: p.thumbnail ?? '', body: p.body }))
   }, [id])
 
   if (!isAdmin)
     return (
       <section className="hero">
         <p className="eyebrow">글쓰기</p>
-        <h1>
-          로그인하면 <em>쓸 수 있어요.</em>
-        </h1>
+        <h1>로그인이 필요합니다.</h1>
         <button type="button" className="btn" onClick={signIn}>
           로그인
         </button>
@@ -40,6 +39,7 @@ export default function Editor() {
       title: f.title.trim(),
       excerpt: f.excerpt.trim(),
       tags: f.tags.split(',').map((t) => t.trim()).filter(Boolean),
+      thumbnail: f.thumbnail.trim(),
       body: f.body,
       status,
     })
@@ -63,12 +63,16 @@ export default function Editor() {
       <div className="editor-grid">
         <div className="editor-form">
           <input className="f-title" placeholder="제목" value={f.title} onChange={set('title')} />
-          <textarea className="f-excerpt" rows={2} placeholder="한 줄 요약 (목록과 글 머리에 표시)" value={f.excerpt} onChange={set('excerpt')} />
+          <textarea className="f-excerpt" rows={2} placeholder="요약 (목록과 글 상단에 표시)" value={f.excerpt} onChange={set('excerpt')} />
+          <input className="f-thumb" placeholder="썸네일 이미지 주소 (비워 두면 자동 표지)" value={f.thumbnail} onChange={set('thumbnail')} />
           <input className="f-tags" placeholder="태그 (쉼표로 구분)" value={f.tags} onChange={set('tags')} />
-          <textarea className="f-body" placeholder={'본문 (마크다운)\n\n## 소제목\n> 강조하고 싶은 문장\n- 목록'} value={f.body} onChange={set('body')} />
+          <textarea className="f-body" placeholder={'본문 (마크다운)\n\n## 소제목\n> 인용문\n- 목록'} value={f.body} onChange={set('body')} />
         </div>
         <div className="editor-preview">
           <p className="eyebrow">미리보기</p>
+          <div className="pv-thumb">
+            <Thumb post={{ id: 'preview', tags: f.tags.split(',').map((t) => t.trim()).filter(Boolean), thumbnail: f.thumbnail }} no="00" ratio="16 / 9" />
+          </div>
           <h2 className="pv-title">{f.title || '제목'}</h2>
           <p className="deck">{f.excerpt}</p>
           <Markdown source={f.body} />

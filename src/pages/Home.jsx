@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Thumb from '../components/Thumb.jsx'
 import { listPosts } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
-import { fmtDate, pad, readMinutes } from '../lib/format.js'
+import { fmtDate, pad } from '../lib/format.js'
 
 export default function Home() {
   const { isAdmin } = useAuth()
@@ -14,74 +15,80 @@ export default function Home() {
   }, [isAdmin])
 
   const tags = useMemo(() => [...new Set((posts ?? []).flatMap((p) => p.tags))], [posts])
-  const shown = (posts ?? []).filter((p) => !tag || p.tags.includes(tag))
-  const [lead, ...rest] = shown
   const total = posts?.length ?? 0
+  const shown = (posts ?? []).filter((p) => !tag || p.tags.includes(tag))
+  const noOf = (p) => pad(total - posts.indexOf(p))
+  const latest = posts?.[0]
 
   return (
-    <>
-      <section className="hero">
-        <p className="eyebrow">01 / 글</p>
-        <h1>
-          일하며 만들고,
+    <div className="spread">
+      <section className="page cover" aria-label="소개">
+        <h1 className="display">
+          Planning
           <br />
-          <em>배운 것을</em> 기록합니다.
+          Notes.
         </h1>
-        <p className="hero-note">
-          기획에서 구현, 배포까지 직접 해 보며 남기는 메모. 지금까지 쓴 글 {pad(total)}편.
+        <p className="ko-title">기획 노트</p>
+        <p className="meta-lines">
+          서비스 기획에 관한 글
+          <br />
+          {latest ? `최근 업데이트 ${fmtDate(latest.createdAt)}` : '아직 글이 없습니다'}
         </p>
+
+        <table className="toc" aria-label="분류">
+          <thead>
+            <tr>
+              <th>분류</th>
+              <th className="r">글 수</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <button type="button" className={!tag ? 'on' : ''} onClick={() => setTag(null)}>
+                  전체
+                </button>
+              </td>
+              <td className="r">{pad(total)}</td>
+            </tr>
+            {tags.map((t) => (
+              <tr key={t}>
+                <td>
+                  <button type="button" className={tag === t ? 'on' : ''} onClick={() => setTag(t)}>
+                    {t}
+                  </button>
+                </td>
+                <td className="r">{pad(posts.filter((p) => p.tags.includes(t)).length)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
-      {posts && tags.length > 0 && (
-        <div className="filters" role="group" aria-label="태그">
-          <button type="button" className={!tag ? 'on' : ''} onClick={() => setTag(null)}>
-            전체
-          </button>
-          {tags.map((t) => (
-            <button key={t} type="button" className={tag === t ? 'on' : ''} onClick={() => setTag(t)}>
-              {t}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {posts && lead && (
-        <Link to={`/post/${lead.id}`} className="lead">
-          <span className="lead-no">No.{pad(total - posts.indexOf(lead))}</span>
-          <div className="lead-body">
-            <p className="meta">
-              {lead.status === 'draft' && <b className="draft">임시저장</b>}
-              {lead.tags.join(' · ')} — {fmtDate(lead.createdAt)}
-            </p>
-            <h2>{lead.title}</h2>
-            <p className="deck">{lead.excerpt}</p>
-            <span className="more">
-              읽기 · {readMinutes(lead.body)}분 <i>→</i>
-            </span>
-          </div>
-        </Link>
-      )}
-
-      {posts && rest.length > 0 && (
-        <ol className="index" aria-label="글 목록">
-          {rest.map((p) => (
-            <li key={p.id}>
+      <section className="page list-page" aria-label="글 목록">
+        {posts && shown.length === 0 && <p className="empty">등록된 글이 없습니다.</p>}
+        <ol className="entries">
+          {shown.map((p, i) => (
+            <li key={p.id} className={i === 0 ? 'first' : ''}>
               <Link to={`/post/${p.id}`}>
-                <span className="no">No.{pad(total - posts.indexOf(p))}</span>
-                <span className="ttl">
-                  {p.status === 'draft' && <b className="draft">임시저장</b>}
-                  {p.title}
-                </span>
-                <span className="tg">{p.tags.join(' · ')}</span>
-                <span className="dt">{fmtDate(p.createdAt)}</span>
-                <i aria-hidden="true">↗</i>
+                <Thumb post={p} no={noOf(p)} ratio={i === 0 ? '16 / 9' : '4 / 3'} />
+                <div className="entry-text">
+                  <p className="entry-meta">
+                    <span>No.{noOf(p)}</span>
+                    <span>{p.tags.join(' · ')}</span>
+                    <span>{fmtDate(p.createdAt)}</span>
+                  </p>
+                  <h2>
+                    {p.status === 'draft' && <b className="draft">임시저장</b>}
+                    {p.title}
+                  </h2>
+                  <p className="entry-excerpt">{p.excerpt}</p>
+                </div>
               </Link>
             </li>
           ))}
         </ol>
-      )}
-
-      {posts && shown.length === 0 && <p className="empty">아직 글이 없어요.</p>}
-    </>
+      </section>
+    </div>
   )
 }

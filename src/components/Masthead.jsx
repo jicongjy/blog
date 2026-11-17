@@ -6,8 +6,8 @@ export default function Masthead() {
   return (
     <header className="masthead">
       <div className="masthead-bar">
-        <Link to="/" className="brand" aria-label="블로그 첫 화면">
-          홍지영<small>블로그</small>
+        <Link to="/" className="brand" aria-label="첫 화면">
+          홍지영<small>기획 노트</small>
         </Link>
         <nav className="nav-main" aria-label="메뉴">
           <NavLink to="/" end>

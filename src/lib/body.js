@@ -41,3 +41,16 @@ export const safeHtml = (body = '') =>
 
 // 글자 수 계산용: 태그를 지운 본문
 export const plainText = (body = '') => toHtml(body).replace(/<[^>]*>/g, ' ')
+
+// 화면용 HTML과 목차를 함께 만든다. 제목(h2, h3)에 id를 붙여 목차에서 이동할 수 있게 한다.
+export function prepareBody(body = '') {
+  const doc = new DOMParser().parseFromString(`<body>${safeHtml(body)}</body>`, 'text/html')
+  const toc = []
+  doc.body.querySelectorAll('h2, h3').forEach((h, i) => {
+    const text = h.textContent.trim()
+    if (!text) return
+    h.id = `sec-${i + 1}`
+    toc.push({ id: h.id, text, level: h.tagName === 'H3' ? 3 : 2 })
+  })
+  return { html: doc.body.innerHTML, toc }
+}

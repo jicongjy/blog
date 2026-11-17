@@ -34,10 +34,10 @@ h1, h2, h3, p, ul, ol, figure, blockquote { margin: 0; }
 .side { flex: 0 0 240px; position: sticky; top: 12px; align-self: flex-start; height: calc(100vh - 24px); overflow-y: auto; padding: 24px 20px 24px 12px; display: flex; flex-direction: column; }
 .side-brand { margin-bottom: 32px; font-size: 14px; font-weight: 600; letter-spacing: -0.04em; }
 .side-h { margin: 0 0 10px; font-size: 13px; font-weight: 500; letter-spacing: -0.02em; }
-.side-cat { display: flex; flex-direction: column; gap: 2px; }
+.side-cat { display: flex; flex-direction: column; gap: 14px; }
 .side-cat a { font-size: 30px; font-weight: 500; letter-spacing: -0.06em; line-height: 1.25; color: var(--faint); transition: color .2s; }
 .side-cat a:hover, .side-cat a.on { color: var(--ink); }
-.side-cat sup { margin-left: 3px; font-size: 12px; letter-spacing: 0; color: var(--faint); }
+.side-cat sup { margin-left: 3px; font-size: 12px; letter-spacing: 0; color: var(--accent); }
 .side hr { width: 100%; margin: 28px 0; border: 0; border-top: 1px solid var(--line-2); }
 .side-latest { display: flex; flex-direction: column; gap: 16px; }
 .side-latest a { display: block; }
@@ -251,3 +251,24 @@ h1, h2, h3, p, ul, ol, figure, blockquote { margin: 0; }
 .cat-list .ops button:disabled { opacity: .3; cursor: default; }
 .cat-note { margin-top: 16px; font-size: 13px; color: var(--mute); }
 .form-error { margin: 12px 0 0; padding: 12px 14px; border-radius: 4px; background: var(--soft); font-size: 14px; color: var(--accent); }
+
+/* 글 상세: 목차(왼쪽 고정) + 본문 2열 */
+.post-cols { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 0 56px; padding: 72px 40px 56px; }
+.toc { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow: auto; }
+.toc-h { margin: 0 0 14px; font-size: 13px; color: var(--mute); }
+.toc-empty { margin: 0; font-size: 13px; color: var(--faint); }
+.toc ol { margin: 0; padding: 0; list-style: none; border-left: 1px solid var(--line); }
+.toc li button { display: block; width: 100%; padding: 6px 0 6px 14px; margin-left: -1px; border: 0; border-left: 1px solid transparent; background: none; font: inherit; font-size: 14px; line-height: 1.45; letter-spacing: -0.03em; text-align: left; color: var(--mute); cursor: pointer; }
+.toc li.l3 button { padding-left: 28px; font-size: 13px; }
+.toc li button:hover { color: var(--ink); }
+.toc li.on button { border-left-color: var(--ink); color: var(--ink); font-weight: 600; }
+.post-main { min-width: 0; max-width: 720px; }
+.post-main h1 { font-size: clamp(32px, 4.4vw, 54px); font-weight: 500; letter-spacing: -0.075em; line-height: 1.05; }
+.post-main .art-summary { max-width: none; margin-top: 22px; font-size: 18px; }
+.post-cover { margin: 36px 0 40px; }
+.post-main .art { max-width: none; margin: 0; padding: 0 0 24px; }
+.post-main .art h2, .post-main .art h3 { scroll-margin-top: 24px; }
+@media (max-width: 860px) {
+  .post-cols { grid-template-columns: 1fr; gap: 28px; padding: 40px 16px 32px; }
+  .toc { position: static; max-height: none; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+}

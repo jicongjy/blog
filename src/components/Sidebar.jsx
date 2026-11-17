@@ -43,9 +43,6 @@ export default function Sidebar({ posts }) {
           </Link>
         ))}
       </nav>
-      <a className="side-link" href="https://jicongjy.github.io/portfolio/" target="_blank" rel="noreferrer">
-        포트폴리오 ↗
-      </a>
       <div className="side-spacer" />
       {isAdmin ? (
         <div className="admin-box">
@@ -53,7 +50,7 @@ export default function Sidebar({ posts }) {
             카테고리 관리
           </Link>
           <Link to="/write" className="sub">
-            <span>글쓰기 ↗</span>
+            <span>글 작성하기 ↗</span>
             <Mascot />
           </Link>
           <button type="button" onClick={signOut}>
@@ -61,8 +58,8 @@ export default function Sidebar({ posts }) {
           </button>
         </div>
       ) : (
-        <Link to="/login" className="sub">
-          <span>관리자 로그인 ↗</span>
+        <Link to="/write" className="sub">
+          <span>글 작성하기 ↗</span>
           <Mascot />
         </Link>
       )}

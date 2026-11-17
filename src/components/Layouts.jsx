@@ -29,17 +29,13 @@ export function Plain() {
         <nav aria-label="메뉴">
           <Link to="/">홈</Link>
           <Link to="/notes">전체 글</Link>
-          {isAdmin ? (
+          {isAdmin && (
             <>
               <Link to="/write">글쓰기</Link>
               <button type="button" onClick={signOut}>
                 로그아웃
               </button>
             </>
-          ) : (
-            <a href="https://jicongjy.github.io/portfolio/" target="_blank" rel="noreferrer">
-              포트폴리오 ↗
-            </a>
           )}
         </nav>
       </header>

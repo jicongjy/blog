@@ -151,33 +151,6 @@ h1, h2, h3, p, ul, ol, figure, blockquote { margin: 0; }
 .post-missing { padding: 96px 40px; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
 .post-missing .more { font-size: 15px; }
 
-/* 글쓰기 */
-.editor { padding: 28px 40px 56px; }
-.editor-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
-.editor-actions { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--mute); }
-.editor-actions > a { padding: 12px 16px; }
-.editor-grid { display: flex; flex-wrap: wrap; gap: 40px 48px; padding-top: 32px; }
-.editor-form { flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-.editor-form label > span, .editor-form legend, .lbl { display: block; margin-bottom: 8px; padding: 0; font-size: 13px; color: var(--mute); }
-.editor-form input[type='text'], .editor-form input:not([type]), .editor-form textarea { width: 100%; padding: 0 16px; border: 0; border-radius: 4px; background: var(--soft); font-size: 15px; color: var(--ink); outline: none; }
-.editor-form input:not([type='radio']) { height: 44px; }
-.editor-form select { width: 100%; height: 44px; padding: 0 16px; border: 0; border-radius: 4px; background: var(--soft); font: inherit; font-size: 15px; color: var(--ink); outline: none; }
-.editor-form select:focus { box-shadow: inset 0 0 0 1px var(--ink); }
-.editor-form textarea { padding: 14px 16px; line-height: 1.7; resize: vertical; }
-.editor-form input:focus, .editor-form textarea:focus { box-shadow: inset 0 0 0 1px var(--ink); }
-.f-title { height: 56px !important; font-size: 22px !important; font-weight: 500; letter-spacing: -0.05em; }
-.f-body { padding: 16px !important; line-height: 1.8 !important; }
-.editor-form .row { display: flex; flex-wrap: wrap; gap: 20px; }
-.editor-form .grow { flex: 1 1 220px; }
-.editor-form fieldset { margin: 0; padding: 0; border: 0; }
-.seg { display: flex; gap: 8px; font-size: 14px; }
-.seg label { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 4px; background: var(--soft); cursor: pointer; }
-.seg label.on { background: var(--ink); color: var(--on-dark); }
-.editor-preview { flex: 1 1 360px; min-width: 0; }
-.pv { padding: 24px; border: 1px solid var(--line); border-radius: 4px; }
-.pv h2 { margin-bottom: 14px; font-size: 34px; font-weight: 500; letter-spacing: -0.08em; line-height: 1; }
-.pv .art-summary { margin: 0 0 20px; font-size: 15px; }
-.pv .tile { margin-bottom: 20px; }
 
 /* 로그인 */
 .login { min-height: 640px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 56px; padding: 56px 40px; }
@@ -214,24 +187,42 @@ h1, h2, h3, p, ul, ol, figure, blockquote { margin: 0; }
   .art-cover { padding: 0 16px 32px; }
   .art { padding: 0 16px 56px; }
   .related { padding: 32px 16px 40px; }
-  .editor { padding: 24px 16px 40px; }
   .gen.xl .gen-cat { font-size: 64px; left: 16px; bottom: 14px; }
   .gen.xl .gen-no { left: 16px; top: 14px; }
   .login { padding: 40px 16px; gap: 32px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 
-/* 본문 에디터 */
-.rte { border-radius: 4px; background: var(--soft); }
-.rte-bar { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; border-bottom: 1px solid var(--line, #e0e0e0); }
-.rte-bar button { height: 32px; padding: 0 12px; border: 0; border-radius: 4px; background: transparent; font: inherit; font-size: 13px; color: var(--ink); cursor: pointer; }
-.rte-bar button:hover:not(:disabled) { background: #e6e6e6; }
-.rte-bar button.on { background: var(--ink); color: #f5f5f5; }
-.rte-bar button:disabled { color: #aaa; cursor: default; }
+/* ===== 글쓰기: 글 상세와 같은 분위기 ===== */
+.ed-side { display: flex; flex-direction: column; gap: 22px; }
+.ed-side .hm-label { margin-bottom: -6px; }
+.ed-lbl { display: block; margin-bottom: 6px; color: var(--soft-gray); }
+.ed-lbl a { text-decoration: underline; text-underline-offset: 3px; }
+.ed-side select, .ed-side input { display: block; width: 100%; height: 34px; padding: 0 12px; border: 0; border-radius: 0; background: var(--slot); color: var(--ink); font: inherit; outline: none; }
+.ed-side input::placeholder { color: var(--soft-gray); }
+.ed-side select:focus, .ed-side input:focus { background: color-mix(in srgb, var(--ink) 12%, var(--hm-bg, #fff)); }
+.ed-seg { display: flex; gap: 6px; }
+.ed-seg button { flex: 1; height: 34px; border: 0; background: var(--slot); color: var(--ink); font: inherit; cursor: pointer; }
+.ed-seg button.on { background: var(--ink); color: var(--hm-bg, #fff); }
+.ed-actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin-top: 6px; }
+.ed-actions > button:not(.hm-read), .ed-actions > a { padding: 0; border: 0; background: none; color: var(--soft-gray); font: inherit; text-align: left; cursor: pointer; }
+.ed-actions > button:not(.hm-read):hover, .ed-actions > a:hover { color: var(--ink); }
+.ed-actions .hm-read { margin-top: 0; border: 0; cursor: pointer; font-family: inherit; }
+.ed-actions .hm-read:disabled { opacity: .5; cursor: default; }
+.ed-title { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: clamp(30px, 4.6vw, 60px); font-weight: 600; letter-spacing: -0.05em; line-height: 1.1; outline: none; }
+.ed-title::placeholder, .ed-excerpt::placeholder { color: var(--gray); }
+.ed-excerpt { display: block; width: 100%; margin: 22px 0 0; padding: 0; border: 0; background: none; color: var(--soft-gray); font: inherit; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.5; letter-spacing: -0.03em; resize: none; outline: none; }
+.ed .pd-cover { margin: 40px 0 28px; }
+
+.rte-bar { position: sticky; top: 0; z-index: 4; display: flex; flex-wrap: wrap; gap: 2px 14px; padding: 10px 0; background: var(--hm-bg, #fff); }
+.rte-bar button { padding: 0; border: 0; background: none; color: var(--soft-gray); font: inherit; cursor: pointer; }
+.rte-bar button:hover:not(:disabled) { color: var(--ink); }
+.rte-bar button.on { color: var(--ink); font-weight: 600; }
+.rte-bar button:disabled { opacity: .4; cursor: default; }
 .rte-bar .sp { flex: 1; }
-.rte-body { min-height: 320px; padding: 16px !important; font-size: 15px; }
+.rte-body { min-height: 320px; }
 .rte-body .tiptap { min-height: 290px; outline: none; }
-.rte-body .tiptap p.is-editor-empty:first-child::before { content: attr(data-placeholder); float: left; height: 0; color: #999; pointer-events: none; }
+.rte-body .tiptap p.is-editor-empty:first-child::before { content: attr(data-placeholder); float: left; height: 0; color: var(--gray); pointer-events: none; }
 .rte-body .tiptap > :last-child { margin-bottom: 0; }
 .art ol { margin: 0 0 20px; padding-left: 1.4em; }
 .art li > p { margin: 0; }

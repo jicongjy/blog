@@ -52,7 +52,7 @@ export default function RichEditor({ value, onChange }) {
           되돌리기
         </button>
       </div>
-      <EditorContent editor={editor} className="rte-body art sm" />
+      <EditorContent editor={editor} className="rte-body pd-body" />
     </div>
   )
 }

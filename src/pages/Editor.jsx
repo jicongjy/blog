@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import Body from '../components/Body.jsx'
+import HmTop from '../components/HmTop.jsx'
 import RichEditor from '../components/RichEditor.jsx'
-import { useCategories } from '../lib/useCategories.js'
-import { toHtml } from '../lib/body.js'
-import Tile from '../components/Tile.jsx'
+import { heroImage, postFallback } from '../data/categoryImages.js'
 import { getPost, savePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
+import { toHtml } from '../lib/body.js'
+import { useCategories } from '../lib/useCategories.js'
 
 const empty = { title: '', excerpt: '', category: '', thumbnail: '', visibility: 'public', body: '' }
 
@@ -19,6 +19,12 @@ export default function Editor() {
   const [loaded, setLoaded] = useState(false)
   const [cats] = useCategories()
 
+  // 홈, 글 상세와 같은 화면 바탕을 쓴다.
+  useEffect(() => {
+    document.body.classList.add('is-home')
+    return () => document.body.classList.remove('is-home')
+  }, [])
+
   useEffect(() => {
     if (!id) return
     getPost(id).then((p) => {
@@ -30,20 +36,23 @@ export default function Editor() {
   if (!ready) return null
   if (!isAdmin)
     return (
-      <div className="post-missing">
-        <h1 className="h1">
-          로그인이 <span>필요합니다.</span>
-        </h1>
-        <Link className="btn" to="/login">
-          관리자 로그인
-        </Link>
+      <div className="hm">
+        <HmTop />
+        <div className="pd-missing">
+          <h1 className="pd-title">로그인이 필요합니다.</h1>
+          <p>
+            <Link to="/login">관리자 로그인</Link>
+          </p>
+        </div>
       </div>
     )
 
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }))
+  const names = [...new Set([...(cats ?? []).map((c) => c.name), f.category].filter(Boolean))]
+  const category = f.category || names[0] || ''
+
   const submit = async (status) => {
     if (!f.title.trim()) return window.alert('제목을 입력해 주세요.')
-    const category = f.category || cats?.[0]?.name
     if (!category) return window.alert('카테고리를 먼저 만들어 주세요.')
     setSaving(true)
     const saved = await savePost({
@@ -59,82 +68,71 @@ export default function Editor() {
     nav(`/post/${saved.id}`)
   }
 
+  const cover = f.thumbnail.trim() || postFallback(category, names.indexOf(category)) || heroImage
+
   return (
-    <section className="editor">
-      <div className="editor-top">
-        <h1 className="h1 sm">
-          {id ? '글' : '새 글'} <span>{id ? '수정' : '쓰기'}</span>
-        </h1>
-        <div className="editor-actions">
-          <Link to={id ? `/post/${id}` : '/notes'}>취소</Link>
-          <button type="button" className="btn soft" disabled={saving} onClick={() => submit('draft')}>
-            임시저장
-          </button>
-          <button type="button" className="btn" disabled={saving} onClick={() => submit('published')}>
-            발행
-          </button>
-        </div>
-      </div>
+    <div className="hm pd ed">
+      <HmTop />
 
-      <div className="editor-grid">
-        <form className="editor-form" onSubmit={(e) => e.preventDefault()}>
-          <label>
-            <span>제목</span>
-            <input className="f-title" value={f.title} onChange={set('title')} />
-          </label>
-          <label>
-            <span>요약 (목록과 글 상단에 표시)</span>
-            <textarea rows={2} value={f.excerpt} onChange={set('excerpt')} />
-          </label>
-          <div className="row">
-            <label className="grow">
-              <span>
-                카테고리 · <Link to="/admin/categories">관리</Link>
-              </span>
-              <select value={f.category || cats?.[0]?.name || ''} onChange={set('category')}>
-                {[...new Set([...(cats ?? []).map((c) => c.name), f.category].filter(Boolean))].map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+      <div className="pd-cols">
+        <aside className="pd-toc ed-side" aria-label="글 설정">
+          <p className="hm-label">{id ? 'Edit' : 'Write'}</p>
+
+          <div className="ed-field">
+            <label htmlFor="ed-cat" className="ed-lbl">
+              카테고리 · <Link to="/admin/categories">관리</Link>
             </label>
-            <fieldset>
-              <legend>공개 설정</legend>
-              <div className="seg">
-                <label className={f.visibility === 'public' ? 'on' : ''}>
-                  <input type="radio" name="vis" checked={f.visibility === 'public'} onChange={() => setF((s) => ({ ...s, visibility: 'public' }))} /> 공개
-                </label>
-                <label className={f.visibility === 'private' ? 'on' : ''}>
-                  <input type="radio" name="vis" checked={f.visibility === 'private'} onChange={() => setF((s) => ({ ...s, visibility: 'private' }))} /> 비공개
-                </label>
-              </div>
-            </fieldset>
+            <select id="ed-cat" value={category} onChange={set('category')}>
+              {names.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
           </div>
-          <label>
-            <span>썸네일 이미지 주소 (비워 두면 카테고리 표지)</span>
-            <input value={f.thumbnail} onChange={set('thumbnail')} placeholder="https://" />
-          </label>
-          <div>
-            <span className="lbl">본문</span>
-            {/* 글을 불러온 뒤에 에디터를 만들어 처음 내용이 들어가게 한다 */}
-            {(!id || loaded) && <RichEditor value={f.body} onChange={(html) => setF((s) => ({ ...s, body: html }))} />}
-          </div>
-        </form>
 
-        <aside className="editor-preview" aria-label="미리보기">
-          <p className="lbl">미리보기</p>
-          <div className="pv">
-            <p className="art-meta">{f.category || cats?.[0]?.name || '카테고리'}</p>
-            <h2>{f.title || '제목'}</h2>
-            <p className="art-summary">{f.excerpt}</p>
-            <Tile post={{ id: 'preview', category: f.category || cats?.[0]?.name, thumbnail: f.thumbnail }} no="00" ratio="16 / 9" size="lg" />
-            <div className="art sm">
-              <Body source={f.body} />
+          <div className="ed-field">
+            <span className="ed-lbl">공개 설정</span>
+            <div className="ed-seg" role="radiogroup" aria-label="공개 설정">
+              <button type="button" role="radio" aria-checked={f.visibility === 'public'} className={f.visibility === 'public' ? 'on' : ''} onClick={() => setF((s) => ({ ...s, visibility: 'public' }))}>
+                공개
+              </button>
+              <button type="button" role="radio" aria-checked={f.visibility === 'private'} className={f.visibility === 'private' ? 'on' : ''} onClick={() => setF((s) => ({ ...s, visibility: 'private' }))}>
+                비공개
+              </button>
             </div>
           </div>
+
+          <div className="ed-field">
+            <label htmlFor="ed-thumb" className="ed-lbl">
+              썸네일 이미지 주소
+            </label>
+            <input id="ed-thumb" value={f.thumbnail} onChange={set('thumbnail')} placeholder="비우면 카테고리 이미지" />
+          </div>
+
+          <div className="ed-actions">
+            <button type="button" className="hm-read" disabled={saving} onClick={() => submit('published')}>
+              발행
+            </button>
+            <button type="button" disabled={saving} onClick={() => submit('draft')}>
+              임시저장
+            </button>
+            <Link to={id ? `/post/${id}` : '/notes'}>취소</Link>
+          </div>
         </aside>
+
+        <div className="pd-main">
+          <form onSubmit={(e) => e.preventDefault()}>
+            <input className="ed-title" value={f.title} onChange={set('title')} placeholder="제목" aria-label="제목" />
+            <textarea className="ed-excerpt" rows={2} value={f.excerpt} onChange={set('excerpt')} placeholder="요약 (목록과 글 상단에 표시)" aria-label="요약" />
+            <div className="pd-cover">
+              <img src={cover} alt="" />
+            </div>
+            {/* 글을 불러온 뒤에 에디터를 만들어 처음 내용이 들어가게 한다 */}
+            {(!id || loaded) && <RichEditor value={f.body} onChange={(html) => setF((s) => ({ ...s, body: html }))} />}
+          </form>
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

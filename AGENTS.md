@@ -5,7 +5,7 @@
 ## 현재 상태 (2026-11-17)
 - 주소: https://jicongjy.github.io/blog/ (HashRouter, `base: '/blog/'`). `main`에 푸시하면 GitHub Actions가 자동 배포한다.
 - Firebase 연결 완료: 프로젝트 `gen-lang-client-0559087225`, Firestore 이름 있는 데이터베이스 `blog`, Google 로그인. 관리자 계정만 글 쓰기. 규칙은 `firestore.rules`(저장소에는 `ADMIN_EMAIL_HERE` 자리표시자, 실제 주소는 콘솔 규칙에만 있다).
-- 화면: 홈(`/`), 전체 글(`/notes`), 글 상세(`/post/:id`)는 잡지형 새 디자인. 글쓰기(`/write`), 카테고리 관리(`/admin/categories`), 로그인은 아직 옛 디자인.
+- 화면: 홈(`/`), 전체 글(`/notes`), 글 상세(`/post/:id`)는 잡지형 새 디자인. 글쓰기(`/write`)도 새 디자인(글 상세와 같은 2열: 왼쪽 설정, 오른쪽 제목, 요약, 표지, 본문). 카테고리 관리(`/admin/categories`)와 로그인만 아직 옛 디자인.
 - GA4 코드 완료(`src/lib/analytics.js`). 이벤트: page_view, category_click, article_select, article_scroll(50, 90). 자세한 매개변수는 `docs/work-log.md` 23번. 측정 ID(`VITE_GA_MEASUREMENT_ID`)를 GitHub Variables에 등록하기 전까지는 꺼져 있다. 사용자가 GA 속성을 만들고 `G-...` ID를 줄 예정.
 - 색 조합 기능 완료. 상단 브랜드 오른쪽의 방사형 그라데이션 점 하나를 누르면 그 자리에서 오른쪽으로 같은 형태의 점 스와치가 펼쳐진다. 기본 모노톤과 두 번째 레퍼런스의 7개 조합을 `src/lib/theme.js`의 `PALETTES`에서 관리한다. 바탕과 같은 외곽색으로 점이 사라지지 않도록 중심에는 대비색을 둔다.
 
@@ -26,7 +26,7 @@
 ## 남은 일
 1. 사용자: GA 속성 생성 후 측정 ID 전달 → `gh variable set VITE_GA_MEASUREMENT_ID --repo jicongjy/blog --body G-XXXX` 후 재배포, GA 실시간 보고서로 확인. GA 콘솔에서 향상된 측정의 "기록 이벤트에 따른 페이지 변경"은 꺼야 중복 집계가 없다.
 2. 사용자: `/admin/categories`에서 카테고리 이름을 영어로 바꾸고 "임시 글 4개 등록"을 다시 눌러 썸네일을 붙인다.
-3. 글쓰기, 카테고리 관리, 로그인 화면을 새 디자인으로 통일(완료 후 `Mascot.jsx` 삭제 가능).
+3. 카테고리 관리, 로그인 화면을 새 디자인으로 통일(완료 후 `Mascot.jsx` 삭제 가능).
 4. 확인 못 한 것: 실제 마우스 휠, 트랙패드에서의 스크롤 감각(이동 시간 `sectionScroll.js`의 `DURATION` 0.65초).
 
 ## 작업 방식

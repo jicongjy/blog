@@ -30,9 +30,9 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/post/:id" element={<Post />} />
         <Route path="/notes" element={<List />} />
+        <Route path="/write" element={<Editor />} />
+        <Route path="/write/:id" element={<Editor />} />
         <Route element={<Plain />}>
-          <Route path="/write" element={<Editor />} />
-          <Route path="/write/:id" element={<Editor />} />
           <Route path="/admin/categories" element={<Categories />} />
           <Route path="/login" element={<Login />} />
         </Route>

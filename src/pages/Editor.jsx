@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import Markdown from '../components/Markdown.jsx'
+import Body from '../components/Body.jsx'
+import RichEditor from '../components/RichEditor.jsx'
+import { CATEGORIES } from '../data/categories.js'
+import { toHtml } from '../lib/body.js'
 import Tile from '../components/Tile.jsx'
 import { getPost, savePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
 
-const empty = { title: '', excerpt: '', category: '', thumbnail: '', visibility: 'public', body: '' }
+const empty = { title: '', excerpt: '', category: CATEGORIES[0], thumbnail: '', visibility: 'public', body: '' }
 
 export default function Editor() {
   const { id } = useParams()
@@ -13,10 +16,14 @@ export default function Editor() {
   const { isAdmin, ready } = useAuth()
   const [f, setF] = useState(empty)
   const [saving, setSaving] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     if (!id) return
-    getPost(id).then((p) => p && setF({ title: p.title, excerpt: p.excerpt, category: p.category ?? '', thumbnail: p.thumbnail ?? '', visibility: p.visibility ?? 'public', body: p.body }))
+    getPost(id).then((p) => {
+      if (p) setF({ title: p.title, excerpt: p.excerpt, category: p.category ?? '', thumbnail: p.thumbnail ?? '', visibility: p.visibility ?? 'public', body: toHtml(p.body) })
+      setLoaded(true)
+    })
   }, [id])
 
   if (!ready) return null
@@ -35,13 +42,13 @@ export default function Editor() {
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }))
   const submit = async (status) => {
     if (!f.title.trim()) return window.alert('제목을 입력해 주세요.')
-    if (!f.category.trim()) return window.alert('카테고리를 입력해 주세요.')
+    if (!f.category) return window.alert('카테고리를 선택해 주세요.')
     setSaving(true)
     const saved = await savePost({
       id,
       title: f.title.trim(),
       excerpt: f.excerpt.trim(),
-      category: f.category.trim(),
+      category: f.category,
       thumbnail: f.thumbnail.trim(),
       visibility: f.visibility,
       body: f.body,
@@ -80,7 +87,13 @@ export default function Editor() {
           <div className="row">
             <label className="grow">
               <span>카테고리</span>
-              <input value={f.category} onChange={set('category')} placeholder="예: 기획" />
+              <select value={f.category} onChange={set('category')}>
+                {[...new Set([...CATEGORIES, f.category].filter(Boolean))].map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
             </label>
             <fieldset>
               <legend>공개 설정</legend>
@@ -98,10 +111,11 @@ export default function Editor() {
             <span>썸네일 이미지 주소 (비워 두면 카테고리 표지)</span>
             <input value={f.thumbnail} onChange={set('thumbnail')} placeholder="https://" />
           </label>
-          <label>
-            <span>본문 (마크다운)</span>
-            <textarea className="f-body" rows={13} value={f.body} onChange={set('body')} placeholder={'## 소제목\n\n본문\n\n> 인용문\n\n- 목록'} />
-          </label>
+          <div>
+            <span className="lbl">본문</span>
+            {/* 글을 불러온 뒤에 에디터를 만들어 처음 내용이 들어가게 한다 */}
+            {(!id || loaded) && <RichEditor value={f.body} onChange={(html) => setF((s) => ({ ...s, body: html }))} />}
+          </div>
         </form>
 
         <aside className="editor-preview" aria-label="미리보기">
@@ -112,7 +126,7 @@ export default function Editor() {
             <p className="art-summary">{f.excerpt}</p>
             <Tile post={{ id: 'preview', category: f.category, thumbnail: f.thumbnail }} no="00" ratio="16 / 9" size="lg" />
             <div className="art sm">
-              <Markdown source={f.body} />
+              <Body source={f.body} />
             </div>
           </div>
         </aside>

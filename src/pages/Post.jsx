@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import Markdown from '../components/Markdown.jsx'
+import Body from '../components/Body.jsx'
 import Tile from '../components/Tile.jsx'
 import { getPost, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
@@ -64,7 +64,7 @@ export default function Post() {
       </figure>
 
       <div className="art">
-        <Markdown source={post.body} />
+        <Body source={post.body} />
       </div>
 
       <section className="related" aria-labelledby="rel">

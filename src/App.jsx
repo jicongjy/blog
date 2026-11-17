@@ -18,11 +18,11 @@ export default function App() {
     <AuthProvider>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/post/:id" element={<Post />} />
         <Route element={<WithSidebar />}>
           <Route path="/notes" element={<List />} />
         </Route>
         <Route element={<Plain />}>
-          <Route path="/post/:id" element={<Post />} />
           <Route path="/write" element={<Editor />} />
           <Route path="/write/:id" element={<Editor />} />
           <Route path="/admin/categories" element={<Categories />} />

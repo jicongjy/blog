@@ -1,23 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { categoryImage, heroImage } from '../data/categoryImages.js'
-import { useAuth } from '../lib/auth.jsx'
+import HmTop from '../components/HmTop.jsx'
 import { fmtDate, noOf, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
 import { usePosts } from '../lib/usePosts.js'
 
-function Clock() {
-  const [now, setNow] = useState(() => new Date())
-  useEffect(() => {
-    const t = setInterval(() => setNow(new Date()), 1000)
-    return () => clearInterval(t)
-  }, [])
-  const z = (n) => String(n).padStart(2, '0')
-  return <span className="hm-clock">{`${z(now.getHours())}:${z(now.getMinutes())}:${z(now.getSeconds())}`}</span>
-}
-
 export default function Home() {
-  const { isAdmin, signOut } = useAuth()
   const posts = usePosts()
   const [cats] = useCategories()
   const [active, setActive] = useState(0) // 첫 화면에서 강조 중인 카테고리 순서
@@ -47,22 +36,7 @@ export default function Home() {
     <div className="hm">
       {/* 첫 화면 */}
       <section className="hm-hero" aria-label="소개">
-        <header className="hm-top">
-          <Link to="/" className="hm-brand">
-            홍지영 기획 노트
-          </Link>
-          <nav className="hm-nav" aria-label="메뉴">
-            <Link to="/notes">전체 글</Link>
-            {isAdmin && <Link to="/admin/categories">카테고리 관리</Link>}
-            <Link to="/write">글 작성하기</Link>
-            {isAdmin && (
-              <button type="button" onClick={signOut}>
-                로그아웃
-              </button>
-            )}
-            <Clock />
-          </nav>
-        </header>
+        <HmTop />
 
         <h1 className="hm-statement">
           <b>문제 정의</b>, <b>화면 설계</b>, <b>운영</b>에서 배운 것을 기록합니다.

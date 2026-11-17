@@ -280,8 +280,9 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); }
 .hm a:hover, .hm .hm-nav button:hover { color: var(--soft-gray); }
 .hm-label { color: var(--soft-gray); }
 
-.hm-hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding: 14px 0 28px; }
-.hm-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.hm-hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding: 0 0 28px; }
+.hm-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-top: 14px; }
+.hm-brandrow { position: relative; display: flex; align-items: center; gap: 12px; }
 .hm-nav { display: flex; align-items: baseline; gap: 20px; color: var(--soft-gray); }
 .hm-nav a, .hm-nav button { color: var(--ink); }
 .hm-clock { font-variant-numeric: tabular-nums; }
@@ -299,12 +300,15 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); }
 
 .hm-notes { display: grid; grid-template-columns: minmax(200px, 24%) minmax(0, 1fr); gap: 0 48px; padding: 96px 0 0; scroll-margin-top: 0; }
 .hm-side { position: sticky; top: 14px; align-self: start; }
+.hm-entry { display: flex; flex-direction: column; height: calc(100vh - 96px); height: calc(100svh - 96px); margin-bottom: 96px; }
+.hm-entry .hm-slot { flex: 1 1 auto; min-height: 0; margin-top: 0; aspect-ratio: auto; }
+.hm-entry .hm-row { margin-top: 14px; padding-bottom: 0; flex: 0 0 auto; }
 .hm-side ol { margin: 6px 0 0; padding: 0; list-style: none; }
 .hm-side li { display: grid; grid-template-columns: 22px 1fr; color: var(--soft-gray); }
 .hm-side li a { color: var(--soft-gray); }
 .hm-side li a:hover { color: var(--ink); }
 .hm-feed { min-width: 0; }
-.hm-feedhead { display: flex; justify-content: space-between; gap: 16px; }
+.hm-feedhead { display: flex; justify-content: space-between; gap: 16px; height: 18px; margin-bottom: 16px; position: sticky; top: 14px; z-index: 5; background: var(--hm-bg, #fff); }
 .hm-feedhead button { color: var(--soft-gray); text-decoration: underline; text-underline-offset: 3px; }
 .hm-empty { margin-top: 14px; color: var(--soft-gray); }
 .hm-slot { display: block; position: relative; margin-top: 14px; aspect-ratio: 16 / 9; background: var(--slot); overflow: hidden; }
@@ -327,6 +331,9 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); }
   .hm-notes { grid-template-columns: 1fr; gap: 40px 0; padding-top: 64px; }
   .hm-side { position: static; }
   .hm-row { grid-template-columns: 1fr; gap: 14px; }
+  .hm-entry { display: block; height: auto; margin-bottom: 0; }
+  .hm-entry .hm-slot { aspect-ratio: 16 / 9; margin-top: 14px; }
+  .hm-entry .hm-row { padding-bottom: 64px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hm-catimg img, .hm-catlist button { transition: none; }
@@ -375,23 +382,25 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); }
 }
 
 /* ===== 홈 스크롤: 글 하나씩 넘기는 동작은 Home.jsx 의 스크립트가 맡는다. 여기서는 나타나는 효과만 ===== */
-.snap-home .hm-entry .hm-slot img { transform: scale(1.1); transition: transform 1.3s cubic-bezier(.2, .7, .2, 1); }
-.snap-home .hm-entry .hm-row { opacity: 0; transform: translateY(28px); transition: opacity .9s ease .25s, transform .9s cubic-bezier(.2, .7, .2, 1) .25s; }
+.snap-home .hm-entry .hm-slot img { transform: scale(1.1); transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
+.snap-home .hm-entry .hm-row { opacity: 0; transform: translateY(28px); transition: opacity .6s ease .1s, transform .6s cubic-bezier(.2, .7, .2, 1) .1s; }
 .snap-home .hm-entry.in .hm-slot img { transform: none; }
 .snap-home .hm-entry.in .hm-row { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .snap-home .hm-entry .hm-slot img, .snap-home .hm-entry .hm-row { transform: none; opacity: 1; transition: none; }
 }
 
-/* ===== 색 조합 바꾸기: 왼쪽 아래 ===== */
-.ts { position: fixed; z-index: 20; left: max(16px, env(safe-area-inset-left, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; color: var(--hm-fg, #0a0a0a); }
-.ts-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.ts-dot { display: block; width: 18px; height: 18px; border: 0; padding: 0; border-radius: 50%; background: linear-gradient(90deg, var(--a) 50%, var(--b) 50%); cursor: pointer; transition: transform .2s; }
-.ts-dot:hover { transform: scale(1.2); }
-.ts-dot.on { transform: scale(1.35); }
-.ts-sun { display: block; width: 20px; height: 20px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
-.ts-sun:hover { opacity: .6; }
-.ts-sun:focus-visible, .ts-dot:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
+/* ===== 색 조합 바꾸기: 상단 브랜드 오른쪽. 원을 누르면 색 원이 아래로 차례로 튀어나온다 ===== */
+.ts { position: relative; display: flex; align-items: center; color: var(--hm-fg, #0a0a0a); }
+.ts-dot { display: block; width: 14px; height: 14px; border: 0; padding: 0; border-radius: 50%; background: linear-gradient(90deg, var(--a) 50%, var(--b) 50%); cursor: pointer; }
+.ts-cur { box-shadow: 0 0 0 1px color-mix(in srgb, var(--hm-fg, #0a0a0a) 25%, transparent); }
+.ts-list { position: absolute; z-index: 30; top: calc(100% + 10px); left: 0; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.ts-list .ts-dot { animation: ts-pop .45s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(var(--i) * 70ms); }
+.ts-list .ts-dot:hover { transform: scale(1.25); }
+.ts-list .ts-dot.on { box-shadow: 0 0 0 2px var(--hm-bg, #fff), 0 0 0 3px var(--hm-fg, #0a0a0a); }
+@keyframes ts-pop { from { opacity: 0; transform: translateY(-8px) scale(.2); } to { opacity: 1; transform: none; } }
+.ts-dot:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .ts-list .ts-dot { animation: none; } }
 
 /* ===== 전체 글: 필터, 색인, 미리보기 ===== */
 .ls-cols { display: grid; grid-template-columns: minmax(200px, 24%) minmax(0, 1fr) clamp(140px, 17vw, 260px); gap: 0 48px; padding: 96px 0 0; min-height: 70vh; }

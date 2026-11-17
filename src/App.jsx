@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { initAnalytics, pageView } from './lib/analytics.js'
 import { AuthProvider } from './lib/auth.jsx'
-import ThemeSwitch from './components/ThemeSwitch.jsx'
 import { Plain } from './components/Layouts.jsx'
 import Home from './pages/Home.jsx'
 import List from './pages/List.jsx'
@@ -39,7 +38,6 @@ export default function App() {
         </Route>
         <Route path="*" element={<Home />} />
       </Routes>
-      {(pathname === '/' || pathname === '/notes' || pathname.startsWith('/post/')) && <ThemeSwitch />}
     </AuthProvider>
   )
 }

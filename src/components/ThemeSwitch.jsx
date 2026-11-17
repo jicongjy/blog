@@ -1,42 +1,45 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PALETTES, applyPalette, currentPalette } from '../lib/theme.js'
 import { track } from '../lib/analytics.js'
 
-// 왼쪽 아래 해 아이콘. 누르면 색 조합이 세로로 펼쳐진다.
+// 상단 브랜드 오른쪽의 원 하나. 누르면 색 조합 원들이 세로로 차례로 나타난다.
 export default function ThemeSwitch() {
   const [open, setOpen] = useState(false)
-  const [cur, setCur] = useState(() => currentPalette().id)
+  const [cur, setCur] = useState(() => currentPalette())
+  const box = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const off = (e) => box.current && !box.current.contains(e.target) && setOpen(false)
+    document.addEventListener('pointerdown', off)
+    return () => document.removeEventListener('pointerdown', off)
+  }, [open])
 
   const choose = (p) => {
     applyPalette(p, true)
-    setCur(p.id)
+    setCur(p)
     track('select_palette', { palette: p.id })
   }
 
   return (
-    <div className="ts">
+    <div className="ts" ref={box}>
+      <button type="button" className="ts-dot ts-cur" style={{ '--a': cur.bg, '--b': cur.fg }} aria-label="색 조합 바꾸기" aria-expanded={open} onClick={() => setOpen((v) => !v)} />
       {open && (
         <ul className="ts-list" aria-label="색 조합">
-          {PALETTES.map((p) => (
+          {PALETTES.map((p, i) => (
             <li key={p.id}>
               <button
                 type="button"
-                className={`ts-dot${cur === p.id ? ' on' : ''}`}
-                style={{ '--a': p.bg, '--b': p.fg }}
+                className={`ts-dot${cur.id === p.id ? ' on' : ''}`}
+                style={{ '--a': p.bg, '--b': p.fg, '--i': i }}
                 aria-label={p.name}
-                aria-pressed={cur === p.id}
+                aria-pressed={cur.id === p.id}
                 onClick={() => choose(p)}
               />
             </li>
           ))}
         </ul>
       )}
-      <button type="button" className="ts-sun" aria-label="색 조합 바꾸기" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="4" fill="currentColor" stroke="none" />
-          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" />
-        </svg>
-      </button>
     </div>
   )
 }

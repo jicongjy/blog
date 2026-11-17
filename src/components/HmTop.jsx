@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import ThemeSwitch from './ThemeSwitch.jsx'
 import { useAuth } from '../lib/auth.jsx'
 
 function Clock() {
@@ -17,9 +18,12 @@ export default function HmTop() {
   const { isAdmin, signOut } = useAuth()
   return (
     <header className="hm-top">
-      <Link to="/" className="hm-brand">
-        홍지영 기획 노트
-      </Link>
+      <div className="hm-brandrow">
+        <Link to="/" className="hm-brand">
+          홍지영 기획 노트
+        </Link>
+        <ThemeSwitch />
+      </div>
       <nav className="hm-nav" aria-label="메뉴">
         <Link to="/notes">전체 글</Link>
         {isAdmin && <Link to="/admin/categories">카테고리 관리</Link>}

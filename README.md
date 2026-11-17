@@ -4,7 +4,8 @@
 
 - 화면: Vite + React (HashRouter, base `/blog/`)
 - 배포: GitHub Pages (`main` 푸시 시 `.github/workflows/deploy.yml`)
-- 데이터·로그인: Firebase (Firestore, Google 로그인). **아직 연결 전**이며, 지금은 `src/data/posts.js`(localStorage)와 `src/lib/auth.jsx`(미리보기 로그인)가 대신한다.
+- 데이터·로그인: Firebase (Firestore `blog` 데이터베이스, Google 로그인). 연결 완료. 설정값이 없는 로컬에서는 localStorage 미리보기로 동작한다.
+- 현재 상태, 디자인 규칙, 남은 일: [AGENTS.md](AGENTS.md), 작업 기록: [docs/work-log.md](docs/work-log.md)
 
 ## 개발
 ```bash
@@ -30,4 +31,4 @@ npm run build
 웹 앱 설정값(`apiKey` 등)은 공개되는 값이라 Variables에 넣어도 된다. 권한은 `firestore.rules`가 지킨다.
 
 ## 데이터 구조
-`posts/{id}`: `title`, `excerpt`, `category`, `thumbnail`(이미지 주소, 비면 자동 표지), `visibility`(`public`/`private`), `status`(`published`/`draft`), `body`(마크다운), `createdAt`, `updatedAt`
+`posts/{id}`: `title`, `excerpt`, `category`, `thumbnail`(이미지 주소, 비면 자동 표지), `visibility`(`public`/`private`), `status`(`published`/`draft`), `body`(HTML, 옛 글은 마크다운), `createdAt`, `updatedAt`

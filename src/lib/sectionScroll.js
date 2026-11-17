@@ -33,7 +33,7 @@ export function startSectionScroll() {
     cancelAnimationFrame(raf)
     const step = (now) => {
       const k = Math.min(1, (now - t0) / DURATION)
-      window.scrollTo(0, from + (next - from) * ease(k))
+      window.scrollTo({ top: from + (next - from) * ease(k), behavior: 'instant' }) // html 의 scroll-behavior: smooth 가 매 프레임을 또 부드럽게 만들어 느려지는 것을 막는다
       if (k < 1) raf = requestAnimationFrame(step)
       else animating = false
     }

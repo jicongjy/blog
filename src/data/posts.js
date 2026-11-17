@@ -1,9 +1,14 @@
-// 글 저장소. 지금은 브라우저 localStorage에 저장하는 임시 구현입니다.
-// Firebase를 붙일 때는 이 파일의 함수 본문만 Firestore 호출로 바꾸면 화면 코드는 그대로입니다.
+// 글 저장소. Firebase 설정이 있으면 Firestore(posts 컬렉션), 없으면 브라우저 localStorage 임시 저장.
+// 화면 코드는 이 파일의 함수만 부른다.
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore'
+import { db, firebaseEnabled } from '../lib/firebase.js'
 import { samples } from './samples.js'
 
-const KEY = 'blog:posts:v3'
+const byDate = (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+const isPublic = (p) => p.status === 'published' && p.visibility === 'public'
 
+/* ---------- 임시(localStorage) 구현 ---------- */
+const KEY = 'blog:posts:v3'
 function load() {
   try {
     const raw = localStorage.getItem(KEY)
@@ -13,7 +18,6 @@ function load() {
   }
   return samples
 }
-
 function persist(list) {
   try {
     localStorage.setItem(KEY, JSON.stringify(list))
@@ -22,29 +26,45 @@ function persist(list) {
   }
 }
 
-const byDate = (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-
-// 관리자가 아니면 발행된 공개 글만 보인다.
+/* ---------- 공통 함수 ---------- */
+// 관리자가 아니면 발행된 공개 글만 보인다. (Firestore 규칙도 같은 조건으로 읽기를 허용한다)
 export async function listPosts({ isAdmin = false } = {}) {
-  return load()
-    .filter((p) => isAdmin || (p.status === 'published' && p.visibility !== 'private'))
-    .sort(byDate)
+  if (!firebaseEnabled) return load().filter((p) => isAdmin || isPublic(p)).sort(byDate)
+  const col = collection(db, 'posts')
+  const q = isAdmin ? col : query(col, where('status', '==', 'published'), where('visibility', '==', 'public'))
+  const snap = await getDocs(q)
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort(byDate)
 }
 
 export async function getPost(id) {
-  return load().find((p) => p.id === id) ?? null
+  if (!firebaseEnabled) return load().find((p) => p.id === id) ?? null
+  try {
+    const snap = await getDoc(doc(db, 'posts', id))
+    return snap.exists() ? { id: snap.id, ...snap.data() } : null
+  } catch {
+    return null // 권한이 없는 글(비공개·임시저장)은 없는 글처럼 처리한다
+  }
 }
 
 export async function savePost(post) {
-  const list = load()
   const now = new Date().toISOString()
-  const id = post.id ?? `post-${Date.now()}`
-  const prev = list.find((p) => p.id === id)
-  const next = { ...prev, ...post, id, createdAt: prev?.createdAt ?? now, updatedAt: now }
-  persist(prev ? list.map((p) => (p.id === id ? next : p)) : [next, ...list])
-  return next
+  if (!firebaseEnabled) {
+    const list = load()
+    const id = post.id ?? `post-${Date.now()}`
+    const prev = list.find((p) => p.id === id)
+    const next = { ...prev, ...post, id, createdAt: prev?.createdAt ?? now, updatedAt: now }
+    persist(prev ? list.map((p) => (p.id === id ? next : p)) : [next, ...list])
+    return next
+  }
+  const ref = post.id ? doc(db, 'posts', post.id) : doc(collection(db, 'posts'))
+  const prevSnap = post.id ? await getDoc(ref) : null
+  const { id: _omit, ...fields } = post
+  const data = { ...fields, createdAt: prevSnap?.exists() ? prevSnap.data().createdAt : now, updatedAt: now }
+  await setDoc(ref, data)
+  return { id: ref.id, ...data }
 }
 
 export async function removePost(id) {
-  persist(load().filter((p) => p.id !== id))
+  if (!firebaseEnabled) return persist(load().filter((p) => p.id !== id))
+  await deleteDoc(doc(db, 'posts', id))
 }

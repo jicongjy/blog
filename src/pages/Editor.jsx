@@ -10,7 +10,7 @@ const empty = { title: '', excerpt: '', category: '', thumbnail: '', visibility:
 export default function Editor() {
   const { id } = useParams()
   const nav = useNavigate()
-  const { isAdmin } = useAuth()
+  const { isAdmin, ready } = useAuth()
   const [f, setF] = useState(empty)
   const [saving, setSaving] = useState(false)
 
@@ -19,6 +19,7 @@ export default function Editor() {
     getPost(id).then((p) => p && setF({ title: p.title, excerpt: p.excerpt, category: p.category ?? '', thumbnail: p.thumbnail ?? '', visibility: p.visibility ?? 'public', body: p.body }))
   }, [id])
 
+  if (!ready) return null
   if (!isAdmin)
     return (
       <div className="post-missing">

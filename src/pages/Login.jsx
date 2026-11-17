@@ -1,13 +1,19 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Mascot from '../components/Mascot.jsx'
 import { useAuth } from '../lib/auth.jsx'
+import { firebaseEnabled } from '../lib/firebase.js'
 
 export default function Login() {
   const { signIn } = useAuth()
   const nav = useNavigate()
+  const [error, setError] = useState('')
   const go = async () => {
-    await signIn()
-    nav('/write')
+    setError('')
+    const r = await signIn()
+    if (r.ok) return nav('/write')
+    if (r.reason === 'not-admin') setError('이 계정은 관리자로 등록되어 있지 않습니다. 다른 계정으로 다시 시도해 주세요.')
+    else if (r.reason === 'error') setError(`로그인에 실패했습니다. (${r.message ?? '알 수 없는 오류'})`)
   }
   return (
     <section className="login">
@@ -25,7 +31,12 @@ export default function Login() {
           Google로 로그인
         </button>
         <p className="login-note">허용된 계정으로만 로그인할 수 있습니다.</p>
-        <p className="login-note">지금은 Firebase 연결 전이라 버튼을 누르면 미리보기 로그인이 됩니다.</p>
+        {error && (
+          <p className="login-error" role="alert">
+            {error}
+          </p>
+        )}
+        {!firebaseEnabled && <p className="login-note">지금은 Firebase 연결 전이라 버튼을 누르면 미리보기 로그인이 됩니다.</p>}
         <Link to="/" className="sub">
           <span>← 첫 화면으로</span>
           <Mascot />

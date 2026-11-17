@@ -1,20 +1,5 @@
 import { Link, Outlet } from 'react-router-dom'
-import { usePosts } from '../lib/usePosts.js'
 import { useAuth } from '../lib/auth.jsx'
-import Sidebar from './Sidebar.jsx'
-
-// 홈·목록: 왼쪽 사이드바 + 흰 패널
-export function WithSidebar() {
-  const posts = usePosts()
-  return (
-    <div className="site">
-      <Sidebar posts={posts} />
-      <main className="panel">
-        <Outlet context={{ posts }} />
-      </main>
-    </div>
-  )
-}
 
 // 글 상세·글쓰기·로그인: 사이드바 없이 가운데 정렬 패널
 export function Plain() {

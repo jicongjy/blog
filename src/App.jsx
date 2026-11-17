@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider } from './lib/auth.jsx'
-import { Plain, WithSidebar } from './components/Layouts.jsx'
+import { Plain } from './components/Layouts.jsx'
 import Home from './pages/Home.jsx'
 import List from './pages/List.jsx'
 import Post from './pages/Post.jsx'
@@ -19,9 +19,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/post/:id" element={<Post />} />
-        <Route element={<WithSidebar />}>
-          <Route path="/notes" element={<List />} />
-        </Route>
+        <Route path="/notes" element={<List />} />
         <Route element={<Plain />}>
           <Route path="/write" element={<Editor />} />
           <Route path="/write/:id" element={<Editor />} />

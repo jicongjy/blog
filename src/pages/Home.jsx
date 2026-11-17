@@ -16,7 +16,11 @@ export default function Home() {
   // 홈은 흰 화면으로 쓴다.
   useEffect(() => {
     document.body.classList.add('is-home')
-    return () => document.body.classList.remove('is-home')
+    document.documentElement.classList.add('snap-home')
+    return () => {
+      document.body.classList.remove('is-home')
+      document.documentElement.classList.remove('snap-home')
+    }
   }, [])
 
   const list = posts ?? []

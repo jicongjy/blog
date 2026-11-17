@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { addCategory, moveCategory, removeCategory, renameCategory } from '../data/categories.js'
-import { listPosts } from '../data/posts.js'
+import { listPosts, savePost } from '../data/posts.js'
+import { TEMP_POSTS } from '../data/tempPosts.js'
 import { useAuth } from '../lib/auth.jsx'
 import { useCategories } from '../lib/useCategories.js'
 
@@ -12,6 +13,7 @@ export default function Categories() {
   const [name, setName] = useState('')
   const [editing, setEditing] = useState(null) // { id, name }
   const [msg, setMsg] = useState('')
+  const [tempMsg, setTempMsg] = useState('')
 
   useEffect(() => {
     if (isAdmin) listPosts({ isAdmin: true }).then((ps) => setCounts(ps.reduce((m, p) => ({ ...m, [p.category]: (m[p.category] ?? 0) + 1 }), {})))
@@ -115,6 +117,31 @@ export default function Categories() {
             </li>
           ))}
         </ul>
+        <div className="cat-temp">
+          <p className="cat-temp-h">임시 글</p>
+          <p className="cat-note">화면 확인용 글 4개를 한 번에 등록합니다. 여러 번 눌러도 중복되지 않고, 글 상세에서 삭제할 수 있습니다.</p>
+          <button
+            type="button"
+            className="btn soft"
+            onClick={async () => {
+              setTempMsg('')
+              try {
+                const order = cats ?? []
+                for (const t of TEMP_POSTS) {
+                  const { id, cat, ...rest } = t
+                  await savePost({ id, ...rest, category: order[cat]?.name ?? order[0]?.name ?? 'Planning', thumbnail: '', visibility: 'public', status: 'published' })
+                }
+                setTempMsg('임시 글 4개를 등록했습니다.')
+                reload()
+              } catch (e) {
+                setTempMsg(e.message || '등록하지 못했습니다. 잠시 후 다시 시도해 주세요.')
+              }
+            }}
+          >
+            임시 글 4개 등록
+          </button>
+          {tempMsg && <p className="cat-note">{tempMsg}</p>}
+        </div>
         <p className="cat-note">이름을 바꾸면 그 카테고리의 글도 함께 바뀝니다. 글이 있는 카테고리는 삭제할 수 없습니다.</p>
       </div>
     </section>

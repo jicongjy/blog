@@ -4,7 +4,7 @@ import { collection, deleteDoc, doc, getDocs, query, setDoc, where, writeBatch }
 import { db, firebaseEnabled } from '../lib/firebase.js'
 import { listPosts, renameCategoryInLocalPosts } from './posts.js'
 
-export const DEFAULT_CATEGORIES = ['기획', '설계', '운영']
+export const DEFAULT_CATEGORIES = ['Planning', 'Design', 'Operations']
 const KEY = 'blog:categories:v1'
 const byOrder = (a, b) => a.order - b.order
 

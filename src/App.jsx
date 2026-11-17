@@ -17,8 +17,8 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route element={<WithSidebar />}>
-          <Route path="/" element={<Home />} />
           <Route path="/notes" element={<List />} />
         </Route>
         <Route element={<Plain />}>

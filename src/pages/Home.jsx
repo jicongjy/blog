@@ -1,74 +1,157 @@
-import { Link, useOutletContext } from 'react-router-dom'
-import Tile from '../components/Tile.jsx'
-import { fmtDate, noOf } from '../lib/format.js'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { categoryImage, heroImage } from '../data/categoryImages.js'
+import { useAuth } from '../lib/auth.jsx'
+import { fmtDate, noOf, readMinutes } from '../lib/format.js'
+import { useCategories } from '../lib/useCategories.js'
+import { usePosts } from '../lib/usePosts.js'
 
-function Arrow({ dark }) {
-  return (
-    <span className={`arrow ${dark ? 'dark' : ''}`} aria-hidden="true">
-      ↗
-    </span>
-  )
+function Clock() {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(t)
+  }, [])
+  const z = (n) => String(n).padStart(2, '0')
+  return <span className="hm-clock">{`${z(now.getHours())}:${z(now.getMinutes())}:${z(now.getSeconds())}`}</span>
 }
 
 export default function Home() {
-  const { posts } = useOutletContext()
-  const picks = (posts ?? []).slice(0, 3)
+  const { isAdmin, signOut } = useAuth()
+  const posts = usePosts()
+  const [cats] = useCategories()
+  const [active, setActive] = useState(0) // 첫 화면에서 강조 중인 카테고리 순서
+  const [filter, setFilter] = useState(null) // 글 섹션에 적용 중인 카테고리 이름
+  const notes = useRef(null)
+
+  // 홈은 흰 화면으로 쓴다.
+  useEffect(() => {
+    document.body.classList.add('is-home')
+    return () => document.body.classList.remove('is-home')
+  }, [])
+
+  const list = posts ?? []
+  const names = useMemo(() => {
+    const fromDb = (cats ?? []).map((c) => c.name)
+    return [...new Set([...fromDb, ...list.map((p) => p.category).filter(Boolean)])]
+  }, [cats, list])
+  const count = (n) => list.filter((p) => p.category === n).length
+  const shown = filter ? list.filter((p) => p.category === filter) : list
+
+  const pick = (name) => {
+    setFilter(name)
+    notes.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
-    <>
-      <section className="intro" aria-label="소개">
-        <h1>
-          Plan. Define. <span>Review.</span>
-        </h1>
-        <p>서비스 기획에 관한 글을 정리합니다.</p>
-      </section>
-
-      {posts && picks.length > 0 && (
-        <section aria-labelledby="pick">
-          <h2 id="pick" className="sec-h">
-            추천 글
-          </h2>
-          <div className="bento">
-            {picks.map((p, i) => (
-              <Link key={p.id} to={`/post/${p.id}`} className={`pick ${i === 0 ? 'big' : ''}`}>
-                <span className="pick-top">
-                  <span>{p.category}</span>
-                  <span>{fmtDate(p.createdAt)}</span>
-                </span>
-                <span className="pick-bottom">
-                  <span className="pick-title">{p.title}</span>
-                  <Arrow dark={i !== 0} />
-                </span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section aria-labelledby="all">
-        <div className="sec-row">
-          <h2 id="all" className="sec-h">
-            All Notes
-          </h2>
-          <Link to="/notes" className="more">
-            전체 글 보기 →
+    <div className="hm">
+      {/* 첫 화면 */}
+      <section className="hm-hero" aria-label="소개">
+        <header className="hm-top">
+          <Link to="/" className="hm-brand">
+            홍지영 기획 노트
           </Link>
-        </div>
-        {posts && posts.length === 0 && <p className="empty">등록된 글이 없습니다.</p>}
-        <div className="grid">
-          {(posts ?? []).slice(0, 9).map((p) => (
-            <Link key={p.id} to={`/post/${p.id}`} className="note">
-              <Tile post={p} no={noOf(posts, p)} />
-              <p className="nd">
-                {p.status === 'draft' && <b className="chip">임시저장</b>}
-                {p.visibility === 'private' && <b className="chip">비공개</b>}
-                {fmtDate(p.createdAt)}
-              </p>
-              <p className="nt">{p.title}</p>
-            </Link>
-          ))}
+          <nav className="hm-nav" aria-label="메뉴">
+            <Link to="/notes">전체 글</Link>
+            {isAdmin && <Link to="/admin/categories">카테고리 관리</Link>}
+            <Link to="/write">글 작성하기</Link>
+            {isAdmin && (
+              <button type="button" onClick={signOut}>
+                로그아웃
+              </button>
+            )}
+            <Clock />
+          </nav>
+        </header>
+
+        <h1 className="hm-statement">
+          <b>문제 정의</b>, <b>화면 설계</b>, <b>운영</b>에서 배운 것을 기록합니다.
+        </h1>
+
+        <div className="hm-cats">
+          <p className="hm-label">Categories</p>
+          <ul className="hm-catlist">
+            {names.map((n, i) => (
+              <li key={n}>
+                <button type="button" className={i === active ? 'on' : ''} onMouseEnter={() => setActive(i)} onFocus={() => setActive(i)} onClick={() => { setActive(i); pick(n) }}>
+                  {n}
+                  <sup>{count(n)}</sup>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="hm-catimg" aria-hidden="true">
+            {names.map((n, i) => {
+              const src = categoryImage(n, i)
+              return src ? <img key={n} src={src} alt="" className={i === active ? 'on' : ''} /> : null
+            })}
+          </div>
         </div>
       </section>
-    </>
+
+      {/* 글 섹션 */}
+      <section className="hm-notes" id="notes" ref={notes} aria-label="글">
+        <aside className="hm-side">
+          <p className="hm-label">Notes</p>
+          <ol>
+            {list.map((p) => (
+              <li key={p.id}>
+                <span>{Number(noOf(list, p))}.</span>
+                <Link to={`/post/${p.id}`}>{p.title}</Link>
+              </li>
+            ))}
+          </ol>
+        </aside>
+
+        <div className="hm-feed">
+          <div className="hm-feedhead">
+            <p>{filter ? filter : '최근 글'}</p>
+            {filter && (
+              <button type="button" onClick={() => setFilter(null)}>
+                전체 보기
+              </button>
+            )}
+          </div>
+
+          {posts && shown.length === 0 && <p className="hm-empty">아직 글이 없습니다.</p>}
+
+          {shown.slice(0, 6).map((p) => {
+            const ci = names.indexOf(p.category)
+            const src = p.thumbnail || categoryImage(p.category, ci) || heroImage
+            return (
+              <article key={p.id} className="hm-entry">
+                <Link to={`/post/${p.id}`} className="hm-slot" aria-label={p.title}>
+                  <img src={src} alt="" loading="lazy" />
+                </Link>
+                <div className="hm-row">
+                  <p className="hm-k">{Number(noOf(list, p))}. 글 제목</p>
+                  <div className="hm-meta">
+                    <p>
+                      <Link to={`/post/${p.id}`}>{p.title}</Link>
+                    </p>
+                    <p className="g">{p.category}</p>
+                    <p className="g">
+                      {fmtDate(p.createdAt)} · 읽는 시간 {readMinutes(p.body)}분
+                    </p>
+                    {p.excerpt && <p className="g hm-ex">{p.excerpt}</p>}
+                    <p className="hm-view">
+                      <Link to={`/post/${p.id}`}>[읽기]</Link>
+                    </p>
+                  </div>
+                </div>
+              </article>
+            )
+          })}
+
+          {shown.length > 6 && (
+            <p className="hm-more">
+              <Link to={filter ? `/notes?c=${encodeURIComponent(filter)}` : '/notes'}>전체 글 보기 →</Link>
+            </p>
+          )}
+        </div>
+      </section>
+
+      <footer className="hm-foot">© {new Date().getFullYear()} 홍지영 기획 노트</footer>
+    </div>
   )
 }

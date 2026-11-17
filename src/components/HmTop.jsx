@@ -20,7 +20,7 @@ export default function HmTop() {
     <header className="hm-top">
       <div className="hm-brandrow">
         <Link to="/" className="hm-brand">
-          홍지영 기획 노트
+          기획 노트
         </Link>
         <ThemeSwitch />
       </div>

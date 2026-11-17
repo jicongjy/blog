@@ -8,7 +8,7 @@ export function Plain() {
     <div className="plain">
       <header className="plain-head">
         <Link to="/" className="brand">
-          홍지영 기획 노트
+          기획 노트
           {isAdmin && <small>관리자</small>}
         </Link>
         <nav aria-label="메뉴">

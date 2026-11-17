@@ -87,7 +87,7 @@ export default function List() {
         </aside>
       </div>
 
-      <footer className="hm-foot">© {new Date().getFullYear()} 홍지영 기획 노트</footer>
+      <footer className="hm-foot">© {new Date().getFullYear()} 기획 노트</footer>
     </div>
   )
 }

@@ -160,7 +160,7 @@ export default function Post() {
         </section>
       )}
 
-      <footer className="hm-foot">© {new Date().getFullYear()} 홍지영 기획 노트{no ? ` · No. ${no}` : ''}</footer>
+      <footer className="hm-foot">© {new Date().getFullYear()} 기획 노트{no ? ` · No. ${no}` : ''}</footer>
     </div>
   )
 }

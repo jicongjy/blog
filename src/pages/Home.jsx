@@ -144,7 +144,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="hm-foot">© {new Date().getFullYear()} 홍지영 기획 노트</footer>
+      <footer className="hm-foot">© {new Date().getFullYear()} 기획 노트</footer>
     </div>
   )
 }

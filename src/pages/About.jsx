@@ -8,7 +8,7 @@ export default function About() {
       <p className="hero-note">
         기획부터 화면, 구현, 배포까지 직접 해 보며 알게 된 것을 남깁니다. 작업물은 포트폴리오에서 볼 수 있어요.
       </p>
-      <a className="btn" href="https://jicongjy.github.io" target="_blank" rel="noreferrer">
+      <a className="btn" href="https://jicongjy.github.io/portfolio/" target="_blank" rel="noreferrer">
         포트폴리오 보기 ↗
       </a>
     </section>

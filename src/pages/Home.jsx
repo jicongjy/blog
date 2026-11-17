@@ -4,6 +4,7 @@ import { categoryImage, heroImage, postFallback } from '../data/categoryImages.j
 import { categoryClick, selectArticle } from '../lib/analytics.js'
 import { startSectionScroll } from '../lib/sectionScroll.js'
 import HmTop from '../components/HmTop.jsx'
+import Loading from '../components/Loading.jsx'
 import { fmtDate, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
 import { usePosts } from '../lib/usePosts.js'
@@ -113,6 +114,7 @@ export default function Home() {
             )}
           </div>
 
+          {!posts && <Loading />}
           {posts && shown.length === 0 && <p className="hm-empty">아직 글이 없습니다.</p>}
 
           {shown.slice(0, 6).map((p) => {

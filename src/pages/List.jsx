@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import HmTop from '../components/HmTop.jsx'
+import Loading from '../components/Loading.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
 import { categoryClick, selectArticle } from '../lib/analytics.js'
 import { fmtDate, noOf } from '../lib/format.js'
@@ -69,6 +70,7 @@ export default function List() {
           <p className="hm-label">
             {category ?? 'All'} · {shown.length}
           </p>
+          {!posts && <Loading />}
           {posts && shown.length === 0 && <p className="ls-empty">조건에 맞는 글이 없습니다.</p>}
           <ol>
             {shown.map((p, i) => (

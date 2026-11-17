@@ -431,3 +431,20 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .cat-temp { margin: 40px 0 8px; }
 .cat-temp-h { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
 .cat-temp .btn { margin-top: 12px; }
+
+/* ===== 로딩: 첫 화면 덮개와 작은 원 ===== */
+.ld-dot { display: block; width: 14px; height: 14px; border-radius: 50%; background: currentColor; animation: ld-pulse 1.1s ease-in-out infinite; }
+@keyframes ld-pulse { 0%, 100% { transform: scale(.55); opacity: .35; } 50% { transform: scale(1); opacity: 1; } }
+.ld { display: flex; justify-content: center; padding: 22vh 0; opacity: 0; animation: ld-show .01s .25s forwards; color: var(--ink); }
+@keyframes ld-show { to { opacity: 1; } }
+.splash { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); font-family: var(--sans); font-size: 14px; letter-spacing: -0.02em; transition: transform .65s cubic-bezier(.7, 0, .2, 1); }
+.splash.leave { transform: translateY(-100%); }
+.splash-in { display: flex; flex-direction: column; align-items: center; gap: 14px; animation: splash-in .4s ease both; }
+.splash-in p { margin: 0; font-weight: 600; }
+@keyframes splash-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .ld-dot { animation: none; }
+  .splash { transition: opacity .3s ease; }
+  .splash.leave { transform: none; opacity: 0; }
+  .splash-in { animation: none; }
+}

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { initAnalytics, pageView } from './lib/analytics.js'
 import { AuthProvider } from './lib/auth.jsx'
+import Splash from './components/Splash.jsx'
 import { Plain } from './components/Layouts.jsx'
 import Home from './pages/Home.jsx'
 import List from './pages/List.jsx'
@@ -26,6 +27,7 @@ export default function App() {
   }, [pathname])
   return (
     <AuthProvider>
+      <Splash />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/post/:id" element={<Post />} />

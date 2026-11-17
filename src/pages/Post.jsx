@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Body from '../components/Body.jsx'
 import HmTop from '../components/HmTop.jsx'
+import Loading from '../components/Loading.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
 import { getPost, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
@@ -67,7 +68,13 @@ export default function Post() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [countable, post])
 
-  if (post === undefined || all === null) return null
+  if (post === undefined || all === null)
+    return (
+      <div className="hm">
+        <HmTop />
+        <Loading />
+      </div>
+    )
   const hidden = post && !isAdmin && (post.status !== 'published' || post.visibility === 'private')
   if (!post || hidden)
     return (

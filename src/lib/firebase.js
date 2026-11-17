@@ -19,4 +19,6 @@ export const ADMIN_EMAIL = (env.VITE_ADMIN_EMAIL || '').trim().toLowerCase()
 
 const app = firebaseEnabled ? initializeApp(config) : null
 export const auth = app ? getAuth(app) : null
-export const db = app ? getFirestore(app) : null
+// 기존 프로젝트의 기본 데이터베이스와 규칙이 섞이지 않도록, 값이 있으면 별도 데이터베이스(예: blog)를 쓴다.
+const databaseId = (env.VITE_FIREBASE_DATABASE_ID || '').trim()
+export const db = app ? (databaseId ? getFirestore(app, databaseId) : getFirestore(app)) : null

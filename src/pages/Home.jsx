@@ -134,11 +134,11 @@ export default function Home() {
                       <span>{fmtDate(p.createdAt)}</span>
                       <span className="hm-readtime">읽는 시간 {readMinutes(p.body)}분</span>
                     </p>
-                    <p className="hm-view">
-                      <Link to={`/post/${p.id}`} onClick={() => selectArticle(p, 'home_card')}>[읽기]</Link>
-                    </p>
                   </div>
                 </div>
+                <Link to={`/post/${p.id}`} className="hm-read" onClick={() => selectArticle(p, 'home_card')}>
+                  읽기
+                </Link>
               </article>
             )
           })}

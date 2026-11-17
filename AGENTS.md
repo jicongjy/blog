@@ -7,7 +7,7 @@
 - Firebase 연결 완료: 프로젝트 `gen-lang-client-0559087225`, Firestore 이름 있는 데이터베이스 `blog`, Google 로그인. 관리자 계정만 글 쓰기. 규칙은 `firestore.rules`(저장소에는 `ADMIN_EMAIL_HERE` 자리표시자, 실제 주소는 콘솔 규칙에만 있다).
 - 화면: 홈(`/`), 전체 글(`/notes`), 글 상세(`/post/:id`)는 잡지형 새 디자인. 글쓰기(`/write`), 카테고리 관리(`/admin/categories`), 로그인은 아직 옛 디자인.
 - GA4 코드 완료(`src/lib/analytics.js`). 측정 ID(`VITE_GA_MEASUREMENT_ID`)를 GitHub Variables에 등록하기 전까지는 꺼져 있다. 사용자가 GA 속성을 만들고 `G-...` ID를 줄 예정.
-- 색 조합 기능 완료(왼쪽 아래 해 아이콘). 현재 조합 5개는 임시이며 사용자가 정한 조합을 주면 `src/lib/theme.js`의 `PALETTES`만 교체한다.
+- 색 조합 기능 완료(상단 브랜드 오른쪽 원을 누르면 색 원이 가로로 펼쳐짐). 조합 9개: 흰색, 검정, 그리고 사용자가 준 레퍼런스 이미지의 색(크림 #f3eee8, 라벤더 #a785fe, 핑크 #eaa9cb, 라임 #d5ef72, 초록 #00b65c, 빨강 #f8311c, 파랑 #537cde). 바꿀 때는 `src/lib/theme.js`의 `PALETTES`만 수정한다.
 
 ## 디자인 규칙 (사용자 확정, 어기지 말 것)
 - 잡지형. 선과 테두리 없음, 글자 크기는 13px 하나로 두고 굵기와 회색으로만 위계. Pretendard만 사용, 전체 흰 화면, 흑백(강조색 없음), 마스코트 사용 안 함.

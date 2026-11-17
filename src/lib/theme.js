@@ -1,11 +1,15 @@
 // 색 조합. 배경(bg)과 글자(fg) 두 색만 정하면 회색 단계는 두 색을 섞어서 자동으로 만든다.
-// 임시 조합이므로 지영 님이 정한 조합으로 이 목록만 바꾸면 된다.
+// 크림, 라벤더, 핑크, 라임, 초록, 빨강, 파랑은 사용자가 준 레퍼런스 이미지의 색(HEX)이다.
 export const PALETTES = [
   { id: 'white', name: '흰색', bg: '#ffffff', fg: '#0a0a0a' },
   { id: 'black', name: '검정', bg: '#0d0d0d', fg: '#f2f2f2' },
-  { id: 'paper', name: '종이', bg: '#f3efe6', fg: '#1a1a18' },
-  { id: 'fog', name: '안개', bg: '#e4e6e8', fg: '#101214' },
-  { id: 'moss', name: '이끼', bg: '#dfe5da', fg: '#1b2418' },
+  { id: 'cream', name: '크림', bg: '#f3eee8', fg: '#111111' },
+  { id: 'lavender', name: '라벤더', bg: '#a785fe', fg: '#111111' },
+  { id: 'pink', name: '핑크', bg: '#eaa9cb', fg: '#111111' },
+  { id: 'lime', name: '라임', bg: '#d5ef72', fg: '#111111' },
+  { id: 'green', name: '초록', bg: '#00b65c', fg: '#111111' },
+  { id: 'red', name: '빨강', bg: '#f8311c', fg: '#111111' },
+  { id: 'blue', name: '파랑', bg: '#537cde', fg: '#111111' },
 ]
 
 const KEY = 'blog:palette'

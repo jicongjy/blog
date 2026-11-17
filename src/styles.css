@@ -394,11 +394,11 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); }
 .ts { position: relative; display: flex; align-items: center; color: var(--hm-fg, #0a0a0a); }
 .ts-dot { display: block; width: 14px; height: 14px; border: 0; padding: 0; border-radius: 50%; background: linear-gradient(90deg, var(--a) 50%, var(--b) 50%); cursor: pointer; }
 .ts-cur { box-shadow: 0 0 0 1px color-mix(in srgb, var(--hm-fg, #0a0a0a) 25%, transparent); }
-.ts-list { position: absolute; z-index: 30; top: calc(100% + 10px); left: 0; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.ts-list .ts-dot { animation: ts-pop .45s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(var(--i) * 70ms); }
+.ts-list { position: absolute; z-index: 30; top: 0; bottom: 0; left: calc(100% + 12px); margin: 0; padding: 0; list-style: none; display: flex; flex-direction: row; align-items: center; gap: 10px; }
+.ts-list .ts-dot { animation: ts-pop .45s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: calc(var(--i) * 45ms); }
 .ts-list .ts-dot:hover { transform: scale(1.25); }
 .ts-list .ts-dot.on { box-shadow: 0 0 0 2px var(--hm-bg, #fff), 0 0 0 3px var(--hm-fg, #0a0a0a); }
-@keyframes ts-pop { from { opacity: 0; transform: translateY(-8px) scale(.2); } to { opacity: 1; transform: none; } }
+@keyframes ts-pop { from { opacity: 0; transform: translateX(-8px) scale(.2); } to { opacity: 1; transform: none; } }
 .ts-dot:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .ts-list .ts-dot { animation: none; } }
 

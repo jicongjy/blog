@@ -129,7 +129,7 @@ export default function Categories() {
                 const order = cats ?? []
                 for (const t of TEMP_POSTS) {
                   const { id, cat, ...rest } = t
-                  await savePost({ id, ...rest, category: order[cat]?.name ?? order[0]?.name ?? 'Planning', thumbnail: '', visibility: 'public', status: 'published' })
+                  await savePost({ id, ...rest, category: order[cat]?.name ?? order[0]?.name ?? 'Planning', visibility: 'public', status: 'published' })
                 }
                 setTempMsg('임시 글 4개를 등록했습니다.')
                 reload()

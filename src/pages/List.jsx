@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import HmTop from '../components/HmTop.jsx'
-import { categoryImage, heroImage } from '../data/categoryImages.js'
+import { heroImage, postFallback } from '../data/categoryImages.js'
 import { fmtDate, noOf } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
 import { usePosts } from '../lib/usePosts.js'
@@ -22,7 +22,7 @@ export default function List() {
   const list = posts ?? []
   const names = useMemo(() => [...new Set([...(cats ?? []).map((c) => c.name), ...list.map((p) => p.category).filter(Boolean)])], [cats, list])
   const shown = list.filter((p) => (!category || p.category === category) && p.title.toLowerCase().includes(q.trim().toLowerCase()))
-  const imgOf = (p) => p.thumbnail || categoryImage(p.category, names.indexOf(p.category)) || heroImage
+  const imgOf = (p) => p.thumbnail || postFallback(p.category, names.indexOf(p.category)) || heroImage
   const cur = shown[Math.min(hover, shown.length - 1)]
   const pick = (c) => {
     setHover(0)

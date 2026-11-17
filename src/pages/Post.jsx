@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Body from '../components/Body.jsx'
 import HmTop from '../components/HmTop.jsx'
-import { categoryImage, heroImage } from '../data/categoryImages.js'
+import { heroImage, postFallback } from '../data/categoryImages.js'
 import { getPost, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
 import { pageView, track } from '../lib/analytics.js'
@@ -82,7 +82,7 @@ export default function Post() {
     )
 
   const names = [...new Set([...(cats ?? []).map((c) => c.name), ...all.map((p) => p.category).filter(Boolean)])]
-  const imgOf = (p) => p.thumbnail || categoryImage(p.category, names.indexOf(p.category)) || heroImage
+  const imgOf = (p) => p.thumbnail || postFallback(p.category, names.indexOf(p.category)) || heroImage
   const related = all.filter((p) => p.id !== post.id).slice(0, 3)
   const no = all.some((p) => p.id === post.id) ? Number(noOf(all, all.find((p) => p.id === post.id))) : null
 

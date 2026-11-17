@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { categoryImage, heroImage } from '../data/categoryImages.js'
+import { categoryImage, heroImage, postFallback } from '../data/categoryImages.js'
 import { track } from '../lib/analytics.js'
 import { startSectionScroll } from '../lib/sectionScroll.js'
 import HmTop from '../components/HmTop.jsx'
@@ -111,7 +111,7 @@ export default function Home() {
 
           {shown.slice(0, 6).map((p) => {
             const ci = names.indexOf(p.category)
-            const src = p.thumbnail || categoryImage(p.category, ci) || heroImage
+            const src = p.thumbnail || postFallback(p.category, ci) || heroImage
             return (
               <article key={p.id} className="hm-entry">
                 <Link to={`/post/${p.id}`} className="hm-slot" aria-label={p.title}>

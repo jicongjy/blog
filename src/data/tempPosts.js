@@ -1,8 +1,10 @@
+const thumb = (n) => `${import.meta.env.BASE_URL}images/post-${n}.jpg`
 // 관리자 화면에서 한 번에 등록하는 임시 글. 아이디가 고정이라 여러 번 눌러도 중복되지 않는다.
 // cat: 카테고리 목록에서의 순서(0부터). 카테고리 이름을 바꿔도 맞게 들어간다.
 export const TEMP_POSTS = [
   {
     id: 'temp-1',
+    thumbnail: thumb(1),
     cat: 0,
     title: '요구사항을 한 장으로 정리하는 순서',
     excerpt: '임시 글. 기능 목록을 나열하기 전에 문제, 대상, 성공 기준을 먼저 적는 순서를 정리했습니다.',
@@ -10,6 +12,7 @@ export const TEMP_POSTS = [
   },
   {
     id: 'temp-2',
+    thumbnail: thumb(2),
     cat: 1,
     title: '화면 흐름을 먼저 그리고 문구를 쓴다',
     excerpt: '임시 글. 문구는 화면 흐름이 정해진 뒤에 쓰는 편이 수정이 적습니다.',
@@ -17,6 +20,7 @@ export const TEMP_POSTS = [
   },
   {
     id: 'temp-3',
+    thumbnail: thumb(3),
     cat: 2,
     title: '회의 후 정리 문서의 최소 항목',
     excerpt: '임시 글. 결정, 담당, 기한 세 가지만 남기고 나머지는 줄였습니다.',
@@ -24,6 +28,7 @@ export const TEMP_POSTS = [
   },
   {
     id: 'temp-4',
+    thumbnail: thumb(4),
     cat: 0,
     title: '성공 기준을 숫자로 적어 두는 이유',
     excerpt: '임시 글. 배포 뒤에 확인할 수 있는 지표와 기준값을 먼저 정합니다.',

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { categoryImage, heroImage, postFallback } from '../data/categoryImages.js'
-import { track } from '../lib/analytics.js'
+import { categoryClick, selectArticle } from '../lib/analytics.js'
 import { startSectionScroll } from '../lib/sectionScroll.js'
 import HmTop from '../components/HmTop.jsx'
 import { fmtDate, readMinutes } from '../lib/format.js'
@@ -54,7 +54,7 @@ export default function Home() {
   }, [shown.length, filter, posts])
 
   const pick = (name) => {
-    track('select_category', { category: name })
+    categoryClick(name, 'home_hero')
     setFilter(name)
     notes.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -97,7 +97,7 @@ export default function Home() {
           <ol>
             {shown.map((p) => (
               <li key={p.id} className={activePost === p.id ? 'on' : ''}>
-                <Link to={`/post/${p.id}`}>{p.title}</Link>
+                <Link to={`/post/${p.id}`} onClick={() => selectArticle(p, 'home_toc')}>{p.title}</Link>
               </li>
             ))}
           </ol>
@@ -120,12 +120,12 @@ export default function Home() {
             const src = p.thumbnail || postFallback(p.category, ci) || heroImage
             return (
               <article key={p.id} className="hm-entry" data-post-id={p.id}>
-                <Link to={`/post/${p.id}`} className="hm-slot" aria-label={p.title}>
+                <Link to={`/post/${p.id}`} className="hm-slot" aria-label={p.title} onClick={() => selectArticle(p, 'home_card')}>
                   <img src={src} alt="" loading="lazy" />
                 </Link>
                 <div className="hm-row">
                   <div className="hm-copy">
-                    <h2 className="hm-title"><Link to={`/post/${p.id}`}>{p.title}</Link></h2>
+                    <h2 className="hm-title"><Link to={`/post/${p.id}`} onClick={() => selectArticle(p, 'home_card')}>{p.title}</Link></h2>
                     {p.excerpt && <p className="hm-subtitle">{p.excerpt}</p>}
                   </div>
                   <div className="hm-meta">
@@ -135,7 +135,7 @@ export default function Home() {
                       <span className="hm-readtime">읽는 시간 {readMinutes(p.body)}분</span>
                     </p>
                     <p className="hm-view">
-                      <Link to={`/post/${p.id}`}>[읽기]</Link>
+                      <Link to={`/post/${p.id}`} onClick={() => selectArticle(p, 'home_card')}>[읽기]</Link>
                     </p>
                   </div>
                 </div>

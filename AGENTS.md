@@ -6,7 +6,7 @@
 - 주소: https://jicongjy.github.io/blog/ (HashRouter, `base: '/blog/'`). `main`에 푸시하면 GitHub Actions가 자동 배포한다.
 - Firebase 연결 완료: 프로젝트 `gen-lang-client-0559087225`, Firestore 이름 있는 데이터베이스 `blog`, Google 로그인. 관리자 계정만 글 쓰기. 규칙은 `firestore.rules`(저장소에는 `ADMIN_EMAIL_HERE` 자리표시자, 실제 주소는 콘솔 규칙에만 있다).
 - 화면: 홈(`/`), 전체 글(`/notes`), 글 상세(`/post/:id`)는 잡지형 새 디자인. 글쓰기(`/write`), 카테고리 관리(`/admin/categories`), 로그인은 아직 옛 디자인.
-- GA4 코드 완료(`src/lib/analytics.js`). 측정 ID(`VITE_GA_MEASUREMENT_ID`)를 GitHub Variables에 등록하기 전까지는 꺼져 있다. 사용자가 GA 속성을 만들고 `G-...` ID를 줄 예정.
+- GA4 코드 완료(`src/lib/analytics.js`). 이벤트: page_view, category_click, article_select, article_scroll(50, 90). 자세한 매개변수는 `docs/work-log.md` 23번. 측정 ID(`VITE_GA_MEASUREMENT_ID`)를 GitHub Variables에 등록하기 전까지는 꺼져 있다. 사용자가 GA 속성을 만들고 `G-...` ID를 줄 예정.
 - 색 조합 기능 완료. 상단 브랜드 오른쪽의 방사형 그라데이션 점 하나를 누르면 그 자리에서 오른쪽으로 같은 형태의 점 스와치가 펼쳐진다. 기본 모노톤과 두 번째 레퍼런스의 7개 조합을 `src/lib/theme.js`의 `PALETTES`에서 관리한다. 바탕과 같은 외곽색으로 점이 사라지지 않도록 중심에는 대비색을 둔다.
 
 ## 디자인 규칙 (사용자 확정, 어기지 말 것)

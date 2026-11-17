@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import HmTop from '../components/HmTop.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
+import { categoryClick, selectArticle } from '../lib/analytics.js'
 import { fmtDate, noOf } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
 import { usePosts } from '../lib/usePosts.js'
@@ -29,6 +30,7 @@ export default function List() {
   const imgOf = (p) => p.thumbnail || postFallback(p.category, names.indexOf(p.category)) || heroImage
   const cur = shown[Math.min(hover, shown.length - 1)]
   const pick = (c) => {
+    categoryClick(c, 'list_filter')
     setHover(0)
     setParams(c ? { c } : {})
   }
@@ -71,7 +73,7 @@ export default function List() {
           <ol>
             {shown.map((p, i) => (
               <li key={p.id} onMouseEnter={() => setHover(i)}>
-                <Link to={`/post/${p.id}`} onFocus={() => setHover(i)}>
+                <Link to={`/post/${p.id}`} onFocus={() => setHover(i)} onClick={() => selectArticle(p, 'list_index')}>
                   <span className="n">{Number(noOf(list, p))}.</span>
                   <span className="t">{p.title}</span>
                   <span className="c">{p.category}</span>

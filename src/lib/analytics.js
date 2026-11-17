@@ -52,6 +52,16 @@ export function pageView(path, title, extra = {}) {
   })
 }
 
+// 글을 골랐을 때. click_location: home_card, home_toc, list_index, next_article
+export function selectArticle(post, clickLocation) {
+  track('article_select', { post_id: post.id, post_title: post.title, post_category: post.category, click_location: clickLocation })
+}
+
+// 카테고리를 골랐을 때. click_location: home_hero, list_filter, post_meta
+export function categoryClick(category, clickLocation) {
+  track('category_click', { category: category ?? '전체', click_location: clickLocation })
+}
+
 export function track(name, params = {}) {
   if (!gaEnabled || !window.gtag) return
   window.gtag('event', name, params)

@@ -22,7 +22,7 @@ export default function App() {
   }, [])
   useEffect(() => {
     if (pathname.startsWith('/post/') || pathname.startsWith('/write') || pathname.startsWith('/admin') || pathname === '/login') return
-    pageView(pathname === '/' ? '/' : pathname, pathname === '/notes' ? '전체 글' : '홈')
+    pageView(pathname === '/' ? '/' : pathname, pathname === '/notes' ? '전체 글' : '홈', { page_type: pathname === '/notes' ? 'list' : 'home' })
   }, [pathname])
   return (
     <AuthProvider>

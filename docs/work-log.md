@@ -169,6 +169,12 @@
 - 카테고리: 글이 없는 임시 기본 카테고리는 홈과 전체 글에 표시하지 않는다. 로컬 기본값도 `기획`, `설계`, `운영`으로 통일했다.
 - OG: `public/og-blog.png`(1200×630)을 추가하고 `index.html`에 Open Graph와 Twitter 메타 태그를 연결했다. 이미지는 검정 바탕 중앙의 흰색 소문자 `blog`다.
 
+### 23. GA 이벤트를 보고서 설계에 맞춤
+- 이벤트: `page_view`(홈 `page_type: home`, 전체 글 `list`, 글 상세 `post`와 `post_id`, `post_category`), `category_click`(`category`, `click_location`: home_hero, list_filter, post_meta), `article_select`(`post_id`, `post_title`, `post_category`, `click_location`: home_card, home_toc, list_index, next_article), `article_scroll`(본문 50%, 90% 도달 시 각 1회, `scroll_depth`). 옛 `select_category`와 `read_complete`는 없앴다.
+- 짧은 글은 본문이 한 화면에 다 들어와 50%와 90%가 거의 동시에 간다.
+- 확인: 가짜 측정 ID로 만든 빌드에서 홈 page_view, category_click, article_select, 글 page_view, article_scroll 50과 90이 `dataLayer`에 쌓이는 것을 확인했다. 실제 GA 화면에서의 확인은 아직이다.
+- GA 콘솔 작업: 매개변수를 보고서에서 쓰려면 맞춤 측정기준(범위: 이벤트)으로 `post_id`, `post_title`, `post_category`, `category`, `click_location`, `scroll_depth`(숫자는 맞춤 측정항목), `page_type`을 등록해야 한다.
+
 ## 남은 일
 
 1. Firebase 콘솔에서 `blog` 데이터베이스 생성(프로덕션 모드, 서울), 규칙 붙여 넣기

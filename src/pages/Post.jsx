@@ -5,7 +5,7 @@ import HmTop from '../components/HmTop.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
 import { getPost, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
-import { pageView, track } from '../lib/analytics.js'
+import { categoryClick, pageView, selectArticle, track } from '../lib/analytics.js'
 import { prepareBody } from '../lib/body.js'
 import { fmtDate, noOf, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
@@ -52,18 +52,17 @@ export default function Post() {
   useEffect(() => {
     if (!countable) return undefined
     const info = { post_id: post.id, post_category: post.category }
-    pageView(`/post/${post.id}`, post.title, info)
-    // 끝까지 읽었는지: 본문의 80% 지점을 지나면 한 번만 보낸다.
-    let sent = false
+    pageView(`/post/${post.id}`, post.title, { ...info, page_type: 'post' })
+    // 읽기 깊이: 본문의 50%, 90% 지점을 지나면 각각 한 번만 보낸다.
+    const left = [50, 90]
     const onScroll = () => {
       const el = document.querySelector('.pd-body')
-      if (!el || sent) return
+      if (!el || left.length === 0) return
       const r = el.getBoundingClientRect()
-      if (r.bottom - r.height * 0.2 <= window.innerHeight) {
-        sent = true
-        track('read_complete', { ...info, post_title: post.title })
-      }
+      const depth = ((window.innerHeight - r.top) / r.height) * 100
+      while (left.length && depth >= left[0]) track('article_scroll', { ...info, post_title: post.title, scroll_depth: left.shift() })
     }
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [countable, post])
@@ -116,7 +115,7 @@ export default function Post() {
 
         <article className="pd-main">
           <p className="pd-meta">
-            <Link to={`/notes?c=${encodeURIComponent(post.category)}`}>{post.category}</Link>
+            <Link to={`/notes?c=${encodeURIComponent(post.category)}`} onClick={() => categoryClick(post.category, 'post_meta')}>{post.category}</Link>
             <span>{fmtDate(post.createdAt)}</span>
             <span>읽는 시간 {readMinutes(post.body)}분</span>
             {post.status === 'draft' && <span>임시저장</span>}
@@ -148,7 +147,7 @@ export default function Post() {
           <p className="hm-label">Next</p>
           <div className="pd-grid">
             {related.map((p) => (
-              <Link key={p.id} to={`/post/${p.id}`} className="pd-card">
+              <Link key={p.id} to={`/post/${p.id}`} className="pd-card" onClick={() => selectArticle(p, 'next_article')}>
                 <span className="pd-thumb">
                   <img src={imgOf(p)} alt="" loading="lazy" />
                 </span>

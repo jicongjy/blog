@@ -118,12 +118,11 @@ export default function Home() {
                   <img src={src} alt="" loading="lazy" />
                 </Link>
                 <div className="hm-row">
-                  <p className="hm-k">{Number(noOf(list, p))}. 글 제목</p>
+                  <p className="hm-k">
+                    {Number(noOf(list, p))}. <Link to={`/post/${p.id}`}>{p.title}</Link>
+                  </p>
                   <div className="hm-meta">
-                    <p>
-                      <Link to={`/post/${p.id}`}>{p.title}</Link>
-                    </p>
-                    <p className="g">{p.category}</p>
+                    <p>{p.category}</p>
                     <p className="g">
                       {fmtDate(p.createdAt)} · 읽는 시간 {readMinutes(p.body)}분
                     </p>

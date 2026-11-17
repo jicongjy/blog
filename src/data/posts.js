@@ -2,7 +2,7 @@
 // Firebase를 붙일 때는 이 파일의 함수 본문만 Firestore 호출로 바꾸면 화면 코드는 그대로입니다.
 import { samples } from './samples.js'
 
-const KEY = 'blog:posts:v2'
+const KEY = 'blog:posts:v3'
 
 function load() {
   try {
@@ -24,9 +24,10 @@ function persist(list) {
 
 const byDate = (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
 
-export async function listPosts({ includeDrafts = false } = {}) {
+// 관리자가 아니면 발행된 공개 글만 보인다.
+export async function listPosts({ isAdmin = false } = {}) {
   return load()
-    .filter((p) => includeDrafts || p.status === 'published')
+    .filter((p) => isAdmin || (p.status === 'published' && p.visibility !== 'private'))
     .sort(byDate)
 }
 

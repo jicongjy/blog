@@ -1,109 +1,87 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Markdown from '../components/Markdown.jsx'
-import Thumb from '../components/Thumb.jsx'
-import { getPost, listPosts, removePost } from '../data/posts.js'
+import Tile from '../components/Tile.jsx'
+import { getPost, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
-import { fmtDate, readMinutes } from '../lib/format.js'
-
-const i0 = (list, post) => Math.max(0, list.findIndex((p) => p.id === post.id))
+import { fmtDate, noOf, readMinutes } from '../lib/format.js'
+import { usePosts } from '../lib/usePosts.js'
 
 export default function Post() {
   const { id } = useParams()
   const nav = useNavigate()
   const { isAdmin } = useAuth()
+  const all = usePosts()
   const [post, setPost] = useState(undefined)
-  const [all, setAll] = useState([])
 
   useEffect(() => {
-    window.scrollTo(0, 0)
     getPost(id).then(setPost)
-    listPosts({ includeDrafts: isAdmin }).then(setAll)
-  }, [id, isAdmin])
+  }, [id])
 
-  if (post === undefined) return null
-  if (post === null || (post.status !== 'published' && !isAdmin))
+  if (post === undefined || all === null) return null
+  const hidden = post && !isAdmin && (post.status !== 'published' || post.visibility === 'private')
+  if (!post || hidden)
     return (
-      <section className="hero">
-        <p className="eyebrow">404</p>
-        <h1>글을 찾을 수 없습니다.</h1>
-        <Link className="back" to="/">
-          ← 글 목록
+      <div className="post-missing">
+        <h1 className="h1">글을 찾을 수 없습니다.</h1>
+        <Link className="more" to="/notes">
+          ← 전체 글
         </Link>
-      </section>
+      </div>
     )
 
-  const i = all.findIndex((p) => p.id === post.id)
-  const newer = all[i - 1]
-  const older = all[i + 1]
+  const related = all.filter((p) => p.id !== post.id).slice(0, 2)
+  const no = all.includes(post) ? noOf(all, post) : '00'
 
   const onDelete = async () => {
     if (!window.confirm('이 글을 삭제합니다. 되돌릴 수 없습니다.')) return
     await removePost(post.id)
-    nav('/')
+    nav('/notes')
   }
 
   return (
-    <article className="article">
-      <header className="article-head">
-        <p className="eyebrow">{post.tags.join(' · ')}</p>
+    <article>
+      <div className="art-head">
+        <p className="art-meta">
+          <Link to={`/notes?c=${encodeURIComponent(post.category)}`}>{post.category}</Link> · {fmtDate(post.createdAt)} · 읽는 시간 {readMinutes(post.body)}분
+          {post.status === 'draft' && <b className="chip">임시저장</b>}
+          {post.visibility === 'private' && <b className="chip">비공개</b>}
+        </p>
         <h1>{post.title}</h1>
-        <p className="deck">{post.excerpt}</p>
-      </header>
-
-      <figure className="article-cover">
-        <Thumb post={post} no={String(all.length - i0(all, post)).padStart(2, '0')} ratio="21 / 9" />
-      </figure>
-
-      <div className="article-grid">
-        <aside className="margin">
-          <dl>
-            <dt>작성</dt>
-            <dd>{fmtDate(post.createdAt)}</dd>
-            <dt>읽는 시간</dt>
-            <dd>{readMinutes(post.body)}분</dd>
-            {post.status === 'draft' && (
-              <>
-                <dt>상태</dt>
-                <dd>임시저장</dd>
-              </>
-            )}
-          </dl>
-          <Link className="back" to="/">
-            ← 글 목록
-          </Link>
-          {isAdmin && (
-            <div className="admin-actions">
-              <Link to={`/write/${post.id}`}>수정</Link>
-              <button type="button" onClick={onDelete}>
-                삭제
-              </button>
-            </div>
-          )}
-        </aside>
-        <div className="article-body">
-          <Markdown source={post.body} />
-        </div>
+        <p className="art-summary">{post.excerpt}</p>
+        {isAdmin && (
+          <p className="art-admin">
+            <Link to={`/write/${post.id}`}>수정</Link>
+            <button type="button" onClick={onDelete}>
+              삭제
+            </button>
+          </p>
+        )}
       </div>
 
-      <nav className="pager" aria-label="이전·다음 글">
-        {older ? (
-          <Link to={`/post/${older.id}`}>
-            <small>이전 글</small>
-            <span>{older.title}</span>
+      <figure className="art-cover">
+        <Tile post={post} no={no} ratio="21 / 9" size="xl" />
+      </figure>
+
+      <div className="art">
+        <Markdown source={post.body} />
+      </div>
+
+      <section className="related" aria-labelledby="rel">
+        <h2 id="rel">다음에 읽을 글</h2>
+        <div className="grid three">
+          {related.map((p) => (
+            <Link key={p.id} to={`/post/${p.id}`} className="note">
+              <Tile post={p} no={noOf(all, p)} />
+              <p className="nd">{fmtDate(p.createdAt)}</p>
+              <p className="nt">{p.title}</p>
+            </Link>
+          ))}
+          <Link to="/notes" className="all-tile">
+            전체 글 보기 →
           </Link>
-        ) : (
-          <span />
-        )}
-        {newer ? (
-          <Link to={`/post/${newer.id}`} className="next">
-            <small>다음 글</small>
-            <span>{newer.title}</span>
-          </Link>
-        ) : (
-          <span />
-        )}
-      </nav>
+        </div>
+      </section>
     </article>
   )
 }

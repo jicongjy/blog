@@ -1,9 +1,9 @@
 // 썸네일. post.thumbnail(이미지 주소)이 있으면 그 이미지를, 없으면 제목·분류로 만든 표지를 보여 줍니다.
 const tones = [
-  { bg: '#e4e0d9', fg: '#111' },
-  { bg: '#111111', fg: '#f6f4f0' },
-  { bg: '#c9c5bd', fg: '#111' },
-  { bg: '#f0ede7', fg: '#111' },
+  { bg: '#ececec', fg: '#111' },
+  { bg: '#111111', fg: '#fff' },
+  { bg: '#cfcfcf', fg: '#111' },
+  { bg: '#f5f5f5', fg: '#111' },
 ]
 const hash = (s) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)
 

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { categoryImage, heroImage } from '../data/categoryImages.js'
 import { track } from '../lib/analytics.js'
+import { startSectionScroll } from '../lib/sectionScroll.js'
 import HmTop from '../components/HmTop.jsx'
 import { fmtDate, noOf, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
@@ -18,7 +19,9 @@ export default function Home() {
   useEffect(() => {
     document.body.classList.add('is-home')
     document.documentElement.classList.add('snap-home')
+    const stop = startSectionScroll()
     return () => {
+      stop()
       document.body.classList.remove('is-home')
       document.documentElement.classList.remove('snap-home')
     }
@@ -31,6 +34,17 @@ export default function Home() {
   }, [cats, list])
   const count = (n) => list.filter((p) => p.category === n).length
   const shown = filter ? list.filter((p) => p.category === filter) : list
+
+  // 글이 화면에 들어오면 이미지와 설명이 천천히 나타나게 한다.
+  useEffect(() => {
+    const els = document.querySelectorAll('.hm-entry')
+    const io = new IntersectionObserver(
+      (items) => items.forEach((it) => it.isIntersecting && it.target.classList.add('in')),
+      { threshold: 0.25 }
+    )
+    els.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [shown.length, filter, posts])
 
   const pick = (name) => {
     track('select_category', { category: name })

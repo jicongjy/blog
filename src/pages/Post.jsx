@@ -5,6 +5,7 @@ import HmTop from '../components/HmTop.jsx'
 import { categoryImage, heroImage } from '../data/categoryImages.js'
 import { getPost, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
+import { pageView, track } from '../lib/analytics.js'
 import { prepareBody } from '../lib/body.js'
 import { fmtDate, noOf, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
@@ -45,6 +46,27 @@ export default function Post() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [toc])
+
+  // 공개된 글만 집계한다. 페이지 제목을 글 제목으로 보내서 GA에서 글별 조회수가 제목으로 보인다.
+  const countable = Boolean(post) && post.status === 'published' && post.visibility !== 'private'
+  useEffect(() => {
+    if (!countable) return undefined
+    const info = { post_id: post.id, post_category: post.category }
+    pageView(`/post/${post.id}`, post.title, info)
+    // 끝까지 읽었는지: 본문의 80% 지점을 지나면 한 번만 보낸다.
+    let sent = false
+    const onScroll = () => {
+      const el = document.querySelector('.pd-body')
+      if (!el || sent) return
+      const r = el.getBoundingClientRect()
+      if (r.bottom - r.height * 0.2 <= window.innerHeight) {
+        sent = true
+        track('read_complete', { ...info, post_title: post.title })
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [countable, post])
 
   if (post === undefined || all === null) return null
   const hidden = post && !isAdmin && (post.status !== 'published' || post.visibility === 'private')

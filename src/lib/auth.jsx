@@ -2,6 +2,7 @@
 // 화면의 관리자 표시는 편의용이며, 실제 쓰기 권한은 firestore.rules 가 막는다.
 import { createContext, useContext, useEffect, useState } from 'react'
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut as fbSignOut } from 'firebase/auth'
+import { markOwner } from './analytics.js'
 import { ADMIN_EMAIL, auth, firebaseEnabled } from './firebase.js'
 
 const AuthContext = createContext(null)
@@ -23,6 +24,7 @@ export function AuthProvider({ children }) {
       return undefined
     }
     return onAuthStateChanged(auth, (u) => {
+      if (isAllowed(u)) markOwner()
       setUser(u)
       setReady(true)
     })

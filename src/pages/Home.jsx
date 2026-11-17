@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { categoryImage, heroImage } from '../data/categoryImages.js'
+import { track } from '../lib/analytics.js'
 import HmTop from '../components/HmTop.jsx'
 import { fmtDate, noOf, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
@@ -32,6 +33,7 @@ export default function Home() {
   const shown = filter ? list.filter((p) => p.category === filter) : list
 
   const pick = (name) => {
+    track('select_category', { category: name })
     setFilter(name)
     notes.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }

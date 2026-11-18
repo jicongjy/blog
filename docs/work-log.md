@@ -247,8 +247,16 @@
 - 처음에 lorelei-neutral(CC0)을 고르려 했으나 notionists-neutral로 바꿨다. 흑백 선화라 모노톤 요청에 맞는다.
 - 확인: 로컬 빌드(브라우저 저장소 모드)에서 좋아요 → 아바타 표시(이미지 로드 성공, 개수 1)를 확인했다. Firestore 연동에서의 여러 사람 표시는 규칙 적용 뒤 확인이 필요하다.
 
+### 34. 공휴일 D-day(공공데이터포털 API 실습)
+- 메뉴 줄 시계 왼쪽에 "다음 공휴일 D-N"을 추가했다(`Holiday.jsx`, `HmTop.jsx`). 공휴일 당일은 `D-DAY`, 지나면 다음 공휴일로 넘어간다. 파일이 없거나 남은 공휴일이 없으면 보이지 않는다.
+- 데이터는 `scripts/fetch-holidays.mjs`가 올해와 내년 공휴일을 받아 `public/holidays.json`에 저장하고, 화면은 이 파일만 읽는다. 배포 워크플로가 빌드 전에 이 스크립트를 실행한다(실패해도 배포는 계속, 저장소의 기존 파일 사용).
+- 키가 있으면 공공데이터포털 "한국천문연구원 특일 정보"(`getRestDeInfo`)를 쓰고, 키가 없거나 실패하면 Nager.Date(키 없음)로 대신한다. 키는 GitHub 저장소 비밀 값 `HOLIDAY_API_KEY`에 둔다(화면 코드에는 키가 없다). 지금 저장된 파일은 Nager.Date 기준이다.
+- 확인: Nager.Date로 35개(올해, 내년) 저장, 화면에서 `크리스마스 D-37` 표시, 잘못된 키로 실행하면 실패 메시지(403) 뒤 Nager.Date로 대체되는 것을 확인했다. 공공데이터포털 응답 해석 코드는 실제 키로 아직 시험하지 못했다.
+- 알아 둘 점: 공휴일 목록은 배포할 때만 갱신된다. 임시공휴일이 새로 생기면 배포를 한 번 다시 실행해야 한다.
+
 ## 남은 일
 
+00. 공공데이터포털 키 적용: 활용 신청 후 받은 일반 인증키(Decoding)를 GitHub 저장소 Settings > Secrets and variables > Actions > New repository secret에 이름 `HOLIDAY_API_KEY`로 등록하고, Actions에서 배포를 수동 실행해 `holidays.json`의 `source`가 `data.go.kr`인지 확인
 0. 반응 기능 켜기: Firebase 콘솔에서 Authentication > 로그인 방법 > 익명 사용 설정, 수정된 `firestore.rules`를 Firestore 규칙에 붙여 넣기(관리자 이메일 교체). 그 뒤 `docs/ga-setup-checklist.md`대로 GA 설정(맞춤 측정기준, 핵심 이벤트, 내부 트래픽 필터)
 1. GA: 실시간 보고서에서 이벤트(`page_view`, `category_click`, `article_select`, `article_scroll`)가 뜨는지 확인하고, 맞춤 측정기준(`post_id`, `post_title`, `post_category`, `category`, `click_location`, `page_type`, `scroll_depth`) 등록, 향상된 측정의 "기록 이벤트에 따른 페이지 변경" 끄기
 2. 글 주소 미리보기를 카카오톡, 슬랙에서 실제로 확인(카카오는 캐시 때문에 디버거에서 캐시 삭제가 필요할 수 있음)

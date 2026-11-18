@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Holiday from './Holiday.jsx'
 import QuoteBar from './QuoteBar.jsx'
 import ThemeSwitch from './ThemeSwitch.jsx'
 import { useAuth } from '../lib/auth.jsx'
@@ -35,6 +36,7 @@ export default function HmTop() {
             로그아웃
           </button>
         )}
+        <Holiday />
         <Clock />
       </nav>
     </header>

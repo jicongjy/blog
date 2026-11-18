@@ -478,3 +478,6 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .av { display: block; border-radius: 50%; background: #e8e8e8; box-shadow: 0 0 0 2px var(--hm-bg, #fff); margin-left: -9px; object-fit: cover; }
 .pd-likers-stack .av:first-child { margin-left: 0; }
 .av-fallback { background: color-mix(in srgb, var(--ink) 18%, var(--hm-bg, #fff)); }
+
+/* 메뉴 줄 시계 왼쪽: 다음 공휴일 D-day */
+.hm-holiday { color: var(--soft-gray); font-variant-numeric: tabular-nums; white-space: nowrap; }

@@ -44,6 +44,12 @@ jobs:
           if [ "${{ github.event_name }}" != "schedule" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; else echo "changed=${{ steps.check.outputs.changed }}" >> "$GITHUB_OUTPUT"; fi
       - if: steps.gate.outputs.changed == 'true'
         run: npm ci
+      # 한국 공휴일 목록을 받아 저장한다. 실패해도 배포를 막지 않고 저장소에 있는 기존 파일을 쓴다.
+      - if: steps.gate.outputs.changed == 'true'
+        continue-on-error: true
+        run: node scripts/fetch-holidays.mjs public/holidays.json
+        env:
+          HOLIDAY_API_KEY: ${{ secrets.HOLIDAY_API_KEY }}
       - if: steps.gate.outputs.changed == 'true'
         run: npm run build
         env:

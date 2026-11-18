@@ -39,8 +39,9 @@ export default function List() {
     if (term.length < 2 || term === lastTerm.current) return undefined
     const t = window.setTimeout(() => {
       lastTerm.current = term
-      // 이메일, 전화번호(하이픈, 공백 포함 숫자 6개 이상), 주소처럼 개인정보로 보이는 검색어는 보내지 않고, 길이는 50자로 자른다.
-      const personal = term.replace(/\D/g, '').length >= 6 || /@|골뱅이|https?:|www\.|\.(com|net|kr|co|org|io)\b/i.test(term)
+      // 이메일, 전화번호(하이픈, 공백 포함 숫자 6개 이상, 전각 숫자 포함), 웹 주소처럼 개인정보로 보이는 검색어는 보내지 않고, 길이는 50자로 자른다.
+      const norm = term.normalize('NFKC') // 전각 숫자(０-９) 등을 일반 숫자로 맞춘 뒤 검사한다
+      const personal = (norm.match(/\p{Nd}/gu) || []).length >= 6 || /@|골뱅이|https?:|www\.|\.(com|net|kr|co|org|io)\b/i.test(norm)
       track('search', { search_term: personal ? '(제외됨)' : term.slice(0, 50), result_count: resultCount.current })
     }, 800)
     return () => window.clearTimeout(t)

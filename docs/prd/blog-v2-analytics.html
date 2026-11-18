@@ -59,7 +59,7 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <h3>R1. 이벤트 공통 매개변수 보강 <span class="b p0">P0</span></h3>
 <p>모든 글 관련 이벤트에 읽는 시간(<code>read_minutes</code>)과 발행일(<code>post_published</code>)을 추가한다.</p>
 <ul>
-<li>수용 기준: 글별 탐색 분석에서 글 길이와 발행일로 구분 가능</li>
+<li>수용 기준: 글 관련 이벤트에 글 길이와 발행일 값이 포함되어 전송됨</li>
 </ul>
 <h3>R2. 완독 판정 개선 <span class="b p0">P0</span></h3>
 <ul>
@@ -131,38 +131,18 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr><td><code>select_palette</code></td><td>색상 팔레트 선택</td><td>선택한 팔레트</td><td>기존</td></tr>
 </tbody></table>
 <h3>신규 이벤트</h3>
-<table><thead><tr><th>이벤트</th><th>발생 시점</th><th>주요 매개변수</th><th>핵심 이벤트</th><th>우선순위</th><th>요구사항</th></tr></thead><tbody>
-<tr class="rp0"><td><code>article_read</code></td><td>90% 스크롤 + 활성 시간 조건 충족(방문당 1회)</td><td>글 공통, <code>engaged_seconds</code></td><td>예</td><td><span class="b p0">P0</span></td><td>R2</td></tr>
-<tr class="rp0"><td><code>article_time</code></td><td>활성 시간 15, 30, 60, 120초 도달</td><td>글 공통, <code>engaged_seconds</code></td><td>아니오</td><td><span class="b p0">P0</span></td><td>R2</td></tr>
-<tr class="rp0"><td><code>share</code></td><td>링크 복사 버튼 클릭</td><td>글 공통, <code>share_method</code>(copy_link)</td><td>예</td><td><span class="b p0">P0</span></td><td>R3</td></tr>
-<tr class="rp0"><td><code>search</code></td><td>검색 입력 중단 0.8초 후</td><td><code>search_term</code>, <code>result_count</code></td><td>아니오</td><td><span class="b p0">P0</span></td><td>R3</td></tr>
-<tr class="rp1"><td><code>like</code>, <code>unlike</code></td><td>좋아요 켬, 끔</td><td>글 공통</td><td><code>like</code>만 예</td><td><span class="b p1">P1</span></td><td>R4</td></tr>
-<tr class="rp1"><td><code>scrap</code>, <code>unscrap</code></td><td>스크랩 켬, 끔</td><td>글 공통</td><td><code>scrap</code>만 예</td><td><span class="b p1">P1</span></td><td>R4</td></tr>
+<table><thead><tr><th>이벤트</th><th>발생 시점</th><th>주요 매개변수</th><th>우선순위</th><th>요구사항</th></tr></thead><tbody>
+<tr class="rp0"><td><code>article_read</code></td><td>90% 스크롤 + 활성 시간 조건 충족(방문당 1회)</td><td>글 공통, <code>engaged_seconds</code></td><td><span class="b p0">P0</span></td><td>R2</td></tr>
+<tr class="rp0"><td><code>article_time</code></td><td>활성 시간 15, 30, 60, 120초 도달</td><td>글 공통, <code>engaged_seconds</code></td><td><span class="b p0">P0</span></td><td>R2</td></tr>
+<tr class="rp0"><td><code>share</code></td><td>링크 복사 버튼 클릭</td><td>글 공통, <code>share_method</code>(copy_link)</td><td><span class="b p0">P0</span></td><td>R3</td></tr>
+<tr class="rp0"><td><code>search</code></td><td>검색 입력 중단 0.8초 후</td><td><code>search_term</code>, <code>result_count</code></td><td><span class="b p0">P0</span></td><td>R3</td></tr>
+<tr class="rp1"><td><code>like</code>, <code>unlike</code></td><td>좋아요 켬, 끔</td><td>글 공통</td><td><span class="b p1">P1</span></td><td>R4</td></tr>
+<tr class="rp1"><td><code>scrap</code>, <code>unscrap</code></td><td>스크랩 켬, 끔</td><td>글 공통</td><td><span class="b p1">P1</span></td><td>R4</td></tr>
 </tbody></table>
 <p>글 공통 매개변수: <code>post_id</code>, <code>post_title</code>, <code>post_category</code>, <code>post_published</code>, <code>read_minutes</code></p>
-<h3>맞춤 측정기준 (이벤트 범위, 문자 값)</h3>
-<table><thead><tr><th>매개변수</th><th>용도</th><th>전송 상태</th><th>우선순위</th></tr></thead><tbody>
-<tr class="rp0"><td><code>post_id</code></td><td>글별 분해</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>post_title</code></td><td>글 이름 표시</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>post_category</code></td><td>카테고리별 분해</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>page_type</code></td><td>홈/목록/글 구분</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>click_location</code></td><td>클릭 위치 구분</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>category</code></td><td>카테고리 클릭 분석</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>scroll_depth</code></td><td>읽기 깊이</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>post_published</code></td><td>발행일 기준 비교</td><td>신규 전송(R1)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>share_method</code></td><td>공유 방식</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>search_term</code></td><td>검색어</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp2"><td><code>traffic_type</code></td><td>내부 트래픽 구분</td><td>신규 전송(R7)</td><td><span class="b p2">P2</span></td></tr>
-</tbody></table>
-<h3>맞춤 측정항목 (숫자 값)</h3>
-<table><thead><tr><th>매개변수</th><th>단위</th><th>용도</th><th>전송 상태</th><th>우선순위</th></tr></thead><tbody>
-<tr class="rp0"><td><code>read_minutes</code></td><td>분</td><td>글 길이 보정</td><td>신규 전송(R1)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>engaged_seconds</code></td><td>초</td><td>활성 시간 분석</td><td>신규 전송(R2)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>result_count</code></td><td>개</td><td>검색 결과 수</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
-</tbody></table>
 <h2>7. 후속 범위</h2>
 <table><thead><tr><th>후속 항목</th><th>내용</th><th>선행 조건</th></tr></thead><tbody>
-<tr><td>글별 지표 대시보드</td><td>블로그 관리자 화면 안에서 R6의 글별 지표와 인기 글 점수를 표로 제공한다. 데이터는 GA4 Data API를 서버 함수(Cloud Functions)로 호출해 가져오며, 관리자 로그인 계정만 조회할 수 있다. 외부 BI 도구는 사용하지 않는다.</td><td>R1~R3 배포 후 최소 2주 데이터 축적, GA 속성에 서비스 계정 조회 권한 부여, 서버 함수 사용 가능한 요금제</td></tr>
+<tr><td>글별 지표 대시보드</td><td>블로그 관리자 화면 안에서 R6의 글별 지표와 인기 글 점수를 표로 제공한다. 데이터는 GA4 Data API를 서버 함수(Cloud Functions)로 호출해 가져오며, 관리자 로그인 계정만 조회할 수 있다. 외부 BI 도구는 사용하지 않는다.</td><td>R1~R3 배포 후 최소 2주 데이터 축적</td></tr>
 <tr><td>댓글 기능</td><td>글 상세 화면에 댓글 작성, 조회를 제공한다. 스팸 방지(작성 빈도 제한, 금칙어)와 관리자 삭제, 승인 기능을 포함하고 <code>comment</code> 이벤트를 추가한다. 반응 지표에 댓글 수를 합산한다.</td><td>R4(익명 인증, 반응 데이터 모델) 안정화, 운영 정책 수립</td></tr>
 <tr><td>스크랩 목록 보기</td><td>방문자가 스크랩한 글을 모아 보는 목록 화면을 제공한다. 1단계는 같은 브라우저에서 스크랩한 글 목록이고, 2단계로 기기가 달라도 목록이 유지되도록 계정 연동 방식을 검토한다.</td><td>R4(스크랩 데이터 모델) 완료, 2단계는 로그인 방식 결정</td></tr>
 <tr><td>BigQuery 내보내기</td><td>GA4 원본 이벤트를 내보내 사용자 단위, 경로 단위 분석을 수행한다.</td><td>데이터 축적, 분석 요구 구체화</td></tr>
@@ -178,7 +158,6 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <table><thead><tr><th>위험</th><th>영향</th><th>대응</th></tr></thead><tbody>
 <tr><td>방문량이 적어 통계적 의미가 낮음</td><td>순위 신뢰도 저하</td><td>최소 표본(조회 30회) 기준, 누적 후 판단</td></tr>
 <tr><td>GA 반영 지연(24~48시간), 임계값</td><td>지표 확인 지연</td><td>실시간, DebugView로 구현을 먼저 검증</td></tr>
-<tr><td>맞춤 정의 한도(이벤트 범위 측정기준 50개)</td><td>등록 불가</td><td>필요한 항목만 등록</td></tr>
 <tr><td>익명 인증 남용</td><td>반응 수 왜곡</td><td>보안 규칙으로 문서 형태와 본인 문서만 허용</td></tr>
 <tr><td>광고 차단 도구</td><td>일부 이벤트 누락</td><td>한계로 문서화, 추세 위주로 해석</td></tr>
 </tbody></table>

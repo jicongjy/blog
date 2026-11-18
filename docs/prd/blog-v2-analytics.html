@@ -160,25 +160,27 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr class="rp1"><td><code>scrap</code>, <code>unscrap</code></td><td>스크랩 켬, 끔</td><td>글 공통</td><td><code>scrap</code>만 예</td><td><span class="b p1">P1</span></td><td>R5</td></tr>
 </tbody></table>
 <p>글 공통 매개변수: <code>post_id</code>, <code>post_title</code>, <code>post_category</code>, <code>post_published</code>, <code>read_minutes</code></p>
-<h3>맞춤 측정기준 (이벤트 범위)</h3>
-<table><thead><tr><th>매개변수</th><th>용도</th><th>우선순위</th></tr></thead><tbody>
-<tr class="rp0"><td><code>post_id</code></td><td>글별 분해</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>post_title</code></td><td>글 이름 표시</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>post_category</code></td><td>카테고리별 분해</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>post_published</code></td><td>발행일 기준 비교</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>page_type</code></td><td>홈/목록/글 구분</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>click_location</code></td><td>클릭 위치 구분</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>category</code></td><td>카테고리 클릭 분석</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>scroll_depth</code></td><td>읽기 깊이</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>share_method</code></td><td>공유 방식</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>search_term</code></td><td>검색어</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp2"><td><code>traffic_type</code></td><td>내부 트래픽 구분</td><td><span class="b p2">P2</span></td></tr>
+<h3>맞춤 측정기준, 맞춤 측정항목이란</h3>
+<p>이벤트가 아니라 <strong>GA 콘솔에 하는 등록</strong>이다. 이벤트에 붙어 전송되는 매개변수(예: <code>post_id</code>)는 등록하지 않으면 GA가 저장은 하지만 보고서와 탐색에서 기준이나 숫자로 쓸 수 없다. 등록하면 그때부터 쌓이는 데이터에 대해 "글별로 보기"(측정기준, 문자 값)와 "합계, 평균 내기"(측정항목, 숫자 값)가 가능해진다. 아래 표의 <strong>전송 상태</strong>는 코드가 해당 매개변수를 이미 보내는지를 뜻하고, 등록(R1)은 전부 이번에 신규로 한다.</p>
+<h3>맞춤 측정기준 (이벤트 범위, 문자 값)</h3>
+<table><thead><tr><th>매개변수</th><th>용도</th><th>전송 상태</th><th>우선순위</th></tr></thead><tbody>
+<tr class="rp0"><td><code>post_id</code></td><td>글별 분해</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>post_title</code></td><td>글 이름 표시</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>post_category</code></td><td>카테고리별 분해</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>page_type</code></td><td>홈/목록/글 구분</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>click_location</code></td><td>클릭 위치 구분</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>category</code></td><td>카테고리 클릭 분석</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>scroll_depth</code></td><td>읽기 깊이</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>post_published</code></td><td>발행일 기준 비교</td><td>신규 전송(R2)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>share_method</code></td><td>공유 방식</td><td>신규 전송(R4)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>search_term</code></td><td>검색어</td><td>신규 전송(R4)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp2"><td><code>traffic_type</code></td><td>내부 트래픽 구분</td><td>신규 전송(R9)</td><td><span class="b p2">P2</span></td></tr>
 </tbody></table>
-<h3>맞춤 측정항목</h3>
-<table><thead><tr><th>매개변수</th><th>단위</th><th>용도</th><th>우선순위</th></tr></thead><tbody>
-<tr class="rp0"><td><code>read_minutes</code></td><td>분</td><td>글 길이 보정</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>engaged_seconds</code></td><td>초</td><td>활성 시간 분석</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>result_count</code></td><td>개</td><td>검색 결과 수</td><td><span class="b p0">P0</span></td></tr>
+<h3>맞춤 측정항목 (숫자 값)</h3>
+<table><thead><tr><th>매개변수</th><th>단위</th><th>용도</th><th>전송 상태</th><th>우선순위</th></tr></thead><tbody>
+<tr class="rp0"><td><code>read_minutes</code></td><td>분</td><td>글 길이 보정</td><td>신규 전송(R2)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>engaged_seconds</code></td><td>초</td><td>활성 시간 분석</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>result_count</code></td><td>개</td><td>검색 결과 수</td><td>신규 전송(R4)</td><td><span class="b p0">P0</span></td></tr>
 </tbody></table>
 <h2>7. 후속 범위</h2>
 <table><thead><tr><th>후속 항목</th><th>내용</th><th>선행 조건</th></tr></thead><tbody>

@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import HmTop from '../components/HmTop.jsx'
 import Loading from '../components/Loading.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
-import { categoryClick, selectArticle } from '../lib/analytics.js'
+import { categoryClick, selectArticle, track } from '../lib/analytics.js'
 import { fmtDate, noOf } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
 import { usePosts } from '../lib/usePosts.js'
@@ -29,6 +29,20 @@ export default function List() {
   }, [cats, list])
   const shown = list.filter((p) => (!category || p.category === category) && p.title.toLowerCase().includes(q.trim().toLowerCase()))
   const imgOf = (p) => p.thumbnail || postFallback(p.category, names.indexOf(p.category)) || heroImage
+  // 검색: 입력이 0.8초 멈추면 한 번 보낸다. 한 글자 이하와 같은 검색어 반복은 보내지 않는다.
+  const resultCount = useRef(0)
+  resultCount.current = shown.length
+  const lastTerm = useRef('')
+  useEffect(() => {
+    const term = q.trim()
+    if (term.length < 2) lastTerm.current = ''
+    if (term.length < 2 || term === lastTerm.current) return undefined
+    const t = window.setTimeout(() => {
+      lastTerm.current = term
+      track('search', { search_term: term, result_count: resultCount.current })
+    }, 800)
+    return () => window.clearTimeout(t)
+  }, [q])
   const cur = shown[Math.min(hover, shown.length - 1)]
   const pick = (c) => {
     categoryClick(c, 'list_filter')

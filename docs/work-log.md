@@ -221,8 +221,19 @@
 ### 30. 학습 노트
 - 이번 작업에서 겪은 오류와 새로 배운 내용을 `docs/learning-notes/2026-11-17.md`에 정리했다. 오늘의 노트나 학습 노트에 옮겨 쓸 때 참고한다.
 
+### 31. 2차 개선 구현(PRD 기준)
+- 근거: `docs/prd/blog-v2-analytics.md`의 R1~R5, R7. GA 콘솔 설정은 `docs/ga-setup-checklist.md`에 따로 있다.
+- R1: 글 관련 이벤트(`page_view`, `article_select`, `article_scroll`)에 `post_published`(발행일), `read_minutes`(읽는 시간)를 추가했다. 공통 매개변수 함수는 `analytics.js`의 `postParams`.
+- R2: `article_read`(본문 90% 지점 + 화면이 앞에 있던 활성 시간이 읽는 시간의 40% 이상, 최소 10초, 방문당 1회)와 `article_time`(15, 30, 60, 120초)을 추가했다. 활성 시간은 탭이 보이고 창이 선택된 초만 센다.
+- R3: `share`(링크 복사 클릭), `search`(검색 입력이 0.8초 멈춘 뒤, 2글자 이상, 같은 검색어 반복 제외, `result_count` 포함)를 추가했다.
+- R4: 글 아래에 좋아요, 스크랩 버튼을 추가했다(`Reactions.jsx`, `data/reactions.js`). Firebase 익명 인증으로 방문자를 구분하고, 반응을 처음 누를 때만 익명 계정을 만든다. 저장 위치는 `posts/{글ID}/reactions/{사용자ID}`. 이벤트는 `like`, `unlike`, `scrap`, `unscrap`. 규칙은 `firestore.rules`에 추가했다. 규칙 미적용, 익명 인증 꺼짐이면 버튼을 숨긴다.
+- R5: 링크 복사 주소에 `utm_source=share&utm_medium=copy_link`를 붙였다. GA가 구분하도록 `page_view`의 `page_location`에 `utm_` 매개변수만 남긴다.
+- R7: 관리자로 로그인한 브라우저는 이벤트에 `traffic_type=internal`을 붙인다. 예전처럼 전송을 막지 않으므로, GA에서 내부 트래픽 필터를 켜기 전까지는 관리자 방문도 집계된다.
+- 확인: 로컬 빌드(임시 측정 ID)에서 이벤트 전송 값을 직접 읽어 확인했다. 열자마자 끝까지 내리면 `article_read`가 없고, 활성 24초 뒤 한 번 발생. `share`, `like`, `scrap`, `unscrap`, `search`, UTM 포함 `page_location` 확인. Firestore 연동(익명 인증, 규칙)과 실제 GA 수신은 배포 뒤 확인이 필요하다.
+
 ## 남은 일
 
+0. 반응 기능 켜기: Firebase 콘솔에서 Authentication > 로그인 방법 > 익명 사용 설정, 수정된 `firestore.rules`를 Firestore 규칙에 붙여 넣기(관리자 이메일 교체). 그 뒤 `docs/ga-setup-checklist.md`대로 GA 설정(맞춤 측정기준, 핵심 이벤트, 내부 트래픽 필터)
 1. GA: 실시간 보고서에서 이벤트(`page_view`, `category_click`, `article_select`, `article_scroll`)가 뜨는지 확인하고, 맞춤 측정기준(`post_id`, `post_title`, `post_category`, `category`, `click_location`, `page_type`, `scroll_depth`) 등록, 향상된 측정의 "기록 이벤트에 따른 페이지 변경" 끄기
 2. 글 주소 미리보기를 카카오톡, 슬랙에서 실제로 확인(카카오는 캐시 때문에 디버거에서 캐시 삭제가 필요할 수 있음)
 3. 로그인, 글 저장, 글 수정이 새 주소(BrowserRouter)에서 문제없는지 확인

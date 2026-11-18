@@ -20,6 +20,19 @@ service cloud.firestore {
         && request.resource.data.body is string
         && request.resource.data.body.size() <= 200000;
       allow delete: if isAdmin();
+
+      // 반응(좋아요, 스크랩): 누구나 읽고, 방문자는 자기 문서(문서 ID = 본인 uid)만 쓴다. 발행된 공개 글에만 가능하다.
+      match /reactions/{userId} {
+        allow read: if true;
+        allow create, update: if request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['like', 'scrap', 'updatedAt'])
+          && request.resource.data.like is bool
+          && request.resource.data.scrap is bool
+          && get(/databases/$(database)/documents/posts/$(postId)).data.status == 'published'
+          && get(/databases/$(database)/documents/posts/$(postId)).data.visibility == 'public';
+        allow delete: if (request.auth != null && request.auth.uid == userId) || isAdmin();
+      }
     }
 
     // 카테고리: 누구나 읽고, 추가·수정·삭제는 관리자만 가능하다.

@@ -6,7 +6,8 @@ import Loading from '../components/Loading.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
 import { getPost, removePost } from '../data/posts.js'
 import { useAuth } from '../lib/auth.jsx'
-import { categoryClick, pageView, selectArticle, track } from '../lib/analytics.js'
+import Reactions from '../components/Reactions.jsx'
+import { categoryClick, pageView, postParams, selectArticle, track } from '../lib/analytics.js'
 import { prepareBody } from '../lib/body.js'
 import { fmtDate, noOf, readMinutes } from '../lib/format.js'
 import { useCategories } from '../lib/useCategories.js'
@@ -53,25 +54,52 @@ export default function Post() {
   const countable = Boolean(post) && post.status === 'published' && post.visibility !== 'private'
   useEffect(() => {
     if (!countable) return undefined
-    const info = { post_id: post.id, post_category: post.category }
+    const info = postParams(post)
     pageView(`/post/${post.id}`, post.title, { ...info, page_type: 'post' })
+
     // 읽기 깊이: 본문의 50%, 90% 지점을 지나면 각각 한 번만 보낸다.
     const left = [50, 90]
+    // 완독: 90% 지점을 지났고, 화면이 앞에 있던 활성 시간이 읽는 시간의 40% 이상(최소 10초)일 때 한 번 보낸다.
+    const need = Math.max(10, info.read_minutes * 60 * 0.4)
+    const marks = [15, 30, 60, 120]
+    let depth = 0
+    let active = 0
+    let readSent = false
+    const check = () => {
+      while (marks.length && active >= marks[0]) track('article_time', { ...info, engaged_seconds: marks.shift() })
+      if (!readSent && depth >= 90 && active >= need) {
+        readSent = true
+        track('article_read', { ...info, engaged_seconds: active })
+      }
+    }
     const onScroll = () => {
       const el = document.querySelector('.pd-body')
-      if (!el || left.length === 0) return
+      if (!el) return
       const r = el.getBoundingClientRect()
-      const depth = ((window.innerHeight - r.top) / r.height) * 100
-      while (left.length && depth >= left[0]) track('article_scroll', { ...info, post_title: post.title, scroll_depth: left.shift() })
+      depth = Math.max(depth, ((window.innerHeight - r.top) / r.height) * 100)
+      while (left.length && depth >= left[0]) track('article_scroll', { ...info, scroll_depth: left.shift() })
+      check()
     }
+    // 활성 시간: 탭이 보이고 창이 선택된 상태의 초만 센다.
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === 'visible' && document.hasFocus()) {
+        active += 1
+        check()
+      }
+    }, 1000)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.clearInterval(timer)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [countable, post])
 
   // 글 주소를 복사한다. 카카오톡, 슬랙 등에 붙여 넣으면 이 글의 제목, 요약, 대표 이미지가 미리보기로 보인다.
   const copyShare = async () => {
-    const url = `${window.location.origin}${import.meta.env.BASE_URL}post/${post.id}/`
+    track('share', { ...postParams(post), share_method: 'copy_link' })
+    // 이 주소로 들어온 방문은 GA에서 소스/매체 share / copy_link 로 구분된다.
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}post/${post.id}/?utm_source=share&utm_medium=copy_link`
     try {
       await navigator.clipboard.writeText(url)
     } catch {
@@ -164,6 +192,7 @@ export default function Post() {
           <div className="pd-body">
             <Body html={html} />
           </div>
+          {countable && <Reactions post={post} />}
         </article>
       </div>
 

@@ -450,3 +450,11 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
   .splash.leave { transform: none; opacity: 0; }
   .splash-in { animation: none; }
 }
+
+/* 글 아래 반응 버튼(좋아요, 스크랩): 글 읽기 버튼과 같은 사각형, 켜지면 채워진다 */
+.pd-react { display: flex; gap: 8px; margin-top: 48px; }
+.pd-react button { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border: 1px solid var(--ink); background: none; color: var(--ink); font: inherit; cursor: pointer; }
+.pd-react button span { color: var(--soft-gray); font-variant-numeric: tabular-nums; }
+.pd-react button.on { background: var(--ink); color: var(--hm-bg); }
+.pd-react button.on span { color: inherit; }
+.pd-react button:disabled { opacity: 0.6; cursor: default; }

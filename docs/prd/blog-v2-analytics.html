@@ -18,64 +18,50 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <h2>2. 현황과 문제</h2>
 <p>글별 조회수, 홈에서 글로의 이동, 카테고리 클릭, 지역·기기·유입 경로·이탈은 현재 측정 가능하며 이번 범위에서 변경하지 않는다. 아래는 측정이 부족하거나 확인할 수 없는 항목이다.</p>
 <table><thead><tr><th>번호</th><th>알고 싶은 것</th><th>현재</th><th>문제와 영향</th><th>해소</th></tr></thead><tbody>
-<tr><td>G1</td><td>글별, 카테고리별 분해</td><td>이벤트 매개변수를 맞춤 측정기준으로 등록하지 않음</td><td>분해 불가. 등록 이전 데이터는 소급되지 않음</td><td>R1</td></tr>
-<tr><td>G2</td><td>정확한 조회수</td><td>향상된 측정의 "기록 이벤트에 따른 페이지 변경" 상태 미확인</td><td><code>page_view</code> 이중 집계 가능성</td><td>R1</td></tr>
-<tr><td>G3</td><td>글 길이를 반영한 체류 시간</td><td>GA 기본 "평균 참여 시간"만 존재, 글 길이와 발행일 미전송</td><td>길이가 다른 글끼리 공정한 비교 불가, 신규/기존 글 구분 불가</td><td>R2</td></tr>
-<tr><td>G4</td><td>완독</td><td><code>article_scroll</code> 50%, 90%만 존재</td><td>짧은 글은 열자마자 도달하고 빠른 스크롤도 완독으로 집계되어 완독률 과대평가</td><td>R3</td></tr>
-<tr><td>G5</td><td>공유, 관심 주제</td><td>링크 복사 버튼은 있으나 이벤트 없음, 검색 이벤트 없음</td><td>공유 의도와 독자 관심 주제 파악 불가</td><td>R4</td></tr>
-<tr><td>G6</td><td>좋아요, 스크랩</td><td>기능 없음</td><td>반응 지표 부재</td><td>R5</td></tr>
-<tr><td>G7</td><td>공유 링크를 통한 방문</td><td>공유 경로 구분 수단 없음</td><td>공유로 유입된 방문 식별 불가</td><td>R6</td></tr>
-<tr><td>G8</td><td>운영자 방문 제외</td><td>로그인한 적 있는 브라우저에서만 제외</td><td>운영자 방문이 섞일 수 있음</td><td>R9</td></tr>
-<tr><td>G9</td><td>구현 정확성</td><td>실제 GA 화면(실시간, DebugView)에서 검증하지 않음</td><td>이벤트 누락, 오류를 알 수 없음</td><td>R1</td></tr>
-<tr><td>G10</td><td>글별 지표 비교, 인기 글</td><td>글별 지표를 모아 보는 보고서와 판단 기준 없음</td><td>인기 글 판단이 수작업</td><td>R7, R8</td></tr>
+<tr><td>G1</td><td>글 길이를 반영한 체류 시간</td><td>GA 기본 "평균 참여 시간"만 존재, 글 길이와 발행일 미전송</td><td>길이가 다른 글끼리 공정한 비교 불가, 신규/기존 글 구분 불가</td><td>R1</td></tr>
+<tr><td>G2</td><td>완독</td><td><code>article_scroll</code> 50%, 90%만 존재</td><td>짧은 글은 열자마자 도달하고 빠른 스크롤도 완독으로 집계되어 완독률 과대평가</td><td>R2</td></tr>
+<tr><td>G3</td><td>공유, 관심 주제</td><td>링크 복사 버튼은 있으나 이벤트 없음, 검색 이벤트 없음</td><td>공유 의도와 독자 관심 주제 파악 불가</td><td>R3</td></tr>
+<tr><td>G4</td><td>좋아요, 스크랩</td><td>기능 없음</td><td>반응 지표 부재</td><td>R4</td></tr>
+<tr><td>G5</td><td>공유 링크를 통한 방문</td><td>공유 경로 구분 수단 없음</td><td>공유로 유입된 방문 식별 불가</td><td>R5</td></tr>
+<tr><td>G6</td><td>운영자 방문 제외</td><td>로그인한 적 있는 브라우저에서만 제외</td><td>운영자 방문이 섞일 수 있음</td><td>R7</td></tr>
+<tr><td>G7</td><td>글별 지표 비교, 인기 글</td><td>글별 지표를 모아 보는 보고서와 판단 기준 없음</td><td>인기 글 판단이 수작업</td><td>R6, 후속 대시보드</td></tr>
 </tbody></table>
 <h2>3. 목표와 성공 기준</h2>
 <table><thead><tr><th>목표</th><th>성공 기준</th></tr></thead><tbody>
 <tr><td>글별 성과를 신뢰할 수 있게 측정</td><td>테스트 시나리오에서 코드 기준 이벤트 수와 GA 기록이 일치</td></tr>
-<tr><td>완독과 체류를 글 길이와 무관하게 비교</td><td>GA 탐색 보고서에서 글별 완독률, 길이 보정 참여율 산출</td></tr>
+<tr><td>완독과 체류를 글 길이와 무관하게 비교</td><td>GA 데이터로 글별 완독률, 길이 보정 참여율 산출 가능</td></tr>
 <tr><td>반응 지표 확보</td><td>공유, 좋아요, 스크랩이 글별 숫자로 확인됨</td></tr>
 <tr><td>인기 글 판단 기준 정립</td><td>정의된 기준으로 글 순위를 산출하고, 표본이 부족한 글은 구분 표시</td></tr>
 </tbody></table>
 <h2>4. 범위</h2>
 <table><thead><tr><th>구분</th><th>항목</th></tr></thead><tbody>
-<tr><td>이번 범위</td><td>GA 설정 정비, 이벤트 보강, 완독 판정 개선, 공유와 검색 측정, 좋아요와 스크랩, 유입 구분(UTM), 글별 지표 확인용 GA 탐색 보고서, 인기 글 판단 기준</td></tr>
+<tr><td>이번 범위</td><td>이벤트 보강, 완독 판정 개선, 공유와 검색 측정, 좋아요와 스크랩, 유입 구분(UTM), 인기 글 판단 기준</td></tr>
 <tr><td>후속 범위</td><td>글별 지표 대시보드(관리자 화면), 댓글, 스크랩 목록 보기, BigQuery 내보내기 (7장 참고)</td></tr>
 </tbody></table>
 <h2>5. 우선순위별 요구사항</h2>
 <p>우선순위 기준: <strong>P0</strong> 반드시 이번에 완료 / <strong>P1</strong> 이번 개선 안에 완료 / <strong>P2</strong> 일정 여유 시 진행</p>
 <table><thead><tr><th>우선순위</th><th>ID</th><th>요구사항</th><th>작업 분류</th><th>해소하는 문제</th></tr></thead><tbody>
-<tr class="rp0"><td><span class="b p0">P0</span></td><td>R1</td><td>GA 콘솔 설정 정비</td><td>설정</td><td>G1, G2, G9</td></tr>
-<tr class="rp0"><td><span class="b p0">P0</span></td><td>R2</td><td>이벤트 공통 매개변수 보강</td><td>측정 코드</td><td>G3</td></tr>
-<tr class="rp0"><td><span class="b p0">P0</span></td><td>R3</td><td>완독 판정 개선(<code>article_read</code>, <code>article_time</code>)</td><td>측정 코드</td><td>G4</td></tr>
-<tr class="rp0"><td><span class="b p0">P0</span></td><td>R4</td><td>공유, 검색 이벤트 추가</td><td>측정 코드</td><td>G5</td></tr>
-<tr class="rp1"><td><span class="b p1">P1</span></td><td>R5</td><td>좋아요, 스크랩 기능</td><td>신규 기능</td><td>G6</td></tr>
-<tr class="rp1"><td><span class="b p1">P1</span></td><td>R6</td><td>링크 복사 UTM 부착</td><td>측정 코드</td><td>G7</td></tr>
-<tr class="rp1"><td><span class="b p1">P1</span></td><td>R7</td><td>글별 지표 확인용 GA 탐색 보고서 구성</td><td>설정</td><td>G10</td></tr>
-<tr class="rp1"><td><span class="b p1">P1</span></td><td>R8</td><td>인기 글 판단 기준 확정</td><td>문서, 운영</td><td>G10</td></tr>
-<tr class="rp2"><td><span class="b p2">P2</span></td><td>R9</td><td>관리자 트래픽 제외 개선</td><td>측정 코드, 설정</td><td>G8</td></tr>
+<tr class="rp0"><td><span class="b p0">P0</span></td><td>R1</td><td>이벤트 공통 매개변수 보강</td><td>측정 코드</td><td>G1</td></tr>
+<tr class="rp0"><td><span class="b p0">P0</span></td><td>R2</td><td>완독 판정 개선(<code>article_read</code>, <code>article_time</code>)</td><td>측정 코드</td><td>G2</td></tr>
+<tr class="rp0"><td><span class="b p0">P0</span></td><td>R3</td><td>공유, 검색 이벤트 추가</td><td>측정 코드</td><td>G3</td></tr>
+<tr class="rp1"><td><span class="b p1">P1</span></td><td>R4</td><td>좋아요, 스크랩 기능</td><td>신규 기능</td><td>G4</td></tr>
+<tr class="rp1"><td><span class="b p1">P1</span></td><td>R5</td><td>링크 복사 UTM 부착</td><td>측정 코드</td><td>G5</td></tr>
+<tr class="rp1"><td><span class="b p1">P1</span></td><td>R6</td><td>인기 글 판단 기준 확정</td><td>문서, 운영</td><td>G7</td></tr>
+<tr class="rp2"><td><span class="b p2">P2</span></td><td>R7</td><td>관리자 트래픽 제외 개선</td><td>측정 코드</td><td>G6</td></tr>
 </tbody></table>
 <h3>5.1 작업 분류별 보기</h3>
 <table><thead><tr><th>작업 분류</th><th>설명</th><th>해당 항목</th><th>코드 변경</th></tr></thead><tbody>
-<tr><td>설정</td><td>GA 콘솔에서만 수행</td><td>R1, R7</td><td>없음</td></tr>
-<tr><td>측정 코드</td><td>기존 화면에 이벤트, 매개변수를 추가</td><td>R2, R3, R4, R6, R9</td><td>있음 (소규모)</td></tr>
-<tr><td>신규 기능</td><td>사용자에게 보이는 새 기능 개발</td><td>R5</td><td>있음 (Firebase 규칙 포함)</td></tr>
-<tr><td>문서, 운영</td><td>기준 정의, 문서화</td><td>R8</td><td>없음</td></tr>
+<tr><td>측정 코드</td><td>기존 화면에 이벤트, 매개변수를 추가</td><td>R1, R2, R3, R5, R7</td><td>있음 (소규모)</td></tr>
+<tr><td>신규 기능</td><td>사용자에게 보이는 새 기능 개발</td><td>R4</td><td>있음 (Firebase 규칙 포함)</td></tr>
+<tr><td>문서, 운영</td><td>기준 정의, 문서화</td><td>R6</td><td>없음</td></tr>
 </tbody></table>
 <h2>6. 요구사항 상세</h2>
-<h3>R1. GA 콘솔 설정 정비 <span class="b p0">P0</span></h3>
-<ul>
-<li>맞춤 측정기준(이벤트 범위)과 맞춤 측정항목 등록 (6.1 표 참고)</li>
-<li>향상된 측정의 "기록 이벤트에 따른 페이지 변경" 해제</li>
-<li>핵심 이벤트 지정: <code>article_read</code>, <code>share</code>, <code>like</code>, <code>scrap</code></li>
-<li>데이터 보관 기간 14개월로 설정</li>
-<li>수용 기준: DebugView와 실시간 보고서에서 등록한 매개변수 값이 이벤트에 표시됨</li>
-</ul>
-<h3>R2. 이벤트 공통 매개변수 보강 <span class="b p0">P0</span></h3>
+<h3>R1. 이벤트 공통 매개변수 보강 <span class="b p0">P0</span></h3>
 <p>모든 글 관련 이벤트에 읽는 시간(<code>read_minutes</code>)과 발행일(<code>post_published</code>)을 추가한다.</p>
 <ul>
 <li>수용 기준: 글별 탐색 분석에서 글 길이와 발행일로 구분 가능</li>
 </ul>
-<h3>R3. 완독 판정 개선 <span class="b p0">P0</span></h3>
+<h3>R2. 완독 판정 개선 <span class="b p0">P0</span></h3>
 <ul>
 <li><code>article_read</code>: 글 방문당 1회, 아래 두 조건을 모두 만족할 때 전송한다.</li>
 <ol>
@@ -86,13 +72,13 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <li>기존 <code>article_scroll</code>(50, 90)은 읽기 깊이 분석용으로 유지한다.</li>
 <li>수용 기준: 열자마자 끝까지 내리는 테스트에서는 <code>article_read</code>가 발생하지 않고, 정상 속도로 읽는 테스트에서는 1회만 발생</li>
 </ul>
-<h3>R4. 공유, 검색 이벤트 <span class="b p0">P0</span></h3>
+<h3>R3. 공유, 검색 이벤트 <span class="b p0">P0</span></h3>
 <ul>
 <li><code>share</code>: 링크 복사 버튼 클릭 시 전송</li>
 <li><code>search</code>: 전체 글 검색창 입력이 멈춘 뒤(0.8초) 1회 전송. 빈 검색어와 1글자는 전송하지 않음</li>
 <li>수용 기준: 두 동작이 DebugView에 1회씩 표시됨</li>
 </ul>
-<h3>R5. 좋아요, 스크랩 기능 <span class="b p1">P1</span></h3>
+<h3>R4. 좋아요, 스크랩 기능 <span class="b p1">P1</span></h3>
 <ul>
 <li>글 상세 화면에 좋아요, 스크랩 버튼을 추가한다. 로그인 없이 사용하며, 방문자별 1회만 집계되고 다시 누르면 취소된다.</li>
 <li>인증: Firebase 익명 인증</li>
@@ -100,14 +86,14 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <li>보안 규칙: 쓰기는 본인 문서만, 읽기는 공개</li>
 <li>수용 기준: 동일 사용자가 여러 번 눌러도 1회로 집계, 취소 시 감소, 규칙으로 타인의 반응 변경 불가</li>
 </ul>
-<h3>R6. 링크 복사 UTM 부착 <span class="b p1">P1</span></h3>
+<h3>R5. 링크 복사 UTM 부착 <span class="b p1">P1</span></h3>
 <ul>
 <li>링크 복사 시 <code>utm_source=share&amp;utm_medium=copy_link</code>를 주소에 붙인다.</li>
 <li>링크 미리보기(OG)와 canonical 주소에는 영향이 없어야 한다.</li>
 <li>수용 기준: 해당 주소로 접속하면 GA 획득 보고서에 소스/매체가 <code>share / copy_link</code>로 표시됨</li>
 </ul>
-<h3>R7. 글별 지표 확인용 GA 탐색 보고서 <span class="b p1">P1</span></h3>
-<p>GA4 "탐색"에서 글별(<code>post_id</code>)로 아래 지표를 볼 수 있는 보고서를 구성한다. 이 지표 정의는 후속 범위의 글별 지표 대시보드(7장)가 그대로 이어받는다. 이번에는 GA 안에서 지표와 계산식이 맞는지 먼저 검증하고 확인하는 용도이고, 같은 지표를 관리자 화면으로 옮기는 것이 대시보드다.</p>
+<h3>R6. 인기 글 판단 기준 <span class="b p1">P1</span></h3>
+<p>글별로 아래 지표를 산출하고, 조회수 하나가 아니라 점수로 판단한다. 같은 지표 정의를 후속 범위의 글별 지표 대시보드(7장)가 이어받는다.</p>
 <table><thead><tr><th>지표</th><th>정의</th></tr></thead><tbody>
 <tr><td>조회수, 활성 사용자</td><td>GA 기본</td></tr>
 <tr><td>평균 참여 시간</td><td>GA 기본</td></tr>
@@ -117,8 +103,8 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr><td>반응 수, 반응률</td><td>(<code>share</code> + <code>like</code> + <code>scrap</code>) ÷ 조회수</td></tr>
 <tr><td>재방문 사용자 비율</td><td>GA 사용자 보고서</td></tr>
 </tbody></table>
-<h3>R8. 인기 글 판단 기준 <span class="b p1">P1</span></h3>
-<p>조회수 하나로 판단하지 않고 아래 점수로 판단한다. 가중치는 초기값이며 데이터 수집 후 조정한다.</p>
+<p>점수 가중치는 초기값이며 데이터 수집 후 조정한다.</p>
+<p> 가중치는 초기값이며 데이터 수집 후 조정한다.</p>
 <table><thead><tr><th>요소</th><th>가중치</th><th>의미</th></tr></thead><tbody>
 <tr><td>조회수 순위</td><td>30%</td><td>많이 열렸는가</td></tr>
 <tr><td>완독률</td><td>25%</td><td>끝까지 읽었는가</td></tr>
@@ -130,10 +116,9 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <li>조회 30회 미만 글은 점수를 산출하지 않고 "표본 부족"으로 구분한다.</li>
 <li>발행 후 동일 기간(예: 첫 30일)으로 맞춰 비교해 오래된 글이 유리해지는 것을 막는다.</li>
 </ul>
-<h3>R9. 관리자 트래픽 제외 개선 <span class="b p2">P2</span></h3>
+<h3>R7. 관리자 트래픽 제외 개선 <span class="b p2">P2</span></h3>
 <ul>
-<li>관리자로 로그인하면 이후 이벤트에 <code>traffic_type=internal</code>을 부착하고, GA 데이터 필터(내부 트래픽)로 제외한다.</li>
-<li>필터를 "테스트" 상태로 확인한 뒤 "활성"으로 전환한다.</li>
+<li>관리자로 로그인하면 이후 이벤트에 <code>traffic_type=internal</code>을 부착해 운영자 방문을 구분, 제외할 수 있게 한다.</li>
 <li>한계: 로그인한 적 없는 브라우저의 운영자 방문은 걸러지지 않는다.</li>
 </ul>
 <h2>6.1 이벤트 택소노미</h2>
@@ -147,16 +132,14 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 </tbody></table>
 <h3>신규 이벤트</h3>
 <table><thead><tr><th>이벤트</th><th>발생 시점</th><th>주요 매개변수</th><th>핵심 이벤트</th><th>우선순위</th><th>요구사항</th></tr></thead><tbody>
-<tr class="rp0"><td><code>article_read</code></td><td>90% 스크롤 + 활성 시간 조건 충족(방문당 1회)</td><td>글 공통, <code>engaged_seconds</code></td><td>예</td><td><span class="b p0">P0</span></td><td>R3</td></tr>
-<tr class="rp0"><td><code>article_time</code></td><td>활성 시간 15, 30, 60, 120초 도달</td><td>글 공통, <code>engaged_seconds</code></td><td>아니오</td><td><span class="b p0">P0</span></td><td>R3</td></tr>
-<tr class="rp0"><td><code>share</code></td><td>링크 복사 버튼 클릭</td><td>글 공통, <code>share_method</code>(copy_link)</td><td>예</td><td><span class="b p0">P0</span></td><td>R4</td></tr>
-<tr class="rp0"><td><code>search</code></td><td>검색 입력 중단 0.8초 후</td><td><code>search_term</code>, <code>result_count</code></td><td>아니오</td><td><span class="b p0">P0</span></td><td>R4</td></tr>
-<tr class="rp1"><td><code>like</code>, <code>unlike</code></td><td>좋아요 켬, 끔</td><td>글 공통</td><td><code>like</code>만 예</td><td><span class="b p1">P1</span></td><td>R5</td></tr>
-<tr class="rp1"><td><code>scrap</code>, <code>unscrap</code></td><td>스크랩 켬, 끔</td><td>글 공통</td><td><code>scrap</code>만 예</td><td><span class="b p1">P1</span></td><td>R5</td></tr>
+<tr class="rp0"><td><code>article_read</code></td><td>90% 스크롤 + 활성 시간 조건 충족(방문당 1회)</td><td>글 공통, <code>engaged_seconds</code></td><td>예</td><td><span class="b p0">P0</span></td><td>R2</td></tr>
+<tr class="rp0"><td><code>article_time</code></td><td>활성 시간 15, 30, 60, 120초 도달</td><td>글 공통, <code>engaged_seconds</code></td><td>아니오</td><td><span class="b p0">P0</span></td><td>R2</td></tr>
+<tr class="rp0"><td><code>share</code></td><td>링크 복사 버튼 클릭</td><td>글 공통, <code>share_method</code>(copy_link)</td><td>예</td><td><span class="b p0">P0</span></td><td>R3</td></tr>
+<tr class="rp0"><td><code>search</code></td><td>검색 입력 중단 0.8초 후</td><td><code>search_term</code>, <code>result_count</code></td><td>아니오</td><td><span class="b p0">P0</span></td><td>R3</td></tr>
+<tr class="rp1"><td><code>like</code>, <code>unlike</code></td><td>좋아요 켬, 끔</td><td>글 공통</td><td><code>like</code>만 예</td><td><span class="b p1">P1</span></td><td>R4</td></tr>
+<tr class="rp1"><td><code>scrap</code>, <code>unscrap</code></td><td>스크랩 켬, 끔</td><td>글 공통</td><td><code>scrap</code>만 예</td><td><span class="b p1">P1</span></td><td>R4</td></tr>
 </tbody></table>
 <p>글 공통 매개변수: <code>post_id</code>, <code>post_title</code>, <code>post_category</code>, <code>post_published</code>, <code>read_minutes</code></p>
-<h3>맞춤 측정기준, 맞춤 측정항목이란</h3>
-<p>이벤트가 아니라 <strong>GA 콘솔에 하는 등록</strong>이다. 이벤트에 붙어 전송되는 매개변수(예: <code>post_id</code>)는 등록하지 않으면 GA가 저장은 하지만 보고서와 탐색에서 기준이나 숫자로 쓸 수 없다. 등록하면 그때부터 쌓이는 데이터에 대해 "글별로 보기"(측정기준, 문자 값)와 "합계, 평균 내기"(측정항목, 숫자 값)가 가능해진다. 아래 표의 <strong>전송 상태</strong>는 코드가 해당 매개변수를 이미 보내는지를 뜻하고, 등록(R1)은 전부 이번에 신규로 한다.</p>
 <h3>맞춤 측정기준 (이벤트 범위, 문자 값)</h3>
 <table><thead><tr><th>매개변수</th><th>용도</th><th>전송 상태</th><th>우선순위</th></tr></thead><tbody>
 <tr class="rp0"><td><code>post_id</code></td><td>글별 분해</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
@@ -166,22 +149,22 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr class="rp0"><td><code>click_location</code></td><td>클릭 위치 구분</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
 <tr class="rp0"><td><code>category</code></td><td>카테고리 클릭 분석</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
 <tr class="rp0"><td><code>scroll_depth</code></td><td>읽기 깊이</td><td>기존 전송</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>post_published</code></td><td>발행일 기준 비교</td><td>신규 전송(R2)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>share_method</code></td><td>공유 방식</td><td>신규 전송(R4)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>search_term</code></td><td>검색어</td><td>신규 전송(R4)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp2"><td><code>traffic_type</code></td><td>내부 트래픽 구분</td><td>신규 전송(R9)</td><td><span class="b p2">P2</span></td></tr>
+<tr class="rp0"><td><code>post_published</code></td><td>발행일 기준 비교</td><td>신규 전송(R1)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>share_method</code></td><td>공유 방식</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>search_term</code></td><td>검색어</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp2"><td><code>traffic_type</code></td><td>내부 트래픽 구분</td><td>신규 전송(R7)</td><td><span class="b p2">P2</span></td></tr>
 </tbody></table>
 <h3>맞춤 측정항목 (숫자 값)</h3>
 <table><thead><tr><th>매개변수</th><th>단위</th><th>용도</th><th>전송 상태</th><th>우선순위</th></tr></thead><tbody>
-<tr class="rp0"><td><code>read_minutes</code></td><td>분</td><td>글 길이 보정</td><td>신규 전송(R2)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>engaged_seconds</code></td><td>초</td><td>활성 시간 분석</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
-<tr class="rp0"><td><code>result_count</code></td><td>개</td><td>검색 결과 수</td><td>신규 전송(R4)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>read_minutes</code></td><td>분</td><td>글 길이 보정</td><td>신규 전송(R1)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>engaged_seconds</code></td><td>초</td><td>활성 시간 분석</td><td>신규 전송(R2)</td><td><span class="b p0">P0</span></td></tr>
+<tr class="rp0"><td><code>result_count</code></td><td>개</td><td>검색 결과 수</td><td>신규 전송(R3)</td><td><span class="b p0">P0</span></td></tr>
 </tbody></table>
 <h2>7. 후속 범위</h2>
 <table><thead><tr><th>후속 항목</th><th>내용</th><th>선행 조건</th></tr></thead><tbody>
-<tr><td>글별 지표 대시보드</td><td>블로그 관리자 화면 안에서 R7의 글별 지표와 R8의 인기 글 점수를 표로 제공한다. 데이터는 GA4 Data API를 서버 함수(Cloud Functions)로 호출해 가져오며, 관리자 로그인 계정만 조회할 수 있다. 외부 BI 도구는 사용하지 않는다.</td><td>R1~R4 완료 후 최소 2주 데이터 축적, GA 속성에 서비스 계정 조회 권한 부여, 서버 함수 사용 가능한 요금제</td></tr>
-<tr><td>댓글 기능</td><td>글 상세 화면에 댓글 작성, 조회를 제공한다. 스팸 방지(작성 빈도 제한, 금칙어)와 관리자 삭제, 승인 기능을 포함하고 <code>comment</code> 이벤트를 추가한다. 반응 지표에 댓글 수를 합산한다.</td><td>R5(익명 인증, 반응 데이터 모델) 안정화, 운영 정책 수립</td></tr>
-<tr><td>스크랩 목록 보기</td><td>방문자가 스크랩한 글을 모아 보는 목록 화면을 제공한다. 1단계는 같은 브라우저에서 스크랩한 글 목록이고, 2단계로 기기가 달라도 목록이 유지되도록 계정 연동 방식을 검토한다.</td><td>R5(스크랩 데이터 모델) 완료, 2단계는 로그인 방식 결정</td></tr>
+<tr><td>글별 지표 대시보드</td><td>블로그 관리자 화면 안에서 R6의 글별 지표와 인기 글 점수를 표로 제공한다. 데이터는 GA4 Data API를 서버 함수(Cloud Functions)로 호출해 가져오며, 관리자 로그인 계정만 조회할 수 있다. 외부 BI 도구는 사용하지 않는다.</td><td>R1~R3 배포 후 최소 2주 데이터 축적, GA 속성에 서비스 계정 조회 권한 부여, 서버 함수 사용 가능한 요금제</td></tr>
+<tr><td>댓글 기능</td><td>글 상세 화면에 댓글 작성, 조회를 제공한다. 스팸 방지(작성 빈도 제한, 금칙어)와 관리자 삭제, 승인 기능을 포함하고 <code>comment</code> 이벤트를 추가한다. 반응 지표에 댓글 수를 합산한다.</td><td>R4(익명 인증, 반응 데이터 모델) 안정화, 운영 정책 수립</td></tr>
+<tr><td>스크랩 목록 보기</td><td>방문자가 스크랩한 글을 모아 보는 목록 화면을 제공한다. 1단계는 같은 브라우저에서 스크랩한 글 목록이고, 2단계로 기기가 달라도 목록이 유지되도록 계정 연동 방식을 검토한다.</td><td>R4(스크랩 데이터 모델) 완료, 2단계는 로그인 방식 결정</td></tr>
 <tr><td>BigQuery 내보내기</td><td>GA4 원본 이벤트를 내보내 사용자 단위, 경로 단위 분석을 수행한다.</td><td>데이터 축적, 분석 요구 구체화</td></tr>
 </tbody></table>
 <h2>8. 비기능 요구</h2>

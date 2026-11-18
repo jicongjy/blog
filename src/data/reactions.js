@@ -31,27 +31,32 @@ async function currentUid({ create }) {
 export async function loadReactions(postId) {
   if (!firebaseEnabled) {
     const mine = lload(postId)
-    return { counts: { like: mine.like ? 1 : 0, scrap: mine.scrap ? 1 : 0 }, mine }
+    return { counts: { like: mine.like ? 1 : 0, scrap: mine.scrap ? 1 : 0 }, mine, uid: 'me', likers: mine.like ? ['me'] : [] }
   }
   try {
     const snap = await getDocs(collection(db, 'posts', postId, 'reactions'))
     const docs = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
     const uid = await currentUid({ create: false })
     const mine = uid ? docs.find((d) => d.id === uid) : null
-    return { counts: count(docs), mine: { like: Boolean(mine?.like), scrap: Boolean(mine?.scrap) } }
+    // 좋아요를 누른 사람들의 ID(익명 계정 ID). 최근에 누른 순서이며 아바타를 그리는 입력값으로만 쓴다.
+    const likers = docs
+      .filter((d) => d.like)
+      .sort((a, b) => String(b.updatedAt ?? '').localeCompare(String(a.updatedAt ?? '')))
+      .map((d) => d.id)
+    return { counts: count(docs), mine: { like: Boolean(mine?.like), scrap: Boolean(mine?.scrap) }, uid, likers }
   } catch {
     return null
   }
 }
 
-// 내 반응을 저장한다. 둘 다 꺼지면 문서를 지운다. 실패하면 false.
+// 내 반응을 저장한다. 둘 다 꺼지면 문서를 지운다. 성공하면 내 ID, 실패하면 null.
 export async function saveMine(postId, mine) {
   if (!firebaseEnabled) {
     try {
       localStorage.setItem(lkey(postId), JSON.stringify(mine))
-      return true
+      return 'me'
     } catch {
-      return false
+      return null
     }
   }
   try {
@@ -59,8 +64,8 @@ export async function saveMine(postId, mine) {
     const ref = doc(db, 'posts', postId, 'reactions', uid)
     if (!mine.like && !mine.scrap) await deleteDoc(ref)
     else await setDoc(ref, { like: mine.like, scrap: mine.scrap, updatedAt: new Date().toISOString() })
-    return true
+    return uid
   } catch {
-    return false
+    return null
   }
 }

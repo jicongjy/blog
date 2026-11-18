@@ -239,6 +239,13 @@
 - 알아 둘 점: 이 API의 영어 문장은 단어마다 첫 글자가 대문자로 되어 있다(원본 데이터 그대로). 방문자의 브라우저가 dummyjson 서버로 직접 요청을 보낸다.
 - 확인: 로컬 빌드에서 띠 표시, 애니메이션 동작, 요청 1회, 가로 넘침 없음을 확인했다.
 
+### 33. 좋아요 한 사람들 아바타(DiceBear API 실습)
+- 글의 좋아요 버튼 아래에 좋아요 한 사람들의 아바타를 겹쳐 보여 준다(최근 5명, 나머지는 "외 N명"). 컴포넌트는 `Avatar.jsx`, 데이터는 `reactions.js`가 좋아요 한 사람들의 익명 계정 ID를 함께 돌려준다. 댓글 기능이 생기면 같은 `Avatar`를 작성자 표시에 쓴다.
+- API 방식(A)으로 했다: `api.dicebear.com/10.x/notionists-neutral/svg?seed=<ID>&backgroundColor=...`. 스타일은 notionists-neutral(라이선스 CC0 1.0, 출처 표기 불필요), 배경은 회색 세 가지 중 seed로 정해져 모노톤이다. 불러오지 못하면 단색 원으로 대신한다.
+- 방문자 브라우저가 DiceBear 서버로 익명 계정 ID(seed)를 보낸다. 주소(referrer)는 보내지 않도록 껐다.
+- 처음에 lorelei-neutral(CC0)을 고르려 했으나 notionists-neutral로 바꿨다. 흑백 선화라 모노톤 요청에 맞는다.
+- 확인: 로컬 빌드(브라우저 저장소 모드)에서 좋아요 → 아바타 표시(이미지 로드 성공, 개수 1)를 확인했다. Firestore 연동에서의 여러 사람 표시는 규칙 적용 뒤 확인이 필요하다.
+
 ## 남은 일
 
 0. 반응 기능 켜기: Firebase 콘솔에서 Authentication > 로그인 방법 > 익명 사용 설정, 수정된 `firestore.rules`를 Firestore 규칙에 붙여 넣기(관리자 이메일 교체). 그 뒤 `docs/ga-setup-checklist.md`대로 GA 설정(맞춤 측정기준, 핵심 이벤트, 내부 트래픽 필터)

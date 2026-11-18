@@ -471,3 +471,10 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
   .hm-quote-track { animation: none; display: block; overflow: hidden; text-overflow: ellipsis; }
   .hm-quote-track span:last-child { display: none; }
 }
+
+/* 좋아요 한 사람들: 겹쳐진 모노톤 아바타 */
+.pd-likers { display: flex; align-items: center; gap: 12px; margin: 16px 0 48px; color: var(--soft-gray); }
+.pd-likers-stack { display: flex; }
+.av { display: block; border-radius: 50%; background: #e8e8e8; box-shadow: 0 0 0 2px var(--hm-bg, #fff); margin-left: -9px; object-fit: cover; }
+.pd-likers-stack .av:first-child { margin-left: 0; }
+.av-fallback { background: color-mix(in srgb, var(--ink) 18%, var(--hm-bg, #fff)); }

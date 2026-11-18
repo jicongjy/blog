@@ -18,27 +18,25 @@ function Clock() {
 export default function HmTop() {
   const { isAdmin, signOut } = useAuth()
   return (
-    <>
-      <header className="hm-top">
-        <div className="hm-brandrow">
-          <Link to="/" className="hm-brand">
-            기획 노트
-          </Link>
-          <ThemeSwitch />
-        </div>
-        <nav className="hm-nav" aria-label="메뉴">
-          <Link to="/notes">전체 글</Link>
-          {isAdmin && <Link to="/admin/categories">카테고리 관리</Link>}
-          <Link to="/write">글 작성하기</Link>
-          {isAdmin && (
-            <button type="button" onClick={signOut}>
-              로그아웃
-            </button>
-          )}
-          <Clock />
-        </nav>
-      </header>
+    <header className="hm-top">
+      <div className="hm-brandrow">
+        <Link to="/" className="hm-brand">
+          기획 노트
+        </Link>
+        <ThemeSwitch />
+      </div>
       <QuoteBar />
-    </>
+      <nav className="hm-nav" aria-label="메뉴">
+        <Link to="/notes">전체 글</Link>
+        {isAdmin && <Link to="/admin/categories">카테고리 관리</Link>}
+        <Link to="/write">글 작성하기</Link>
+        {isAdmin && (
+          <button type="button" onClick={signOut}>
+            로그아웃
+          </button>
+        )}
+        <Clock />
+      </nav>
+    </header>
   )
 }

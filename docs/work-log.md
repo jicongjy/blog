@@ -233,7 +233,7 @@
 - 확인: 로컬 빌드(임시 측정 ID)에서 이벤트 전송 값을 직접 읽어 확인했다. 열자마자 끝까지 내리면 `article_read`가 없고, 활성 24초 뒤 한 번 발생. `share`, `like`, `scrap`, `unscrap`, `search`, UTM 포함 `page_location` 확인. Firestore 연동(익명 인증, 규칙)과 실제 GA 수신은 배포 뒤 확인이 필요하다.
 
 ### 32. 헤더 명언 띠(API 위젯 실습)
-- 헤더 아래에 명언 띠를 추가했다(`QuoteBar.jsx`, `HmTop.jsx`). dummyjson 명언 API(`dummyjson.com/quotes/random`, 키 없음, 영어)에서 접속할 때 하나를 받아 오른쪽에서 왼쪽으로 흘린다. 마우스를 올리면 멈추고, 움직임 줄이기 설정에서는 고정된다.
+- 헤더 안에 명언 띠를 추가했다(`QuoteBar.jsx`, `HmTop.jsx`). 왼쪽 로고와 색상 점, 오른쪽 메뉴 사이 빈 자리에 놓고 양옆 여백을 크게 두었다(`clamp(28px, 6vw, 96px)`). 글자가 가장자리에서 딱 잘리지 않게 양끝을 부드럽게 흐리게 했다. 820px 이하에서는 헤더 아래 한 줄로 내려간다. dummyjson 명언 API(`dummyjson.com/quotes/random`, 키 없음, 영어)에서 접속할 때 하나를 받아 오른쪽에서 왼쪽으로 흘린다. 마우스를 올리면 멈추고, 움직임 줄이기 설정에서는 고정된다.
 - 같은 접속 안에서는 화면을 옮겨도 한 번만 받아 온다. 호출이 실패하면 띠를 숨긴다.
 - API 선택 과정: 한국어 명언 오픈 API(`korean-advice-open-api`)는 서비스 중단(402), ZenQuotes는 브라우저 호출 허용 표시 없음, Quotable은 응답 없음. dummyjson만 정상이었다.
 - 알아 둘 점: 이 API의 영어 문장은 단어마다 첫 글자가 대문자로 되어 있다(원본 데이터 그대로). 방문자의 브라우저가 dummyjson 서버로 직접 요청을 보낸다.

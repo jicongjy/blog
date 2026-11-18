@@ -24,9 +24,10 @@ export default function Reactions({ post }) {
     setBusy(true)
     const on = !state.mine[kind]
     const mine = { ...state.mine, [kind]: on }
-    const me = await saveMine(post.id, mine)
-    if (me) {
-      const likers = kind === 'like' ? (on ? [me, ...state.likers.filter((u) => u !== me)] : state.likers.filter((u) => u !== me)) : state.likers
+    const saved = await saveMine(post.id, mine)
+    if (saved) {
+      const me = saved.me
+      const likers = kind === 'like' ? (on ? [me, ...state.likers.filter((u) => u !== me)] : state.likers.filter((u) => u !== me)).filter(Boolean) : state.likers
       setState({ ...state, counts: { ...state.counts, [kind]: state.counts[kind] + (on ? 1 : -1) }, mine, likers })
       track(on ? kind : `un${kind}`, postParams(post))
     }

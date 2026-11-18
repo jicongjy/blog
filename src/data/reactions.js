@@ -9,14 +9,10 @@ const none = { like: false, scrap: false }
 // 아바타를 그리는 외부 서비스와 화면에는 계정 ID를 그대로 넘기지 않고, 되돌릴 수 없는 짧은 값으로 바꿔 넘긴다.
 // 같은 계정은 항상 같은 값이 나와서 얼굴은 유지된다.
 async function token(uid) {
-  const text = `avatar:${uid}`
-  if (globalThis.crypto?.subtle) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
-    return [...new Uint8Array(buf)].slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('')
-  }
-  let h = 5381
-  for (const c of text) h = ((h << 5) + h + c.charCodeAt(0)) >>> 0 // 보안 문맥이 아닐 때의 대체(로컬 확인용)
-  return h.toString(16)
+  // 해시를 만들 수 없는 환경(보안 문맥이 아닌 주소)에서는 약한 방식으로 대신하지 않고 값을 만들지 않는다. 그러면 아바타는 보이지 않는다.
+  if (!globalThis.crypto?.subtle) return null
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`avatar:${uid}`))
+  return [...new Uint8Array(buf)].slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 const count = (docs) => ({
   like: docs.filter((d) => d.like).length,
@@ -44,7 +40,7 @@ async function currentUid({ create }) {
 export async function loadReactions(postId) {
   if (!firebaseEnabled) {
     const mine = lload(postId)
-    return { counts: { like: mine.like ? 1 : 0, scrap: mine.scrap ? 1 : 0 }, mine, likers: mine.like ? [await token('me')] : [] }
+    return { counts: { like: mine.like ? 1 : 0, scrap: mine.scrap ? 1 : 0 }, mine, likers: mine.like ? [await token('me')].filter(Boolean) : [] }
   }
   try {
     const snap = await getDocs(collection(db, 'posts', postId, 'reactions'))
@@ -57,19 +53,19 @@ export async function loadReactions(postId) {
         .filter((d) => d.like)
         .sort((a, b) => String(b.updatedAt ?? '').localeCompare(String(a.updatedAt ?? '')))
         .map((d) => token(d.id)),
-    )
+    ).then((list) => list.filter(Boolean))
     return { counts: count(docs), mine: { like: Boolean(mine?.like), scrap: Boolean(mine?.scrap) }, likers }
   } catch {
     return null
   }
 }
 
-// 내 반응을 저장한다. 둘 다 꺼지면 문서를 지운다. 성공하면 내 아바타용 값, 실패하면 null.
+// 내 반응을 저장한다. 둘 다 꺼지면 문서를 지운다. 성공하면 { me: 내 아바타용 값(없을 수 있음) }, 실패하면 null.
 export async function saveMine(postId, mine) {
   if (!firebaseEnabled) {
     try {
       localStorage.setItem(lkey(postId), JSON.stringify(mine))
-      return await token('me')
+      return { me: await token('me') }
     } catch {
       return null
     }
@@ -79,7 +75,7 @@ export async function saveMine(postId, mine) {
     const ref = doc(db, 'posts', postId, 'reactions', uid)
     if (!mine.like && !mine.scrap) await deleteDoc(ref)
     else await setDoc(ref, { like: mine.like, scrap: mine.scrap, updatedAt: new Date().toISOString() })
-    return await token(uid)
+    return { me: await token(uid) }
   } catch {
     return null
   }

@@ -1,0 +1,161 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>블로그 2차 개선 PRD</title><style>body{font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;max-width:860px;margin:40px auto;padding:0 20px;color:#111;line-height:1.7;font-size:15px;word-break:keep-all}
+h1{font-size:26px;border-bottom:2px solid #111;padding-bottom:8px}h2{font-size:20px;margin-top:40px}h3{font-size:16px;margin-top:28px}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}th,td{border:1px solid #ccc;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f2f2f2}
+code{background:#f2f2f2;padding:1px 4px;border-radius:3px;font-size:13px}@media(max-width:600px){table{display:block;overflow-x:auto}}</style></head><body>
+<h1>기획 노트 블로그 2차 개선 PRD: 데이터 분석 강화</h1>
+<p>상태: 초안 (승인 대기) · 작성일: 2026-11-18 · 관련 문서: <code>docs/work-log.md</code>, <code>docs/ga-report/ga-event-taxonomy.pdf</code></p>
+<h2>1. 배경과 목적</h2>
+<p>1차 개선으로 디자인, GA4 연결, 글별 링크 미리보기(OG)까지 갖췄다. 그러나 "어떤 글이 인기 있는가"를 판단하기에는 측정이 부족하다. 2차의 목적은 <strong>블로그로서 콘텐츠 성과를 충분히 분석할 수 있게 하는 것</strong>이며, 특히 지금 GA에서 누락되었거나 확인할 수 없었던 항목을 채운다.</p>
+<h2>2. 현황</h2>
+<h3>2.1 측정 가능 여부</h3>
+<table><thead><tr><th>알고 싶은 것</th><th>현재</th><th>판단</th></tr></thead><tbody>
+<tr><td>홈, 전체 글, 글별 방문자와 조회수</td><td><code>page_view</code> 직접 전송(<code>page_type</code>, 글은 <code>post_id</code>, <code>post_category</code>, 제목)</td><td>가능 (단, 실제 GA 화면 검증 전)</td></tr>
+<tr><td>평균 체류 시간</td><td>GA 기본 "평균 참여 시간"만 있음</td><td>가능하지만 글 길이 보정 불가</td></tr>
+<tr><td>완독</td><td><code>article_scroll</code> 50%, 90%</td><td>근사치만. 짧은 글은 열자마자 동시 발생, 빨리 내려가도 완독으로 잡힘</td></tr>
+<tr><td>홈에서 글로 이동, 카테고리 관심</td><td><code>article_select</code>, <code>category_click</code></td><td>가능</td></tr>
+<tr><td>지역, 기기, OS, 유입, 이탈</td><td>GA 기본</td><td>가능</td></tr>
+<tr><td>좋아요, 댓글, 스크랩</td><td>기능 없음</td><td><strong>불가</strong></td></tr>
+<tr><td>공유(링크 복사)</td><td>복사 버튼은 있으나 이벤트 없음</td><td><strong>측정 안 됨</strong></td></tr>
+<tr><td>사이트 내 검색</td><td>이벤트 없음</td><td><strong>측정 안 됨</strong></td></tr>
+</tbody></table>
+<h3>2.2 누락, 확인 불가 항목 (이번 개선 대상)</h3>
+<table><thead><tr><th>번호</th><th>문제</th><th>영향</th></tr></thead><tbody>
+<tr><td>G1</td><td>이벤트 매개변수를 맞춤 측정기준으로 등록하지 않음</td><td>글별, 카테고리별 분해 불가, 소급 불가</td></tr>
+<tr><td>G2</td><td>향상된 측정의 "기록 이벤트에 따른 페이지 변경" 상태 미확인</td><td><code>page_view</code> 이중 집계 가능성</td></tr>
+<tr><td>G3</td><td>글 길이, 발행일 정보를 이벤트에 보내지 않음</td><td>체류 시간 비교 불공정, 신규와 오래된 글 구분 불가</td></tr>
+<tr><td>G4</td><td>완독 판정이 스크롤 위치뿐</td><td>완독률 과대평가</td></tr>
+<tr><td>G5</td><td>링크 복사, 검색어 미측정</td><td>공유 의도와 독자 관심 주제 파악 불가</td></tr>
+<tr><td>G6</td><td>좋아요, 스크랩, 댓글 기능 없음</td><td>반응 지표 부재</td></tr>
+<tr><td>G7</td><td>공유 경로별 유입 구분 불가</td><td>어디서 공유되어 온 방문인지 모름</td></tr>
+<tr><td>G8</td><td>관리자 제외가 로그인했던 브라우저에서만 동작, 확인 수단 없음</td><td>본인 방문이 섞일 수 있음</td></tr>
+<tr><td>G9</td><td>실제 GA 화면에서의 이벤트 검증 안 함</td><td>구현 정확성 미보증</td></tr>
+<tr><td>G10</td><td>글별 지표를 한눈에 보는 곳이 없음</td><td>인기 글 판단이 수작업</td></tr>
+</tbody></table>
+<h2>3. 목표와 성공 기준</h2>
+<table><thead><tr><th>목표</th><th>성공 기준</th></tr></thead><tbody>
+<tr><td>글별 성과를 신뢰할 수 있게 측정</td><td>테스트 방문 시나리오 10종에서 코드 기준 이벤트 수와 GA 기록이 일치</td></tr>
+<tr><td>완독과 체류를 글 길이에 상관없이 비교</td><td>글별 "완독률"과 "길이 보정 참여율"을 한 표로 산출</td></tr>
+<tr><td>반응 지표 확보</td><td>공유, 좋아요, 스크랩이 글별 숫자로 확인됨</td></tr>
+<tr><td>인기 글을 기준으로 판단</td><td>정의된 점수로 글 순위가 자동 산출되고, 최소 표본(조회 30회) 미만은 "표본 부족"으로 표시</td></tr>
+</tbody></table>
+<h2>4. 범위</h2>
+<p>포함: GA 설정 정비, 이벤트 보강, 완독 판정 개선, 공유와 검색 측정, 좋아요와 스크랩, 유입 구분, 글별 지표 대시보드.</p>
+<p>제외(이번에는 하지 않음): 댓글(스팸과 관리 부담), 이메일 구독, 유료 도구 연동, BigQuery 내보내기(데이터가 쌓인 뒤 재검토).</p>
+<h2>5. 요구사항</h2>
+<p>우선순위: P0 반드시, P1 이번 개선 안에, P2 여유가 있을 때.</p>
+<h3>R1. GA 설정 정비 (P0, 코드 없음)</h3>
+<ul>
+<li>맞춤 측정기준(이벤트 범위) 등록: <code>post_id</code>, <code>post_title</code>, <code>post_category</code>, <code>post_published</code>, <code>category</code>, <code>click_location</code>, <code>page_type</code>, <code>scroll_depth</code>, <code>share_method</code>, <code>search_term</code></li>
+<li>맞춤 측정항목 등록: <code>read_minutes</code>, <code>engaged_seconds</code></li>
+<li>향상된 측정의 "기록 이벤트에 따른 페이지 변경" 끄기</li>
+<li>핵심 이벤트 지정: <code>article_read</code>, <code>share</code>, <code>like</code>, <code>scrap</code></li>
+<li>데이터 보관 기간 14개월</li>
+<li>수용 기준: DebugView와 실시간 보고서에서 위 값들이 이벤트에 붙어 보임</li>
+</ul>
+<h3>R2. 이벤트 공통 매개변수 보강 (P0)</h3>
+<p>모든 글 관련 이벤트(<code>page_view</code>(글), <code>article_select</code>, <code>article_scroll</code>, 신규 이벤트)에 <code>read_minutes</code>(읽는 시간, 분), <code>post_published</code>(발행일, YYYY-MM-DD)를 추가한다.</p>
+<ul>
+<li>수용 기준: 글별 탐색 분석에서 길이와 발행일로 나눌 수 있음</li>
+</ul>
+<h3>R3. 완독 판정 개선 (P0)</h3>
+<ul>
+<li>새 이벤트 <code>article_read</code>: 글 방문당 한 번, 아래 두 조건을 모두 만족할 때 전송한다.</li>
+</ul>
+<p>  1. 본문 90% 지점을 지났다.</p>
+<p>  2. 화면이 앞에 있던 활성 시간이 글 읽는 시간의 40% 이상이다. (예: 5분 글은 2분 이상) 짧은 글은 최소 10초.</p>
+<ul>
+<li>기존 <code>article_scroll</code>(50, 90)은 읽기 깊이 분석용으로 유지한다.</li>
+<li>신규 <code>article_time</code>: 활성 시간 15초, 30초, 60초, 120초 도달 시 각 한 번(<code>engaged_seconds</code>).</li>
+<li>수용 기준: 열자마자 끝까지 내리는 테스트에서는 <code>article_read</code>가 오지 않고, 천천히 읽는 테스트에서는 한 번만 옴</li>
+</ul>
+<h3>R4. 공유와 검색 측정 (P0)</h3>
+<ul>
+<li><code>share</code>: 링크 복사 버튼 클릭 시. <code>share_method=copy_link</code>, <code>post_id</code> 등 공통 매개변수</li>
+<li><code>search</code>: 전체 글 검색창에서 입력이 멈춘 뒤(0.8초) 한 번, <code>search_term</code>, 결과 수. 빈 검색어와 1글자는 보내지 않는다.</li>
+<li>수용 기준: 두 동작이 DebugView에 한 번씩 보임</li>
+</ul>
+<h3>R5. 반응 기능: 좋아요, 스크랩 (P1)</h3>
+<ul>
+<li>글 상세에 좋아요와 스크랩 버튼. 로그인 없이 쓸 수 있고(Firebase 익명 인증으로 방문자별 한 번만 가능), 다시 누르면 취소.</li>
+<li>저장: Firestore <code>posts/{글ID}/reactions/{사용자ID}</code> (<code>like</code>, <code>scrap</code> 불리언). 글에는 집계 숫자를 두지 않고 화면에서 개수를 센다(규모가 작음).</li>
+<li>규칙: 본인 문서만 쓰기, 읽기는 공개. 관리자는 집계를 읽을 수 있음.</li>
+<li>스크랩 보기: 스크랩한 글만 모아 보는 화면은 이번 범위에 넣지 않고, 같은 브라우저에서 목록 확인만(P2).</li>
+<li>GA 이벤트: <code>like</code>, <code>unlike</code>, <code>scrap</code>, <code>unscrap</code> (공통 매개변수 포함)</li>
+<li>수용 기준: 한 사용자가 여러 번 눌러도 1회로 집계되고, 취소하면 줄어듦. 규칙으로 다른 사람의 반응을 바꿀 수 없음</li>
+</ul>
+<h3>R6. 유입 구분 (P1)</h3>
+<ul>
+<li>링크 복사 시 주소에 <code>utm_source=share&amp;utm_medium=copy_link</code>를 붙여 복사한다. (미리보기와 canonical 주소에는 영향이 없도록 확인)</li>
+<li>수용 기준: 그 주소로 접속하면 GA 획득 보고서에 소스/매체가 <code>share / copy_link</code>로 보임</li>
+</ul>
+<h3>R7. 관리자 제외 개선 (P2)</h3>
+<ul>
+<li>관리자로 로그인하면 이후 이벤트에 <code>traffic_type=internal</code>을 붙이고, GA 데이터 필터(내부 트래픽)로 제외한다. 필터를 "테스트" 상태로 먼저 켜서 확인한 뒤 "활성"으로 바꾼다.</li>
+<li>한계: 로그인한 적 없는 브라우저의 본인 방문은 걸러지지 않는다. 문서에 한계를 명시한다.</li>
+</ul>
+<h3>R8. 글별 지표 대시보드 (P1)</h3>
+<p>관리자 화면 안에 만들고 GA 데이터를 직접 가져온다(외부 도구 미사용). 글별로 아래 표를 만든다.</p>
+<table><thead><tr><th>지표</th><th>정의</th></tr></thead><tbody>
+<tr><td>조회수, 활성 사용자</td><td>GA 기본</td></tr>
+<tr><td>평균 참여 시간</td><td>GA 기본</td></tr>
+<tr><td>길이 보정 참여율</td><td>평균 참여 시간 ÷ (읽는 시간 × 60초)</td></tr>
+<tr><td>완독률</td><td><code>article_read</code> ÷ 글 조회수</td></tr>
+<tr><td>다음 글 이동률</td><td><code>article_select</code>(<code>click_location=next_article</code>) ÷ 조회수</td></tr>
+<tr><td>반응 수</td><td><code>share</code> + <code>like</code> + <code>scrap</code></td></tr>
+<tr><td>반응률</td><td>반응 수 ÷ 조회수</td></tr>
+<tr><td>재방문 사용자 비율</td><td>GA 사용자 보고서</td></tr>
+</tbody></table>
+<h3>R9. 인기 글 판단 기준 (P1)</h3>
+<p>조회수 하나로 정하지 않고 점수로 판단한다. 가중치는 초안이며 데이터를 본 뒤 조정한다.</p>
+<table><thead><tr><th>요소</th><th>가중치</th><th>비고</th></tr></thead><tbody>
+<tr><td>조회수 순위</td><td>30%</td><td>많이 열렸는가</td></tr>
+<tr><td>완독률</td><td>25%</td><td>끝까지 읽었는가</td></tr>
+<tr><td>길이 보정 참여율</td><td>20%</td><td>시간을 들여 읽었는가</td></tr>
+<tr><td>다음 글 이동률</td><td>15%</td><td>더 읽고 싶어졌는가</td></tr>
+<tr><td>반응률</td><td>10%</td><td>공유, 좋아요, 스크랩을 이끌었는가</td></tr>
+</tbody></table>
+<ul>
+<li>조회 30회 미만 글은 점수 대신 "표본 부족"으로 표시한다.</li>
+<li>같은 글을 발행 후 기간(예: 첫 30일)으로 맞춰 비교한다. 오래된 글이 유리해지는 것을 막기 위해서다.</li>
+</ul>
+<h2>6. 비기능 요구</h2>
+<ul>
+<li>성능: 측정 코드가 화면 표시를 막지 않는다. 스크롤 이벤트는 가볍게 처리한다.</li>
+<li>보안: 반응 기능의 Firestore 규칙은 본인 문서만 쓰기 허용. 관리자 이메일은 저장소에 넣지 않는다.</li>
+<li>개인정보 보호: 이름, 이메일 등을 GA 이벤트에 보내지 않는다. 익명 인증 ID도 GA에 보내지 않는다.</li>
+<li>비용: 이번 범위는 Blaze 요금제의 무료 사용량 안에서 가능하다고 본다(방문량 확인 후 재검토).</li>
+</ul>
+<h2>7. 단계와 일정(안)</h2>
+<table><thead><tr><th>단계</th><th>내용</th><th>규모</th></tr></thead><tbody>
+<tr><td>M0</td><td>현재 이벤트의 실제 GA 검증(실시간, DebugView), R1 콘솔 설정</td><td>반나절, 사용자 작업 포함</td></tr>
+<tr><td>M1</td><td>R2, R3, R4, R6: 공통 매개변수, 완독 판정, 공유와 검색, 유입 구분</td><td>1일</td></tr>
+<tr><td>M2</td><td>R8, R9: 대시보드와 인기 글 점수</td><td>2일(서버 함수 포함)</td></tr>
+<tr><td>M3</td><td>R5: 좋아요와 스크랩</td><td>2~3일</td></tr>
+<tr><td>M4</td><td>R7, 문서와 학습 노트 정리</td><td>1일</td></tr>
+</tbody></table>
+<p>M0 이후 약 일주일 데이터를 쌓은 뒤 M2 점수 가중치를 조정한다.</p>
+<h2>8. 위험</h2>
+<table><thead><tr><th>위험</th><th>대응</th></tr></thead><tbody>
+<tr><td>방문량이 적어 통계가 의미 없음</td><td>표본 부족 표시, 일정 기간 누적 후 판단</td></tr>
+<tr><td>GA 반영 지연(24~48시간)과 임계값</td><td>실시간과 DebugView로 구현을 먼저 확인</td></tr>
+<tr><td>맞춤 정의 한도(이벤트 범위 측정기준 50개)</td><td>필요한 항목만 등록</td></tr>
+<tr><td>익명 인증 남용</td><td>규칙으로 문서 형태와 본인 문서만 허용</td></tr>
+<tr><td>광고 차단기로 일부 누락</td><td>한계로 문서화</td></tr>
+</tbody></table>
+<h2>9. 결정 사항 (2026-11-18)</h2>
+<table><thead><tr><th>번호</th><th>결정</th></tr></thead><tbody>
+<tr><td>Q1</td><td>좋아요와 스크랩만 이번 범위. 댓글은 제외하되 <strong>후속 목표(3차)로 기록</strong>한다</td></tr>
+<tr><td>Q2</td><td>외부 도구는 쓰지 않는다. 관리자 화면 안에 대시보드를 만들고 데이터는 GA에서 직접 가져온다</td></tr>
+<tr><td>Q3</td><td>링크 복사에 UTM을 붙인다</td></tr>
+<tr><td>Q4</td><td>완독 기준은 읽는 시간의 40%, 최소 10초로 시작하고 데이터를 보고 조정한다</td></tr>
+</tbody></table>
+<h3>대시보드 데이터 출처</h3>
+<ul>
+<li>GA4 Data API를 Cloud Functions(서버 함수)로 호출해 관리자 화면에 표시한다. GA 화면과 숫자가 일치한다. Blaze 요금제 사용 중이라 구성 가능하다.</li>
+<li>관리자 로그인한 계정만 호출할 수 있게 서버 함수에서 확인한다. GA 접근용 서비스 계정 키는 저장소에 넣지 않는다.</li>
+</ul>
+<h2>10. 후속 목표 (이번 범위 밖)</h2>
+<ul>
+<li>3차: 댓글 기능(스팸 방지, 관리자 승인 또는 삭제 포함)</li>
+</ul>
+</body></html>

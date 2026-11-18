@@ -15,29 +15,19 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 </tbody></table>
 <h2>1. 배경과 목적</h2>
 <p>1차 개선으로 디자인 개편, GA4 연결, 글별 링크 미리보기(OG)까지 갖췄다. 그러나 "어떤 글이 잘 읽히는가"를 판단하기에는 측정이 부족하다. 2차의 목적은 <strong>블로그 콘텐츠 성과를 GA4 안에서 충분히 분석할 수 있게 하는 것</strong>이며, 현재 GA에서 누락되었거나 확인할 수 없는 항목을 채운다.</p>
-<h2>2. 현황</h2>
-<h3>2.1 측정 가능 여부</h3>
-<table><thead><tr><th>알고 싶은 것</th><th>현재 상태</th><th>판단</th></tr></thead><tbody>
-<tr><td>글별 방문자, 조회수</td><td><code>page_view</code> 직접 전송(<code>page_type</code>, <code>post_id</code>, <code>post_category</code>)</td><td>가능</td></tr>
-<tr><td>홈에서 글로 이동, 카테고리 관심</td><td><code>article_select</code>, <code>category_click</code></td><td>가능</td></tr>
-<tr><td>평균 체류 시간</td><td>GA 기본 "평균 참여 시간"만 존재</td><td>가능하나 글 길이 보정 불가</td></tr>
-<tr><td>완독</td><td><code>article_scroll</code> 50%, 90%</td><td>근사치만 가능 (짧은 글은 열자마자 도달, 빠른 스크롤도 완독으로 집계)</td></tr>
-<tr><td>좋아요, 스크랩, 댓글</td><td>기능 없음</td><td>불가</td></tr>
-<tr><td>공유(링크 복사)</td><td>복사 버튼은 있으나 이벤트 없음</td><td>측정 안 됨</td></tr>
-<tr><td>사이트 내 검색</td><td>이벤트 없음</td><td>측정 안 됨</td></tr>
-<tr><td>지역, 기기, 유입 경로, 이탈</td><td>GA 기본</td><td>가능</td></tr>
-</tbody></table>
-<h3>2.2 누락, 확인 불가 항목</h3>
-<table><thead><tr><th>번호</th><th>문제</th><th>영향</th></tr></thead><tbody>
-<tr><td>G1</td><td>이벤트 매개변수를 맞춤 측정기준으로 등록하지 않음</td><td>글별, 카테고리별 분해 불가. 등록 이전 데이터는 소급되지 않음</td></tr>
-<tr><td>G2</td><td>향상된 측정의 "기록 이벤트에 따른 페이지 변경" 상태 미확인</td><td><code>page_view</code> 이중 집계 가능성</td></tr>
-<tr><td>G3</td><td>글 길이, 발행일을 이벤트에 보내지 않음</td><td>체류 시간의 공정한 비교, 신규/기존 글 구분 불가</td></tr>
-<tr><td>G4</td><td>완독 판정이 스크롤 위치뿐</td><td>완독률 과대평가</td></tr>
-<tr><td>G5</td><td>링크 복사, 검색어 미측정</td><td>공유 의도와 독자 관심 주제 파악 불가</td></tr>
-<tr><td>G6</td><td>좋아요, 스크랩 기능 없음</td><td>반응 지표 부재</td></tr>
-<tr><td>G7</td><td>공유 경로별 유입 구분 불가</td><td>공유 링크를 통한 방문 식별 불가</td></tr>
-<tr><td>G8</td><td>관리자 제외가 로그인한 적 있는 브라우저에서만 동작</td><td>운영자 방문이 섞일 수 있음</td></tr>
-<tr><td>G9</td><td>실제 GA 화면(실시간, DebugView)에서 이벤트 검증을 하지 않음</td><td>구현 정확성 미보증</td></tr>
+<h2>2. 현황과 문제</h2>
+<p>글별 조회수, 홈에서 글로의 이동, 카테고리 클릭, 지역·기기·유입 경로·이탈은 현재 측정 가능하며 이번 범위에서 변경하지 않는다. 아래는 측정이 부족하거나 확인할 수 없는 항목이다.</p>
+<table><thead><tr><th>번호</th><th>알고 싶은 것</th><th>현재</th><th>문제와 영향</th><th>해소</th></tr></thead><tbody>
+<tr><td>G1</td><td>글별, 카테고리별 분해</td><td>이벤트 매개변수를 맞춤 측정기준으로 등록하지 않음</td><td>분해 불가. 등록 이전 데이터는 소급되지 않음</td><td>R1</td></tr>
+<tr><td>G2</td><td>정확한 조회수</td><td>향상된 측정의 "기록 이벤트에 따른 페이지 변경" 상태 미확인</td><td><code>page_view</code> 이중 집계 가능성</td><td>R1</td></tr>
+<tr><td>G3</td><td>글 길이를 반영한 체류 시간</td><td>GA 기본 "평균 참여 시간"만 존재, 글 길이와 발행일 미전송</td><td>길이가 다른 글끼리 공정한 비교 불가, 신규/기존 글 구분 불가</td><td>R2</td></tr>
+<tr><td>G4</td><td>완독</td><td><code>article_scroll</code> 50%, 90%만 존재</td><td>짧은 글은 열자마자 도달하고 빠른 스크롤도 완독으로 집계되어 완독률 과대평가</td><td>R3</td></tr>
+<tr><td>G5</td><td>공유, 관심 주제</td><td>링크 복사 버튼은 있으나 이벤트 없음, 검색 이벤트 없음</td><td>공유 의도와 독자 관심 주제 파악 불가</td><td>R4</td></tr>
+<tr><td>G6</td><td>좋아요, 스크랩</td><td>기능 없음</td><td>반응 지표 부재</td><td>R5, R10</td></tr>
+<tr><td>G7</td><td>공유 링크를 통한 방문</td><td>공유 경로 구분 수단 없음</td><td>공유로 유입된 방문 식별 불가</td><td>R6</td></tr>
+<tr><td>G8</td><td>운영자 방문 제외</td><td>로그인한 적 있는 브라우저에서만 제외</td><td>운영자 방문이 섞일 수 있음</td><td>R9</td></tr>
+<tr><td>G9</td><td>구현 정확성</td><td>실제 GA 화면(실시간, DebugView)에서 검증하지 않음</td><td>이벤트 누락, 오류를 알 수 없음</td><td>R1</td></tr>
+<tr><td>G10</td><td>글별 지표 비교, 인기 글</td><td>글별 지표를 모아 보는 보고서와 판단 기준 없음</td><td>인기 글 판단이 수작업</td><td>R7, R8</td></tr>
 </tbody></table>
 <h2>3. 목표와 성공 기준</h2>
 <table><thead><tr><th>목표</th><th>성공 기준</th></tr></thead><tbody>
@@ -60,8 +50,8 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr class="rp0"><td><span class="b p0">P0</span></td><td>R4</td><td>공유, 검색 이벤트 추가</td><td>측정 코드</td><td>G5</td></tr>
 <tr class="rp1"><td><span class="b p1">P1</span></td><td>R5</td><td>좋아요, 스크랩 기능</td><td>신규 기능</td><td>G6</td></tr>
 <tr class="rp1"><td><span class="b p1">P1</span></td><td>R6</td><td>링크 복사 UTM 부착</td><td>측정 코드</td><td>G7</td></tr>
-<tr class="rp1"><td><span class="b p1">P1</span></td><td>R7</td><td>글별 지표 확인용 GA 탐색 보고서 구성</td><td>설정</td><td>인기 글 판단</td></tr>
-<tr class="rp1"><td><span class="b p1">P1</span></td><td>R8</td><td>인기 글 판단 기준 확정</td><td>문서, 운영</td><td>인기 글 판단</td></tr>
+<tr class="rp1"><td><span class="b p1">P1</span></td><td>R7</td><td>글별 지표 확인용 GA 탐색 보고서 구성</td><td>설정</td><td>G10</td></tr>
+<tr class="rp1"><td><span class="b p1">P1</span></td><td>R8</td><td>인기 글 판단 기준 확정</td><td>문서, 운영</td><td>G10</td></tr>
 <tr class="rp2"><td><span class="b p2">P2</span></td><td>R9</td><td>관리자 트래픽 제외 개선</td><td>측정 코드, 설정</td><td>G8</td></tr>
 <tr class="rp2"><td><span class="b p2">P2</span></td><td>R10</td><td>스크랩 목록 보기(같은 브라우저)</td><td>신규 기능</td><td>G6 보완</td></tr>
 </tbody></table>
@@ -197,22 +187,14 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr><td>스크랩 모아보기 고도화</td><td>기기가 달라도 스크랩 목록을 유지하는 계정 연동 방식을 검토한다.</td><td>로그인 방식 결정</td></tr>
 <tr><td>BigQuery 내보내기</td><td>GA4 원본 이벤트를 내보내 사용자 단위, 경로 단위 분석을 수행한다.</td><td>데이터 축적, 분석 요구 구체화</td></tr>
 </tbody></table>
-<h2>8. 단계별 일정(안)</h2>
-<table><thead><tr><th>단계</th><th>내용</th><th>포함 요구사항</th><th>규모</th></tr></thead><tbody>
-<tr><td>M0</td><td>현재 이벤트의 GA 실시간, DebugView 검증과 콘솔 설정</td><td>R1</td><td>반나절</td></tr>
-<tr><td>M1</td><td>측정 코드 개발: 공통 매개변수, 완독 판정, 공유와 검색, UTM</td><td>R2, R3, R4, R6</td><td>1일</td></tr>
-<tr><td>M2</td><td>좋아요, 스크랩 개발과 Firestore 규칙</td><td>R5</td><td>2~3일</td></tr>
-<tr><td>M3</td><td>GA 탐색 보고서 구성, 판단 기준 확정, P2 항목</td><td>R7, R8, R9, R10</td><td>1일</td></tr>
-</tbody></table>
-<p>M1 배포 후 약 1주일 데이터를 쌓은 뒤 R8의 가중치를 조정한다.</p>
-<h2>9. 비기능 요구</h2>
+<h2>8. 비기능 요구</h2>
 <table><thead><tr><th>구분</th><th>내용</th></tr></thead><tbody>
 <tr><td>성능</td><td>측정 코드가 화면 표시를 막지 않는다. 스크롤 이벤트는 가볍게 처리한다</td></tr>
 <tr><td>보안</td><td>반응 기능의 Firestore 규칙은 본인 문서만 쓰기를 허용한다. 관리자 계정 정보는 저장소에 두지 않는다</td></tr>
 <tr><td>개인정보 보호</td><td>이름, 이메일 등 개인 식별 정보와 익명 인증 ID를 GA 이벤트에 전송하지 않는다</td></tr>
 <tr><td>비용</td><td>현재 방문 규모에서 무료 사용량 범위 내로 추정하며, 방문량 증가 시 재검토한다</td></tr>
 </tbody></table>
-<h2>10. 위험과 대응</h2>
+<h2>9. 위험과 대응</h2>
 <table><thead><tr><th>위험</th><th>영향</th><th>대응</th></tr></thead><tbody>
 <tr><td>방문량이 적어 통계적 의미가 낮음</td><td>순위 신뢰도 저하</td><td>최소 표본(조회 30회) 기준, 누적 후 판단</td></tr>
 <tr><td>GA 반영 지연(24~48시간), 임계값</td><td>지표 확인 지연</td><td>실시간, DebugView로 구현을 먼저 검증</td></tr>

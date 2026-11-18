@@ -23,7 +23,7 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr><td>G3</td><td>글 길이를 반영한 체류 시간</td><td>GA 기본 "평균 참여 시간"만 존재, 글 길이와 발행일 미전송</td><td>길이가 다른 글끼리 공정한 비교 불가, 신규/기존 글 구분 불가</td><td>R2</td></tr>
 <tr><td>G4</td><td>완독</td><td><code>article_scroll</code> 50%, 90%만 존재</td><td>짧은 글은 열자마자 도달하고 빠른 스크롤도 완독으로 집계되어 완독률 과대평가</td><td>R3</td></tr>
 <tr><td>G5</td><td>공유, 관심 주제</td><td>링크 복사 버튼은 있으나 이벤트 없음, 검색 이벤트 없음</td><td>공유 의도와 독자 관심 주제 파악 불가</td><td>R4</td></tr>
-<tr><td>G6</td><td>좋아요, 스크랩</td><td>기능 없음</td><td>반응 지표 부재</td><td>R5, R10</td></tr>
+<tr><td>G6</td><td>좋아요, 스크랩</td><td>기능 없음</td><td>반응 지표 부재</td><td>R5</td></tr>
 <tr><td>G7</td><td>공유 링크를 통한 방문</td><td>공유 경로 구분 수단 없음</td><td>공유로 유입된 방문 식별 불가</td><td>R6</td></tr>
 <tr><td>G8</td><td>운영자 방문 제외</td><td>로그인한 적 있는 브라우저에서만 제외</td><td>운영자 방문이 섞일 수 있음</td><td>R9</td></tr>
 <tr><td>G9</td><td>구현 정확성</td><td>실제 GA 화면(실시간, DebugView)에서 검증하지 않음</td><td>이벤트 누락, 오류를 알 수 없음</td><td>R1</td></tr>
@@ -39,7 +39,7 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <h2>4. 범위</h2>
 <table><thead><tr><th>구분</th><th>항목</th></tr></thead><tbody>
 <tr><td>이번 범위</td><td>GA 설정 정비, 이벤트 보강, 완독 판정 개선, 공유와 검색 측정, 좋아요와 스크랩, 유입 구분(UTM), 글별 지표 확인용 GA 탐색 보고서, 인기 글 판단 기준</td></tr>
-<tr><td>후속 범위</td><td>글별 지표 대시보드(관리자 화면), 댓글, 스크랩 모아보기, BigQuery 내보내기 (7장 참고)</td></tr>
+<tr><td>후속 범위</td><td>글별 지표 대시보드(관리자 화면), 댓글, 스크랩 목록 보기, BigQuery 내보내기 (7장 참고)</td></tr>
 </tbody></table>
 <h2>5. 우선순위별 요구사항</h2>
 <p>우선순위 기준: <strong>P0</strong> 반드시 이번에 완료 / <strong>P1</strong> 이번 개선 안에 완료 / <strong>P2</strong> 일정 여유 시 진행</p>
@@ -53,13 +53,12 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <tr class="rp1"><td><span class="b p1">P1</span></td><td>R7</td><td>글별 지표 확인용 GA 탐색 보고서 구성</td><td>설정</td><td>G10</td></tr>
 <tr class="rp1"><td><span class="b p1">P1</span></td><td>R8</td><td>인기 글 판단 기준 확정</td><td>문서, 운영</td><td>G10</td></tr>
 <tr class="rp2"><td><span class="b p2">P2</span></td><td>R9</td><td>관리자 트래픽 제외 개선</td><td>측정 코드, 설정</td><td>G8</td></tr>
-<tr class="rp2"><td><span class="b p2">P2</span></td><td>R10</td><td>스크랩 목록 보기(같은 브라우저)</td><td>신규 기능</td><td>G6 보완</td></tr>
 </tbody></table>
 <h3>5.1 작업 분류별 보기</h3>
 <table><thead><tr><th>작업 분류</th><th>설명</th><th>해당 항목</th><th>코드 변경</th></tr></thead><tbody>
 <tr><td>설정</td><td>GA 콘솔에서만 수행</td><td>R1, R7</td><td>없음</td></tr>
 <tr><td>측정 코드</td><td>기존 화면에 이벤트, 매개변수를 추가</td><td>R2, R3, R4, R6, R9</td><td>있음 (소규모)</td></tr>
-<tr><td>신규 기능</td><td>사용자에게 보이는 새 기능 개발</td><td>R5, R10</td><td>있음 (Firebase 규칙 포함)</td></tr>
+<tr><td>신규 기능</td><td>사용자에게 보이는 새 기능 개발</td><td>R5</td><td>있음 (Firebase 규칙 포함)</td></tr>
 <tr><td>문서, 운영</td><td>기준 정의, 문서화</td><td>R8</td><td>없음</td></tr>
 </tbody></table>
 <h2>6. 요구사항 상세</h2>
@@ -137,10 +136,6 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <li>필터를 "테스트" 상태로 확인한 뒤 "활성"으로 전환한다.</li>
 <li>한계: 로그인한 적 없는 브라우저의 운영자 방문은 걸러지지 않는다.</li>
 </ul>
-<h3>R10. 스크랩 목록 보기 <span class="b p2">P2</span></h3>
-<ul>
-<li>같은 브라우저에서 스크랩한 글을 모아 보는 목록 화면을 제공한다.</li>
-</ul>
 <h2>6.1 이벤트 택소노미</h2>
 <h3>기존 이벤트</h3>
 <table><thead><tr><th>이벤트</th><th>발생 시점</th><th>주요 매개변수</th><th>상태</th></tr></thead><tbody>
@@ -186,7 +181,7 @@ tr.rp0 td{background:#fdeceb}tr.rp1 td{background:#fff4e3}tr.rp2 td{background:#
 <table><thead><tr><th>후속 항목</th><th>내용</th><th>선행 조건</th></tr></thead><tbody>
 <tr><td>글별 지표 대시보드</td><td>블로그 관리자 화면 안에서 R7의 글별 지표와 R8의 인기 글 점수를 표로 제공한다. 데이터는 GA4 Data API를 서버 함수(Cloud Functions)로 호출해 가져오며, 관리자 로그인 계정만 조회할 수 있다. 외부 BI 도구는 사용하지 않는다.</td><td>R1~R4 완료 후 최소 2주 데이터 축적, GA 속성에 서비스 계정 조회 권한 부여, 서버 함수 사용 가능한 요금제</td></tr>
 <tr><td>댓글 기능</td><td>글 상세 화면에 댓글 작성, 조회를 제공한다. 스팸 방지(작성 빈도 제한, 금칙어)와 관리자 삭제, 승인 기능을 포함하고 <code>comment</code> 이벤트를 추가한다. 반응 지표에 댓글 수를 합산한다.</td><td>R5(익명 인증, 반응 데이터 모델) 안정화, 운영 정책 수립</td></tr>
-<tr><td>스크랩 모아보기 고도화</td><td>기기가 달라도 스크랩 목록을 유지하는 계정 연동 방식을 검토한다.</td><td>로그인 방식 결정</td></tr>
+<tr><td>스크랩 목록 보기</td><td>방문자가 스크랩한 글을 모아 보는 목록 화면을 제공한다. 1단계는 같은 브라우저에서 스크랩한 글 목록이고, 2단계로 기기가 달라도 목록이 유지되도록 계정 연동 방식을 검토한다.</td><td>R5(스크랩 데이터 모델) 완료, 2단계는 로그인 방식 결정</td></tr>
 <tr><td>BigQuery 내보내기</td><td>GA4 원본 이벤트를 내보내 사용자 단위, 경로 단위 분석을 수행한다.</td><td>데이터 축적, 분석 요구 구체화</td></tr>
 </tbody></table>
 <h2>8. 비기능 요구</h2>

@@ -228,7 +228,8 @@
 - R3: `share`(링크 복사 클릭), `search`(검색 입력이 0.8초 멈춘 뒤, 2글자 이상, 같은 검색어 반복 제외, `result_count` 포함)를 추가했다.
 - R4: 글 아래에 좋아요, 스크랩 버튼을 추가했다(`Reactions.jsx`, `data/reactions.js`). Firebase 익명 인증으로 방문자를 구분하고, 반응을 처음 누를 때만 익명 계정을 만든다. 저장 위치는 `posts/{글ID}/reactions/{사용자ID}`. 이벤트는 `like`, `unlike`, `scrap`, `unscrap`. 규칙은 `firestore.rules`에 추가했다. 규칙 미적용, 익명 인증 꺼짐이면 버튼을 숨긴다.
 - R5: 링크 복사 주소에 `utm_source=share&utm_medium=copy_link`를 붙였다. GA가 구분하도록 `page_view`의 `page_location`에 `utm_` 매개변수만 남긴다.
-- R7: 관리자로 로그인한 브라우저는 이벤트에 `traffic_type=internal`을 붙인다. 예전처럼 전송을 막지 않으므로, GA에서 내부 트래픽 필터를 켜기 전까지는 관리자 방문도 집계된다.
+- R7: 관리자로 로그인한 브라우저는 이벤트에 `traffic_type=internal`을 붙인다. 보안 점검을 반영해 전송 차단은 유지한다(`analytics.js`의 `BLOCK_OWNER`). GA에서 내부 트래픽 필터를 켠 뒤 `false`로 바꾸면 차단 대신 필터로 제외한다.
+- 보안 점검 반영: 임시저장, 비공개 글은 `article_select`로 보내지 않는다. 검색어는 이메일, 전화번호, 긴 숫자, 주소 모양이면 `(제외됨)`으로 보내고 50자로 자른다. 반응 문서 읽기는 공개로 두었다(익명 계정 ID와 좋아요 여부만 있고 개인정보가 없다). 방문이 크게 늘면 집계용 카운터 문서와 서버 함수로 바꾸는 것을 검토한다.
 - 확인: 로컬 빌드(임시 측정 ID)에서 이벤트 전송 값을 직접 읽어 확인했다. 열자마자 끝까지 내리면 `article_read`가 없고, 활성 24초 뒤 한 번 발생. `share`, `like`, `scrap`, `unscrap`, `search`, UTM 포함 `page_location` 확인. Firestore 연동(익명 인증, 규칙)과 실제 GA 수신은 배포 뒤 확인이 필요하다.
 
 ## 남은 일

@@ -16,6 +16,10 @@ function isOwner() {
   }
 }
 
+// 관리자 브라우저의 전송을 막는다. GA에서 내부 트래픽 필터(traffic_type=internal)를 켠 뒤에는 false 로 바꿔도 된다.
+// 막는 동안에도 traffic_type=internal 은 붙여 두어서, 전환할 때 코드를 더 고칠 필요가 없다.
+const BLOCK_OWNER = true
+
 let started = false
 export function initAnalytics() {
   if (!gaEnabled || started) return
@@ -24,6 +28,7 @@ export function initAnalytics() {
   window.gtag = function gtag() {
     window.dataLayer.push(arguments)
   }
+  if (BLOCK_OWNER && isOwner()) window[`ga-disable-${ID}`] = true
   const s = document.createElement('script')
   s.async = true
   s.src = `https://www.googletagmanager.com/gtag/js?id=${ID}`
@@ -41,6 +46,7 @@ export function markOwner() {
   } catch {
     /* 무시 */
   }
+  if (BLOCK_OWNER) window[`ga-disable-${ID}`] = true
   if (window.gtag) window.gtag('set', { traffic_type: 'internal' })
 }
 
@@ -77,6 +83,8 @@ export function pageView(path, title, extra = {}) {
 
 // 글을 골랐을 때. click_location: home_card, home_toc, list_index, next_article
 export function selectArticle(post, clickLocation) {
+  // 임시저장, 비공개 글(관리자만 보임)의 제목은 분석 데이터로 보내지 않는다.
+  if (post.status !== 'published' || post.visibility === 'private') return
   track('article_select', { ...postParams(post), click_location: clickLocation })
 }
 

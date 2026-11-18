@@ -39,7 +39,9 @@ export default function List() {
     if (term.length < 2 || term === lastTerm.current) return undefined
     const t = window.setTimeout(() => {
       lastTerm.current = term
-      track('search', { search_term: term, result_count: resultCount.current })
+      // 이메일, 전화번호, 긴 숫자처럼 개인정보로 보이는 검색어는 보내지 않고, 길이는 50자로 자른다.
+      const personal = /@|\d{6,}|https?:/i.test(term)
+      track('search', { search_term: personal ? '(제외됨)' : term.slice(0, 50), result_count: resultCount.current })
     }, 800)
     return () => window.clearTimeout(t)
   }, [q])

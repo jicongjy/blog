@@ -7,6 +7,7 @@ import { getPost, savePost } from '../data/posts.js'
 import { aiEnabled } from '../lib/ai.js'
 import { useAuth } from '../lib/auth.jsx'
 import { toHtml } from '../lib/body.js'
+import { checkBeforePublish } from '../lib/publishCheck.js'
 import { htmlToText, MAX_CALLS, requestSuggestion } from '../lib/suggest.js'
 import { useCategories } from '../lib/useCategories.js'
 
@@ -57,8 +58,15 @@ export default function Editor() {
   const category = f.category || names[0] || ''
 
   const submit = async (status) => {
-    if (!f.title.trim()) return window.alert('제목을 입력해 주세요.')
-    if (!category) return window.alert('카테고리를 먼저 만들어 주세요.')
+    // 발행 전 점검(F2): 제목, 요약, 카테고리가 비면 발행하지 않고, 표지가 비면 알리고 확인받는다. 임시저장은 제목만 있으면 된다.
+    if (status === 'published') {
+      const { blocking, warnings } = checkBeforePublish({ ...f, category })
+      if (blocking.length) return window.alert(`발행하려면 다음을 채워 주세요: ${blocking.join(', ')}`)
+      if (warnings.length && !window.confirm('표지 이미지가 비어 있어 카테고리 이미지가 쓰입니다. 이대로 발행할까요?')) return
+    } else {
+      if (!f.title.trim()) return window.alert('제목을 입력해 주세요.')
+      if (!category) return window.alert('카테고리를 먼저 만들어 주세요.')
+    }
     setSaving(true)
     const saved = await savePost({
       id,

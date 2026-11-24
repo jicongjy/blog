@@ -28,8 +28,42 @@ function mdToHtml(source = '') {
 
 const isHtml = (s = '') => /^\s*</.test(s)
 
+// 마크다운을 붙여 넣어 줄마다 <p>로 저장된 글: 줄 전체가 마크다운 기호로 시작하는 <p>만 제목, 인용, 목록으로 바꾼다.
+// 기호 뒤에 공백이 있는 줄만 바꾸므로 일반 문장은 건드리지 않는다.
+export function fixPastedMarkdown(html = '') {
+  const inl = (t) => t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>')
+  const out = []
+  let list = null // { tag, items }
+  const flush = () => {
+    if (list) out.push(`<${list.tag}>${list.items.map((i) => `<li><p>${i}</p></li>`).join('')}</${list.tag}>`)
+    list = null
+  }
+  const addItem = (tag, text) => {
+    if (list && list.tag !== tag) flush()
+    list = list ?? { tag, items: [] }
+    list.items.push(inl(text))
+  }
+  for (const part of html.split(/(<p>[\s\S]*?<\/p>)/)) {
+    const m = part.match(/^<p>([\s\S]*?)<\/p>$/)
+    if (!m) {
+      if (part.trim()) flush()
+      out.push(part)
+      continue
+    }
+    const t = m[1].trim()
+    let r
+    if ((r = t.match(/^(#{1,3}) (.+)$/))) { flush(); out.push(r[1] === '###' ? `<h3>${inl(r[2])}</h3>` : `<h2>${inl(r[2])}</h2>`) }
+    else if ((r = t.match(/^&gt; ?(.+)$/))) { flush(); out.push(`<blockquote><p>${inl(r[1])}</p></blockquote>`) }
+    else if ((r = t.match(/^[-*] (.+)$/))) addItem('ul', r[1])
+    else if ((r = t.match(/^\d{1,2}\. (.+)$/))) addItem('ol', r[1])
+    else { flush(); out.push(part) }
+  }
+  flush()
+  return out.join('')
+}
+
 // 저장된 본문(HTML 또는 예전 마크다운)을 항상 HTML로 돌려준다.
-export const toHtml = (body = '') => (isHtml(body) ? body : mdToHtml(body))
+export const toHtml = (body = '') => (isHtml(body) ? fixPastedMarkdown(body) : mdToHtml(body))
 
 // 화면에 그릴 때는 허용된 태그만 남긴다.
 export const safeHtml = (body = '') =>

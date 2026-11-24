@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import HmTop from '../components/HmTop.jsx'
 import RichEditor from '../components/RichEditor.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
 import { getPost, savePost } from '../data/posts.js'
 import { aiEnabled } from '../lib/ai.js'
+import { recordCall, withFinal } from '../lib/aiUsage.js'
 import { useAuth } from '../lib/auth.jsx'
 import { toHtml } from '../lib/body.js'
 import { checkBeforePublish } from '../lib/publishCheck.js'
@@ -23,7 +24,8 @@ export default function Editor() {
   const [cats] = useCategories()
   // AI 제안: idle(처음) / loading(진행 중) / success / error. 제안은 입력칸을 덮어쓰지 않고, 항목마다 쓰기를 눌러야 들어간다(D30).
   const [ai, setAi] = useState({ status: 'idle', data: null, used: {} })
-  const calls = useRef(0)
+  // 사용 기록(F7): 글에 저장된 기록을 이어받고, 호출이 끝날 때마다 갱신한다. 한 번도 안 썼으면 null.
+  const [usage, setUsage] = useState(null)
 
   // 홈, 글 상세와 같은 화면 바탕을 쓴다.
   useEffect(() => {
@@ -34,6 +36,7 @@ export default function Editor() {
   useEffect(() => {
     if (!id) return
     getPost(id).then((p) => {
+      if (p) setUsage(p.aiUsage ?? null)
       if (p) setF({ title: p.title, excerpt: p.excerpt, category: p.category ?? '', thumbnail: p.thumbnail ?? '', visibility: p.visibility ?? 'public', body: toHtml(p.body) })
       setLoaded(true)
     })
@@ -77,23 +80,25 @@ export default function Editor() {
       visibility: f.visibility,
       body: f.body,
       status,
+      ...(usage ? { aiUsage: withFinal(usage, { ...f, category }) } : {}),
     })
     nav(`/post/${saved.id}`)
   }
 
   const hasBody = htmlToText(f.body).length > 0
-  const callsLeft = MAX_CALLS - calls.current
+  const callsLeft = MAX_CALLS - (usage?.calls ?? 0)
   const canAsk = hasBody && ai.status !== 'loading' && callsLeft > 0
   const aiNote = !hasBody ? '본문을 먼저 쓰세요' : callsLeft <= 0 ? '이 글에서 쓸 수 있는 제안 횟수를 모두 썼습니다' : `제안 ${callsLeft}회 남음`
 
   const askAi = async () => {
     if (!canAsk) return
-    calls.current += 1
     setAi({ status: 'loading', data: null, used: {} })
     try {
       const data = await requestSuggestion({ title: f.title, body: f.body, categories: names })
+      setUsage((u) => recordCall(u, { ok: true, ms: data.ms, suggestion: data }))
       setAi({ status: 'success', data, used: {} })
     } catch {
+      setUsage((u) => recordCall(u, { ok: false }))
       setAi({ status: 'error', data: null, used: {} })
     }
   }

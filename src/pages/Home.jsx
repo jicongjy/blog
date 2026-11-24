@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { heroImage, postFallback } from '../data/categoryImages.js'
 import { categoryClick, selectArticle } from '../lib/analytics.js'
@@ -12,6 +12,12 @@ export default function Home() {
   const posts = usePosts()
   const [cats] = useCategories()
   const [filter, setFilter] = useState(null) // 적용 중인 카테고리 이름
+
+  // 선택한 색 조합이 화면 바탕과 글자에 적용되도록 body에 표시를 붙인다.
+  useEffect(() => {
+    document.body.classList.add('is-home')
+    return () => document.body.classList.remove('is-home')
+  }, [])
 
   const list = posts ?? []
   const names = useMemo(() => {

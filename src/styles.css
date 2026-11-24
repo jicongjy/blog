@@ -365,6 +365,7 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .hm-filter { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 32px 0 0; padding: 0; list-style: none; }
 .hm-filter button { font-size: 18px; font-weight: 500; letter-spacing: -0.04em; color: var(--gray); transition: color .2s; }
 .hm-filter button.on, .hm-filter button:hover { color: var(--ink); }
+.hm-filter button.on sup { color: var(--palette-a, var(--soft-gray)); }
 .hm-filter sup { margin-left: 4px; font-size: 12px; font-weight: 400; letter-spacing: 0; color: var(--soft-gray); }
 .hm-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 24px; margin: 0; padding: 0; list-style: none; }
 .hm-card .hm-slot { margin-top: 0; }

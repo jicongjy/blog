@@ -1,6 +1,5 @@
 // 에디터의 AI 제안(F1). 제목, 요약, 카테고리를 한 번에 한 개씩 받는다(PRD 6.4, D30).
 // 보내는 것은 제목, 본문, 카테고리 이름뿐이다(D17).
-import { Schema } from 'firebase/ai'
 import { AI_TIMEOUT_MS, getSuggestModel } from './ai.js'
 
 // 글 한 편에서 제안을 부를 수 있는 횟수(PRD 6.4)
@@ -49,9 +48,12 @@ function withTimeout(promise, ms) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
 }
 
-const schema = Schema.object({
-  properties: { title: Schema.string(), excerpt: Schema.string(), category: Schema.string() },
-})
+// 응답 형식: 제목, 요약, 카테고리를 담은 JSON 한 개
+const schema = {
+  type: 'object',
+  properties: { title: { type: 'string' }, excerpt: { type: 'string' }, category: { type: 'string' } },
+  required: ['title', 'excerpt', 'category'],
+}
 
 // 성공하면 { title, excerpt, category, ms }, 실패하면 예외를 던진다(F6).
 export async function requestSuggestion({ title, body, categories }) {

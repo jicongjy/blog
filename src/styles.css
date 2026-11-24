@@ -321,7 +321,7 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .hm-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 75%; }
 .hm-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(180px, .8fr); gap: 0 32px; margin-top: 14px; padding-bottom: 64px; }
 .hm-title { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.045em; line-height: 1.3; word-break: keep-all; }
-.hm-subtitle { max-width: 46ch; margin-top: 3px !important; color: var(--soft-gray); line-height: 1.55; }
+.hm-subtitle { max-width: 46ch; margin-top: 3px !important; color: var(--soft-gray); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .hm-category { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
 .hm-category span { width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
 .hm-meta .g { color: var(--soft-gray); }

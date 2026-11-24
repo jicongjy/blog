@@ -7,6 +7,14 @@
 - 데이터·로그인: Firebase (Firestore `blog` 데이터베이스, Google 로그인). 연결 완료. 설정값이 없는 로컬에서는 localStorage 미리보기로 동작한다.
 - 현재 상태, 디자인 규칙, 남은 일: [AGENTS.md](AGENTS.md), 작업 기록: [docs/work-log.md](docs/work-log.md)
 
+## AI 기능과 문서
+
+글을 올리는 관리자와 읽을 글을 고르는 독자를 위해 두 가지 AI 기능을 정의하고 구현하고 있다. 릴리스 목표는 2026-11-25이다.
+
+- 관리자: 발행 직전에 AI가 제목, 요약, 카테고리를 제안하고 빠진 곳을 점검한다. AI는 글을 대신 쓰지 않는다.
+- 독자: 발행할 때 저장한 요약을 글 목록과 글 맨 위에 보여 준다.
+- 문서: [문서 목록](docs/README.md), [PRD](docs/prd/blog-ai-workflow.md), [의사결정 로그](docs/decisions.md)
+
 ## 개발
 ```bash
 npm install

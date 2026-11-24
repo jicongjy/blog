@@ -1,6 +1,6 @@
 # GA4 설정 체크리스트 (운영용)
 
-PRD(`docs/prd/blog-v2-analytics.md`)의 이벤트 요구사항을 구현한 뒤 GA 콘솔에서 하는 설정 목록이다. 코드 변경이 아니며 PRD 범위 밖의 운영 작업이다.
+PRD(`docs/prd/archive/blog-v2-analytics.md`)의 이벤트 요구사항을 구현한 뒤 GA 콘솔에서 하는 설정 목록이다. 코드 변경이 아니며 PRD 범위 밖의 운영 작업이다.
 
 ## 1. 맞춤 측정기준 (이벤트 범위, 문자 값)
 `post_id`, `post_title`, `post_category`, `post_published`, `page_type`, `click_location`, `category`, `scroll_depth`, `share_method`, `search_term`, `traffic_type`

@@ -1,5 +1,6 @@
 // AI 연결. 키는 코드와 배포 파일에 두지 않고, Firestore의 settings/ai 문서(apiKey 필드)에 둔다.
 // 이 문서는 보안 규칙으로 관리자 계정만 읽을 수 있다(firestore.rules). 방문자는 읽을 수 없다.
+import { onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { ADMIN_EMAIL, auth, db } from './firebase.js'
 
@@ -18,8 +19,13 @@ export function isAdminUser() {
 }
 
 let keyPromise = null
+// 로그인 상태가 바뀌면(로그아웃 포함) 메모리의 키를 버린다.
+if (auth) onAuthStateChanged(auth, () => { keyPromise = null })
+
 // 키는 한 번 읽어 이 화면이 열려 있는 동안만 메모리에 둔다. 저장소나 화면에는 남기지 않는다.
-export function readApiKey() {
+// 밖에서 직접 부르지 못하도록 내보내지 않고, 읽기 전에 관리자인지 다시 확인한다.
+function readApiKey() {
+  if (!isAdminUser()) return Promise.reject(new Error('unavailable'))
   keyPromise ??= getDoc(doc(db, 'settings', 'ai')).then((snap) => {
     const key = snap.exists() ? String(snap.data().apiKey ?? '').trim() : ''
     if (!key) throw new Error('unavailable')

@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const state = { exists: true, data: { apiKey: ' TEST-KEY ' }, admin: true }
 const getDoc = vi.fn(async () => ({ exists: () => state.exists, data: () => state.data }))
+let authCb = null
+vi.mock('firebase/auth', () => ({ onAuthStateChanged: (_a, cb) => { authCb = cb } }))
 vi.mock('firebase/firestore', () => ({ doc: (...a) => a.join('/'), getDoc: (...a) => getDoc(...a) }))
 vi.mock('./firebase.js', () => ({
   db: {},
@@ -71,5 +73,19 @@ describe('getSuggestModel', () => {
     state.exists = true
     fetchMock.mockResolvedValue(ok({ title: 'y' }))
     expect(JSON.parse((await m.generateContent('b')).response.text())).toEqual({ title: 'y' })
+  })
+  it('로그아웃하면 메모리의 키를 버리고 다시 읽는다', async () => {
+    fetchMock.mockResolvedValue(ok({}))
+    const m = (await fresh()).getSuggestModel()
+    await m.generateContent('a')
+    authCb()
+    await m.generateContent('b')
+    expect(getDoc).toHaveBeenCalledTimes(2)
+  })
+  it('호출 직전에 관리자가 아니게 되면 키를 읽지 않고 실패한다', async () => {
+    const m = (await fresh()).getSuggestModel()
+    state.admin = false
+    await expect(m.generateContent('a')).rejects.toThrow('unavailable')
+    expect(getDoc).not.toHaveBeenCalled()
   })
 })

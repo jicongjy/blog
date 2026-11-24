@@ -21,7 +21,7 @@
 |---|---|
 | [데스크리서치](research/desk-research.md) | PRD 3.1의 근거인 블로그 현황, 경쟁 환경, 독자 확인 결과 |
 | [지표 후보와 평가](research/metrics-candidates.md) | PRD 5장 지표를 정하기까지 검토한 후보와 평가 |
-| [글 올리는 시간 구현 전 기준값](research/baseline-publish-time.md) | PRD 5.1의 올리는 시간 기준값을 잰 방법과 한계 |
+| [글 올리는 시간 구현 전 기준값](research/baseline-publish-time.md) | PRD 5.2의 올리는 시간 기준값을 잰 방법과 한계 |
 | [GA4 설정 체크리스트](ga-setup-checklist.md) | GA 콘솔에서 하는 운영 설정 목록 |
 | [2026-11-17 작업 노트](learning-notes/2026-11-17.md) | 그날 작업에서 생긴 오류와 배운 것 |
 

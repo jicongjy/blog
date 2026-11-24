@@ -367,7 +367,9 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .pd-meta button { padding: 0; border: 0; background: none; color: var(--soft-gray); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .pd-meta button:hover { color: var(--ink); }
 .pd-title { margin: 14px 0 0; font-size: clamp(30px, 4.6vw, 60px); font-weight: 600; letter-spacing: -0.05em; line-height: 1.1; word-break: keep-all; }
-.hm .pd-excerpt { margin: 22px 0 0; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.5; letter-spacing: -0.03em; color: var(--soft-gray); }
+.hm .pd-summary { margin: 28px 0 0; padding: 18px 20px; background: color-mix(in srgb, var(--ink) 6%, transparent); border-left: 3px solid var(--ink); }
+.pd-summary-lbl { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0; color: var(--soft-gray); }
+.hm .pd-summary p { margin: 0; font-size: clamp(15px, 1.4vw, 17px); line-height: 1.6; letter-spacing: -0.03em; color: var(--ink); word-break: keep-all; }
 .hm .pd-admin { display: flex; gap: 16px; margin-top: 18px; color: var(--soft-gray); }
 .pd-cover { position: relative; margin: 40px 0 48px; aspect-ratio: 16 / 9; background: var(--slot); overflow: hidden; transition: background-color .28s ease; }
 .pd-cover img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 75%; }

@@ -211,6 +211,18 @@ h1, h2, h3, p, ul, ol, figure, blockquote { margin: 0; }
 .ed-actions .hm-read:disabled { opacity: .5; cursor: default; }
 .ed-title { display: block; width: 100%; margin: 0; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; font-size: clamp(30px, 4.6vw, 60px); font-weight: 600; letter-spacing: -0.05em; line-height: 1.1; outline: none; }
 .ed-title::placeholder, .ed-excerpt::placeholder { color: var(--gray); }
+.ed-ai { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
+.ed-ai-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ed-ai-btn { height: 34px; padding: 0 16px; border: 0; background: var(--ink); color: var(--hm-bg, #fff); font: inherit; cursor: pointer; }
+.ed-ai-btn:disabled { opacity: .5; cursor: default; }
+.ed-ai-note { color: var(--soft-gray); font-size: 14px; }
+.ed-ai-err { margin: 14px 0 0; color: var(--ink); }
+.ed-ai-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ed-ai-list li { display: grid; grid-template-columns: 72px 1fr auto; gap: 12px; align-items: baseline; padding: 10px 12px; background: var(--slot); }
+.ed-ai-lbl { color: var(--soft-gray); font-size: 14px; }
+.ed-ai-txt { word-break: keep-all; }
+.ed-ai-list button { height: 28px; padding: 0 12px; border: 0; background: var(--ink); color: var(--hm-bg, #fff); font: inherit; font-size: 14px; cursor: pointer; }
+.ed-ai-list button:disabled { background: none; color: var(--soft-gray); cursor: default; }
 .ed-excerpt { display: block; width: 100%; margin: 22px 0 0; padding: 0; border: 0; background: none; color: var(--soft-gray); font: inherit; font-size: clamp(16px, 1.6vw, 20px); line-height: 1.5; letter-spacing: -0.03em; resize: none; outline: none; }
 .ed .pd-cover { margin: 40px 0 28px; }
 

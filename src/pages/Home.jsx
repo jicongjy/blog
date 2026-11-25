@@ -41,7 +41,7 @@ export default function Home() {
       <section className="hm-intro" aria-label="소개">
         <p className="hm-label">About</p>
         <h1 className="hm-intro-text">
-          <b>서비스를 기획하고 디자인하는 홍지영의 작업 노트입니다.</b> 문제를 어떻게 정의하고, 화면과 운영으로 어떻게 풀었는지 적습니다.
+          <b>서비스 기획에 대한 글을 쓰는 블로그입니다.</b> 문제를 어떻게 정의하고, 화면과 운영으로 어떻게 풀어 가는지 다룹니다.
         </h1>
         <ul className="hm-filter" aria-label="카테고리">
           <li>

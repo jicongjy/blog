@@ -65,7 +65,7 @@ export default function Home() {
         {posts && shown.length === 0 && <p className="hm-empty">아직 글이 없습니다.</p>}
 
         <ul className="hm-grid">
-          {shown.slice(0, 6).map((p) => {
+          {shown.map((p) => {
             const src = p.thumbnail || postFallback(p.category, names.indexOf(p.category)) || heroImage
             return (
               <li key={p.id}>
@@ -84,12 +84,6 @@ export default function Home() {
             )
           })}
         </ul>
-
-        {shown.length > 6 && (
-          <p className="hm-more">
-            <Link to={filter ? `/notes?c=${encodeURIComponent(filter)}` : '/notes'}>전체 글 보기 →</Link>
-          </p>
-        )}
       </section>
 
       <footer className="hm-foot">© {new Date().getFullYear()} 기획 노트</footer>

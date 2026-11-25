@@ -300,8 +300,6 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .hm-category span { width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
 .hm-read { display: flex; align-items: center; justify-content: center; flex: 0 0 auto; height: 44px; margin-top: 16px; background: var(--ink); color: var(--hm-bg, #fff); font-size: 14px; font-weight: 600; letter-spacing: -0.02em; transition: opacity .2s; }
 .hm .hm-read:hover { color: var(--hm-bg, #fff); opacity: .78; }
-.hm-more { padding-bottom: 32px; }
-.hm-more a { text-decoration: underline; text-underline-offset: 3px; }
 .hm-foot { padding: 80px 0 14px; color: var(--soft-gray); }
 
 @media (max-width: 820px) {

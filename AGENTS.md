@@ -4,11 +4,12 @@
 
 ## 현재 상태 (2026-11-25)
 - AI 워크플로우: 글쓰기에서 "AI 제안 받기"로 제목, 요약, 카테고리 제안을 받는다(관리자만). 브라우저가 Anthropic API(`claude-haiku-5-5`)를 직접 부르며 키는 Firestore `settings/ai`에 있고 관리자만 읽는다. 프롬프트와 호출은 `src/lib/suggest.js`, 사용 기록(`aiUsage`)은 `src/lib/aiUsage.js`. 글당 제안은 5회까지. 독자 화면은 AI를 부르지 않는다. 발행 전 점검은 `src/lib/publishCheck.js`.
-- 테스트: `npm test`(46개). 결과와 한계는 `docs/test-report.md`, 시도 기록은 `docs/success-failure-log.md`, 결정은 `docs/decisions.md`.
+- 테스트: `npm test`(48개). 결과와 한계는 `docs/test-report.md`, 시도 기록은 `docs/success-failure-log.md`, 결정은 `docs/decisions.md`.
+- 로그인: 평소는 Google 로그인(관리자 이메일 인증). 채점 기간에는 이메일/비밀번호 로그인(D38)을 열어 두었고 `src/pages/Login.jsx`의 `SHOW_GOOGLE`을 false로 숨겼다. 채점 후 계정 삭제, 규칙의 임시 이메일 제거, AI 키 재발급, `SHOW_GOOGLE = true`로 되돌린다.
 - 홈은 소개 문구와 3열 카드 그리드가 전체 글을 이어서 보여 준다(전체 글 버튼 없음).
 - 배포: `package-lock.json`은 npm 10에서 만든 것이어야 `npm ci`가 통과한다.
 
-## 이전 상태 (2026-11-17)
+## 이전 상태 (2026-11-17, 일부는 위 현재 상태가 우선)
 - 주소: https://jicongjy.github.io/blog/ (BrowserRouter, `base: '/blog/'`). `main`에 푸시하면 GitHub Actions가 자동 배포한다.
 - Firebase 연결 완료: 프로젝트 `gen-lang-client-0559087225`, Firestore 이름 있는 데이터베이스 `blog`, Google 로그인. 관리자 계정만 글 쓰기. 규칙은 `firestore.rules`(저장소에는 `ADMIN_EMAIL_HERE` 자리표시자, 실제 주소는 콘솔 규칙에만 있다).
 - 화면: 홈(`/`), 전체 글(`/notes`), 글 상세(`/post/:id`)는 잡지형 새 디자인. 글쓰기(`/write`)도 새 디자인(글 상세와 같은 2열: 왼쪽 설정, 오른쪽 제목, 요약, 표지, 본문). 카테고리 관리(`/admin/categories`)와 로그인만 아직 옛 디자인.
@@ -29,10 +30,21 @@
 - 공유 이미지: `public/og-blog.png`은 1200×630 검정 바탕에 흰색 `blog` 글자를 둔 OG 이미지다. `index.html`의 Open Graph 및 Twitter 메타 태그가 이 파일을 가리킨다.
 - Firebase 설정값은 `VITE_FIREBASE_*` 환경 변수(로컬 `.env`는 git 제외, 배포는 GitHub Variables). 값이 없으면 localStorage 미리보기 모드로 동작.
 
-## 남은 일
+## 남은 일 (2026-11-25 기준 AI 워크플로우 과제는 완료, 아래는 블로그 자체의 남은 일)
 1. 사용자: GA 속성 생성 후 측정 ID 전달 → `gh variable set VITE_GA_MEASUREMENT_ID --repo jicongjy/blog --body G-XXXX` 후 재배포, GA 실시간 보고서로 확인. GA 콘솔에서 향상된 측정의 "기록 이벤트에 따른 페이지 변경"은 꺼야 중복 집계가 없다.
 2. 사용자: `/admin/categories`에서 카테고리 이름을 영어로 바꾸고 "임시 글 4개 등록"을 다시 눌러 썸네일을 붙인다.
 3. 카테고리 관리, 로그인 화면을 새 디자인으로 통일(완료 후 `Mascot.jsx` 삭제 가능).
+
+## AI 워크플로우 지켜야 할 규칙
+- 기준 문서는 `docs/prd/blog-ai-workflow.md`. PRD에 없는 기능은 만들기 전에 묻고, 범위를 넓히지 않는다.
+- AI 키, 채점 계정 비밀번호는 코드, 커밋, 로그, 문서에 넣지 않는다. 키는 Firestore `settings/ai`에만 두고 관리자만 읽는다.
+- AI는 제안만 한다. 제안은 입력칸을 덮어쓰지 않고, 사용자가 항목마다 "쓰기"를 눌러야 들어간다(D30). 독자 화면에서 AI를 부르지 않는다.
+- AI가 실패하면 직접 입력으로 이어지게 하고, 글을 발행하지 못하게 막지 않는다.
+- 기존 로그인, 글 저장, GA를 깨뜨리지 않는다. 고치기 전에 영향 범위를 먼저 말한다.
+- 모르는 것은 추측하지 않고 묻는다. 확인하지 못한 것은 문서에 "확인 못 함"으로 적는다.
+- 선택지가 둘 이상인 결정은 `docs/decisions.md`에 `## D번호. 제목`으로 이어 적는다(결정, 대안, 이유, 영향).
+- 시도의 성공과 실패는 `docs/success-failure-log.md` 표에 한 줄 추가한다(시도, 결과, 원인, 조치, 근거). 커밋처럼 늘 되는 일은 적지 않는다.
+- 최종 제출 2026-11-25 16:50, 이후 커밋하지 않는다.
 
 ## 작업 방식
 - 사용자 지시가 있을 때만 커밋한다. 커밋 제목은 `유형(범위): 한 줄`(feat, fix, design, content, docs, refactor, chore), 한국어, 한 커밋에 한 변경.

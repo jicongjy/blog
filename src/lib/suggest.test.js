@@ -36,6 +36,23 @@ describe('buildPrompt', () => {
     expect(p).toContain('본문에 없는 내용은 쓰지 않는다')
     expect(p).toContain('120자')
   })
+  it('읽는 사람과 제목 규칙(얻는 것, 쉬운 말, 25자)을 담는다', () => {
+    const p = buildPrompt({ title: '', text: 'a', categories })
+    expect(p).toContain('읽는 사람은')
+    expect(p).toContain('무엇을 얻는지')
+    expect(p).toContain('25자 안팎')
+    expect(p).toContain('쉬운 말로 풀어 쓴다')
+    expect(p).toContain('절을 겹쳐 쓰지 않는다')
+  })
+  it('이미 나온 제안이 있으면 다른 답을 쓰라는 지시와 함께 담는다', () => {
+    const p = buildPrompt({ title: '', text: 'a', categories, previous: [{ title: '첫 제목', excerpt: '첫 요약' }] })
+    expect(p).toContain('이미 나온 제안')
+    expect(p).toContain('1. 제목: 첫 제목 / 요약: 첫 요약')
+  })
+  it('이미 나온 제안이 없으면 그 구역을 넣지 않는다', () => {
+    expect(buildPrompt({ title: '', text: 'a', categories })).not.toContain('이미 나온 제안')
+    expect(buildPrompt({ title: '', text: 'a', categories, previous: [] })).not.toContain('이미 나온 제안')
+  })
   it('제목이 비어 있으면 없음으로 적는다', () => {
     expect(buildPrompt({ title: '', text: 'a', categories })).toContain('현재 제목: (없음)')
   })

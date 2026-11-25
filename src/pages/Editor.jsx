@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import HmTop from '../components/HmTop.jsx'
 import RichEditor from '../components/RichEditor.jsx'
@@ -26,6 +26,8 @@ export default function Editor() {
   const [ai, setAi] = useState({ status: 'idle', data: null, used: {} })
   // 사용 기록(F7): 글에 저장된 기록을 이어받고, 호출이 끝날 때마다 갱신한다. 한 번도 안 썼으면 null.
   const [usage, setUsage] = useState(null)
+  // 이 화면에서 이미 받은 제안. 다시 받을 때 AI에 보내 같은 답이 반복되지 않게 한다.
+  const earlier = useRef([])
 
   // 홈, 글 상세와 같은 화면 바탕을 쓴다.
   useEffect(() => {
@@ -94,7 +96,8 @@ export default function Editor() {
     if (!canAsk) return
     setAi({ status: 'loading', data: null, used: {} })
     try {
-      const data = await requestSuggestion({ title: f.title, body: f.body, categories: names })
+      const data = await requestSuggestion({ title: f.title, body: f.body, categories: names, previous: earlier.current })
+      earlier.current = [...earlier.current, { title: data.title, excerpt: data.excerpt }]
       setUsage((u) => recordCall(u, { ok: true, ms: data.ms, suggestion: data }))
       setAi({ status: 'success', data, used: {} })
     } catch {

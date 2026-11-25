@@ -4,10 +4,22 @@ import Mascot from '../components/Mascot.jsx'
 import { useAuth } from '../lib/auth.jsx'
 import { firebaseEnabled } from '../lib/firebase.js'
 
+const SHOW_GOOGLE = false
+
 export default function Login() {
-  const { signIn } = useAuth()
+  const { signIn, signInEmail } = useAuth()
   const nav = useNavigate()
   const [error, setError] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const goEmail = async (e) => {
+    e.preventDefault()
+    setError('')
+    const r = await signInEmail(email, password)
+    if (r.ok) return nav('/write')
+    if (r.reason === 'wrong') setError('이메일 또는 비밀번호가 맞지 않습니다.')
+    else setError(`로그인에 실패했습니다. (${r.message ?? '알 수 없는 오류'})`)
+  }
   const go = async () => {
     setError('')
     const r = await signIn()
@@ -24,12 +36,20 @@ export default function Login() {
         <p>글쓰기와 글 관리는 관리자만 사용할 수 있습니다.</p>
       </div>
       <div className="login-box">
-        <button type="button" className="google" onClick={go}>
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+        {/* 채점 기간에는 이메일/비밀번호로 로그인한다. 구글 로그인은 SHOW_GOOGLE을 true로 바꾸면 되살아난다. */}
+        <form className="login-form" onSubmit={goEmail}>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="이메일" aria-label="이메일" autoComplete="username" required />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="비밀번호" aria-label="비밀번호" autoComplete="current-password" required />
+          <button type="submit" className="google">로그인</button>
+        </form>
+        {SHOW_GOOGLE && (
+          <button type="button" className="google" onClick={go}>
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="#fff" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3zM12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22zM6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2L6.4 14zM12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.4L6.4 10c.8-2.3 3-4.1 5.6-4.1z" />
           </svg>
-          Google로 로그인
+            Google로 로그인
         </button>
+        )}
         <p className="login-note">허용된 계정으로만 로그인할 수 있습니다.</p>
         {error && (
           <p className="login-error" role="alert">

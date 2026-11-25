@@ -369,9 +369,9 @@ body.is-home { background: var(--hm-bg, #fff); color: var(--hm-fg, #0a0a0a); tra
 .hm-filter sup { margin-left: 4px; font-size: 12px; font-weight: 400; letter-spacing: 0; color: var(--soft-gray); }
 .hm-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 24px; margin: 0; padding: 0; list-style: none; }
 .hm-card .hm-slot { margin-top: 0; }
-.hm-card-meta { display: flex; justify-content: space-between; gap: 12px; margin: 12px 0 0; }
+.hm .hm-card-meta { display: flex; justify-content: space-between; gap: 12px; margin: 20px 0 0; }
 .hm-card-meta .g { color: var(--soft-gray); }
-.hm-card .hm-title { margin: 6px 0 0; font-size: 20px; font-weight: 600; letter-spacing: -0.04em; line-height: 1.3; word-break: keep-all; }
+.hm-card .hm-title { margin: 8px 0 0; font-size: 20px; font-weight: 600; letter-spacing: -0.04em; line-height: 1.3; word-break: keep-all; }
 .hm-card .hm-subtitle { margin-top: 6px !important; font-size: 15px; }
 @media (max-width: 1100px) { .hm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .hm-grid { grid-template-columns: 1fr; } .hm-intro { padding-top: 48px; } }

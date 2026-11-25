@@ -2,7 +2,13 @@
 
 다른 AI가 이어서 작업할 때 가장 먼저 읽는 문서. 작업 기록과 겪은 문제는 `docs/work-log.md`(번호순), 실행과 Firebase 설정은 `README.md`.
 
-## 현재 상태 (2026-11-17)
+## 현재 상태 (2026-11-25)
+- AI 워크플로우: 글쓰기에서 "AI 제안 받기"로 제목, 요약, 카테고리 제안을 받는다(관리자만). 브라우저가 Anthropic API(`claude-haiku-5-5`)를 직접 부르며 키는 Firestore `settings/ai`에 있고 관리자만 읽는다. 프롬프트와 호출은 `src/lib/suggest.js`, 사용 기록(`aiUsage`)은 `src/lib/aiUsage.js`. 글당 제안은 5회까지. 독자 화면은 AI를 부르지 않는다. 발행 전 점검은 `src/lib/publishCheck.js`.
+- 테스트: `npm test`(46개). 결과와 한계는 `docs/test-report.md`, 시도 기록은 `docs/success-failure-log.md`, 결정은 `docs/decisions.md`.
+- 홈은 소개 문구와 3열 카드 그리드가 전체 글을 이어서 보여 준다(전체 글 버튼 없음).
+- 배포: `package-lock.json`은 npm 10에서 만든 것이어야 `npm ci`가 통과한다.
+
+## 이전 상태 (2026-11-17)
 - 주소: https://jicongjy.github.io/blog/ (BrowserRouter, `base: '/blog/'`). `main`에 푸시하면 GitHub Actions가 자동 배포한다.
 - Firebase 연결 완료: 프로젝트 `gen-lang-client-0559087225`, Firestore 이름 있는 데이터베이스 `blog`, Google 로그인. 관리자 계정만 글 쓰기. 규칙은 `firestore.rules`(저장소에는 `ADMIN_EMAIL_HERE` 자리표시자, 실제 주소는 콘솔 규칙에만 있다).
 - 화면: 홈(`/`), 전체 글(`/notes`), 글 상세(`/post/:id`)는 잡지형 새 디자인. 글쓰기(`/write`)도 새 디자인(글 상세와 같은 2열: 왼쪽 설정, 오른쪽 제목, 요약, 표지, 본문). 카테고리 관리(`/admin/categories`)와 로그인만 아직 옛 디자인.
@@ -13,7 +19,6 @@
 - 잡지형. 선과 테두리 없음, 글자 크기는 13px 하나로 두고 굵기와 회색으로만 위계. Pretendard만 사용, 팔레트의 첫 색을 화면 바탕에, 둘째 색을 글자에 쓴다. 이미지는 원본 비율과 색을 유지한다. 마스코트 사용 안 함.
 - 문구는 담담한 한국어. 대시(—)와 AI 티 나는 표현 금지.
 - 색은 `.hm` 영역의 `--ink`(글자), `--hm-bg`(배경), `--palette-a`, `--palette-b`에서 관리한다. 회색 단계는 `color-mix`로 만들고, 새 스타일에 `#fff`나 회색 hex를 직접 쓰지 말고 `--ink`, `--gray`, `--soft-gray`, `--slot`을 쓴다.
-- 홈 스크롤은 `src/lib/sectionScroll.js`가 휠과 방향키를 가로채 첫 화면, 글 하나씩, 맨 아래로 한 칸씩 이동시킨다(CSS scroll-snap은 끊겨서 제거함).
 
 ## 구조
 - 글별 OG: 일반 주소(BrowserRouter, `/blog/post/<글ID>/`). 배포 때(그리고 20분마다 변경 확인) `scripts/generate-share.mjs`가 글마다 OG가 들어간 `post/<글ID>/index.html`을 만든다. 없는 경로는 `404.html`(앱)이 받는다. 자세한 내용은 `docs/work-log.md` 26, 28번.
@@ -28,7 +33,6 @@
 1. 사용자: GA 속성 생성 후 측정 ID 전달 → `gh variable set VITE_GA_MEASUREMENT_ID --repo jicongjy/blog --body G-XXXX` 후 재배포, GA 실시간 보고서로 확인. GA 콘솔에서 향상된 측정의 "기록 이벤트에 따른 페이지 변경"은 꺼야 중복 집계가 없다.
 2. 사용자: `/admin/categories`에서 카테고리 이름을 영어로 바꾸고 "임시 글 4개 등록"을 다시 눌러 썸네일을 붙인다.
 3. 카테고리 관리, 로그인 화면을 새 디자인으로 통일(완료 후 `Mascot.jsx` 삭제 가능).
-4. 확인 못 한 것: 실제 마우스 휠, 트랙패드에서의 스크롤 감각(이동 시간 `sectionScroll.js`의 `DURATION` 0.65초).
 
 ## 작업 방식
 - 사용자 지시가 있을 때만 커밋한다. 커밋 제목은 `유형(범위): 한 줄`(feat, fix, design, content, docs, refactor, chore), 한국어, 한 커밋에 한 변경.

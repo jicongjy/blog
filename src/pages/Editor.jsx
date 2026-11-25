@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import HmTop from '../components/HmTop.jsx'
 import RichEditor from '../components/RichEditor.jsx'
 import { heroImage, postFallback } from '../data/categoryImages.js'
 import { getPost, savePost } from '../data/posts.js'
+import { aiEnabled } from '../lib/ai.js'
+import { recordCall, withFinal } from '../lib/aiUsage.js'
 import { useAuth } from '../lib/auth.jsx'
 import { toHtml } from '../lib/body.js'
+import { checkBeforePublish } from '../lib/publishCheck.js'
+import { htmlToText, MAX_CALLS, requestSuggestion } from '../lib/suggest.js'
 import { useCategories } from '../lib/useCategories.js'
 
 const empty = { title: '', excerpt: '', category: '', thumbnail: '', visibility: 'public', body: '' }
@@ -18,6 +22,12 @@ export default function Editor() {
   const [saving, setSaving] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [cats] = useCategories()
+  // AI 제안: idle(처음) / loading(진행 중) / success / error. 제안은 입력칸을 덮어쓰지 않고, 항목마다 쓰기를 눌러야 들어간다(D30).
+  const [ai, setAi] = useState({ status: 'idle', data: null, used: {} })
+  // 사용 기록(F7): 글에 저장된 기록을 이어받고, 호출이 끝날 때마다 갱신한다. 한 번도 안 썼으면 null.
+  const [usage, setUsage] = useState(null)
+  // 이 화면에서 이미 받은 제안. 다시 받을 때 AI에 보내 같은 답이 반복되지 않게 한다.
+  const earlier = useRef([])
 
   // 홈, 글 상세와 같은 화면 바탕을 쓴다.
   useEffect(() => {
@@ -28,6 +38,7 @@ export default function Editor() {
   useEffect(() => {
     if (!id) return
     getPost(id).then((p) => {
+      if (p) setUsage(p.aiUsage ?? null)
       if (p) setF({ title: p.title, excerpt: p.excerpt, category: p.category ?? '', thumbnail: p.thumbnail ?? '', visibility: p.visibility ?? 'public', body: toHtml(p.body) })
       setLoaded(true)
     })
@@ -52,8 +63,15 @@ export default function Editor() {
   const category = f.category || names[0] || ''
 
   const submit = async (status) => {
-    if (!f.title.trim()) return window.alert('제목을 입력해 주세요.')
-    if (!category) return window.alert('카테고리를 먼저 만들어 주세요.')
+    // 발행 전 점검(F2): 제목, 요약, 카테고리가 비면 발행하지 않고, 표지가 비면 알리고 확인받는다. 임시저장은 제목만 있으면 된다.
+    if (status === 'published') {
+      const { blocking, warnings } = checkBeforePublish({ ...f, category })
+      if (blocking.length) return window.alert(`발행하려면 다음을 채워 주세요: ${blocking.join(', ')}`)
+      if (warnings.length && !window.confirm('표지 이미지가 비어 있어 카테고리 이미지가 쓰입니다. 이대로 발행할까요?')) return
+    } else {
+      if (!f.title.trim()) return window.alert('제목을 입력해 주세요.')
+      if (!category) return window.alert('카테고리를 먼저 만들어 주세요.')
+    }
     setSaving(true)
     const saved = await savePost({
       id,
@@ -64,8 +82,33 @@ export default function Editor() {
       visibility: f.visibility,
       body: f.body,
       status,
+      ...(usage ? { aiUsage: withFinal(usage, { ...f, category }) } : {}),
     })
     nav(`/post/${saved.id}`)
+  }
+
+  const hasBody = htmlToText(f.body).length > 0
+  const callsLeft = MAX_CALLS - (usage?.calls ?? 0)
+  const canAsk = hasBody && ai.status !== 'loading' && callsLeft > 0
+  const aiNote = !hasBody ? '본문을 먼저 쓰세요' : callsLeft <= 0 ? '이 글에서 쓸 수 있는 제안 횟수를 모두 썼습니다' : `제안 ${callsLeft}회 남음`
+
+  const askAi = async () => {
+    if (!canAsk) return
+    setAi({ status: 'loading', data: null, used: {} })
+    try {
+      const data = await requestSuggestion({ title: f.title, body: f.body, categories: names, previous: earlier.current })
+      earlier.current = [...earlier.current, { title: data.title, excerpt: data.excerpt }]
+      setUsage((u) => recordCall(u, { ok: true, ms: data.ms, suggestion: data }))
+      setAi({ status: 'success', data, used: {} })
+    } catch {
+      setUsage((u) => recordCall(u, { ok: false }))
+      setAi({ status: 'error', data: null, used: {} })
+    }
+  }
+
+  const useSuggestion = (key) => {
+    setF((s) => ({ ...s, [key]: ai.data[key] }))
+    setAi((a) => ({ ...a, used: { ...a.used, [key]: true } }))
   }
 
   const cover = f.thumbnail.trim() || postFallback(category, names.indexOf(category)) || heroImage
@@ -130,6 +173,41 @@ export default function Editor() {
             </div>
             {/* 글을 불러온 뒤에 에디터를 만들어 처음 내용이 들어가게 한다 */}
             {(!id || loaded) && <RichEditor value={f.body} onChange={(html) => setF((s) => ({ ...s, body: html }))} />}
+
+            {aiEnabled && (
+              <section className="ed-ai" aria-label="AI 제안">
+                <div className="ed-ai-head">
+                  <button type="button" className="ed-ai-btn" disabled={!canAsk} onClick={askAi}>
+                    {ai.status === 'loading' ? '제안 만드는 중' : 'AI 제안 받기'}
+                  </button>
+                  <span className="ed-ai-note">{aiNote}</span>
+                </div>
+                {ai.status === 'error' && (
+                  <p className="ed-ai-err" role="alert">
+                    제안을 받지 못했습니다. 직접 입력해 주세요.
+                  </p>
+                )}
+                {ai.status === 'success' && (
+                  <ul className="ed-ai-list">
+                    {[
+                      ['title', '제목'],
+                      ['excerpt', '요약'],
+                      ['category', '카테고리'],
+                    ]
+                      .filter(([k]) => ai.data[k])
+                      .map(([k, label]) => (
+                        <li key={k}>
+                          <span className="ed-ai-lbl">{label}</span>
+                          <span className="ed-ai-txt">{ai.data[k]}</span>
+                          <button type="button" disabled={ai.used[k]} onClick={() => useSuggestion(k)}>
+                            {ai.used[k] ? '적용됨' : '쓰기'}
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </section>
+            )}
           </form>
         </div>
       </div>

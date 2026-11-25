@@ -175,7 +175,12 @@ export default function Post() {
             )}
           </p>
           <h1 className="pd-title">{post.title}</h1>
-          {post.excerpt && <p className="pd-excerpt">{post.excerpt}</p>}
+          {post.excerpt && (
+            <aside className="pd-summary" aria-label="요약">
+              <span className="pd-summary-lbl">요약</span>
+              <p>{post.excerpt}</p>
+            </aside>
+          )}
           {isAdmin && (
             <p className="pd-admin">
               <Link to={`/write/${post.id}`}>수정</Link>

@@ -97,6 +97,7 @@ export default function List() {
                   <span className="t">{p.title}</span>
                   <span className="c">{p.category}</span>
                   <span className="d">{fmtDate(p.createdAt)}</span>
+                  {p.excerpt && <span className="x">{p.excerpt}</span>}
                 </Link>
               </li>
             ))}

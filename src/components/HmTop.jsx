@@ -30,7 +30,7 @@ export default function HmTop() {
       <nav className="hm-nav" aria-label="메뉴">
         <Link to="/notes">전체 글</Link>
         {isAdmin && <Link to="/admin/categories">카테고리 관리</Link>}
-        <Link to="/write">글 작성하기</Link>
+        {isAdmin && <Link to="/write">글 작성하기</Link>}
         {isAdmin && (
           <button type="button" onClick={signOut}>
             로그아웃

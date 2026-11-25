@@ -41,7 +41,7 @@ export default function Home() {
       <section className="hm-intro" aria-label="소개">
         <p className="hm-label">About</p>
         <h1 className="hm-intro-text">
-          <b>서비스를 기획하고 디자인하는 홍지영의 작업 노트입니다.</b> 문제를 어떻게 정의하고, 화면과 운영으로 어떻게 풀었는지 적습니다.
+          <b>서비스 기획에 대한 글을 쓰는 블로그입니다.</b> 문제를 어떻게 정의하고, 화면과 운영으로 어떻게 풀어 가는지 다룹니다.
         </h1>
         <ul className="hm-filter" aria-label="카테고리">
           <li>
@@ -65,7 +65,7 @@ export default function Home() {
         {posts && shown.length === 0 && <p className="hm-empty">아직 글이 없습니다.</p>}
 
         <ul className="hm-grid">
-          {shown.slice(0, 6).map((p) => {
+          {shown.map((p) => {
             const src = p.thumbnail || postFallback(p.category, names.indexOf(p.category)) || heroImage
             return (
               <li key={p.id}>
@@ -84,12 +84,6 @@ export default function Home() {
             )
           })}
         </ul>
-
-        {shown.length > 6 && (
-          <p className="hm-more">
-            <Link to={filter ? `/notes?c=${encodeURIComponent(filter)}` : '/notes'}>전체 글 보기 →</Link>
-          </p>
-        )}
       </section>
 
       <footer className="hm-foot">© {new Date().getFullYear()} 기획 노트</footer>

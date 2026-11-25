@@ -2,6 +2,7 @@
 // 이 문서는 보안 규칙으로 관리자 계정만 읽을 수 있다(firestore.rules). 방문자는 읽을 수 없다.
 import { onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
+import { isAllowedUser } from './adminUser.js'
 import { ADMIN_EMAIL, auth, db } from './firebase.js'
 
 // 모델은 가장 가볍고 저렴한 Claude 모델로 정했다(의사결정 로그 D35).
@@ -14,8 +15,7 @@ export const aiEnabled = Boolean(db)
 
 // 화면 쪽 관리자 확인(F5). 키 문서는 규칙으로도 관리자만 읽을 수 있어서, 관리자가 아니면 키를 받지 못한다.
 export function isAdminUser() {
-  const u = auth?.currentUser
-  return Boolean(u && u.emailVerified && ADMIN_EMAIL && u.email?.toLowerCase() === ADMIN_EMAIL)
+  return isAllowedUser(auth?.currentUser, ADMIN_EMAIL)
 }
 
 let keyPromise = null
